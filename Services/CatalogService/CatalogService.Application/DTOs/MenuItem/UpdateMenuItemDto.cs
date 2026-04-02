@@ -5,8 +5,10 @@ namespace CatalogService.Application.DTOs.MenuItem
     /// <summary>Request body for PUT /menuitems/{id} (Partner only).</summary>
     public class UpdateMenuItemDto
     {
+        /// <summary>Name of the category within this restaurant (e.g. "Starters").</summary>
         [Required]
-        public Guid CategoryId { get; set; }
+        [StringLength(50, MinimumLength = 1)]
+        public string CategoryName { get; set; } = string.Empty;
 
         [Required]
         [StringLength(100, MinimumLength = 1)]

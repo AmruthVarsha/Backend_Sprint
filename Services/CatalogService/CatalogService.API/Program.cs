@@ -7,6 +7,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
+using System.Text;
+using System.Security.Claims;
+using CatalogService.Application.Interfaces;
+using CatalogService.Application.Services;
+using CatalogService.API.Middleware;
 
 namespace AuthService.API
 {
@@ -16,18 +21,22 @@ namespace AuthService.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
             builder.Services.AddControllers();
             builder.Services.AddDbContext<CatalogDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("CatalogConnection"))
             );
 
             builder.Services.AddScoped<IRestaurantRepository, RestaurantRepository>();
+            builder.Services.AddScoped<IRestaurantService, RestaurantService>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<IMenuItemRepository, MenuItemRepository>();
+            builder.Services.AddScoped<IMenuItemService, MenuItemService>();
             builder.Services.AddScoped<ICuisineRepository, CuisineRepository>();
+            builder.Services.AddScoped<ICuisineService, CuisineService>();
             builder.Services.AddScoped<IServiceAreaRepository, ServiceAreaRepository>();
+            builder.Services.AddScoped<IServiceAreaService, ServiceAreaService>();
+
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddHttpClient();
@@ -36,7 +45,7 @@ namespace AuthService.API
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Title = "Catalog Service API",
-                    Version = "v1";
+                    Version = "v1"
                 });
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -63,7 +72,8 @@ namespace AuthService.API
                     }
                 });
             });
-            var jwtSettings = new 
+            var jwtSettings = builder.Configuration.GetSection("JWT");
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]));
 
             builder.Services.AddAuthentication(options =>
             {
@@ -77,13 +87,28 @@ namespace AuthService.API
 
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
-                        IssuerSigningKey = 
+                        IssuerSigningKey = key,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = jwtSettings["Issuer"],
+                        ValidAudience = jwtSettings["Audience"],
+                        ValidateAudience = true,
+                        ValidateIssuer = true,
+                        ValidateLifetime = true,
+                        RoleClaimType = ClaimTypes.Role
                     };
                 });
 
            
 
             var app = builder.Build();
+
+            app.UseMiddleware<ExceptionMiddleware>();
+
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
 
 
             app.UseRouting();

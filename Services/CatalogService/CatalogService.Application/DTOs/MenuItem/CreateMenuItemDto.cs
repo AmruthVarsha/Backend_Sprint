@@ -8,8 +8,10 @@ namespace CatalogService.Application.DTOs.MenuItem
         [Required]
         public Guid RestaurantId { get; set; }
 
+        /// <summary>Name of the category within this restaurant (e.g. "Starters").</summary>
         [Required]
-        public Guid CategoryId { get; set; }
+        [StringLength(50, MinimumLength = 1)]
+        public string CategoryName { get; set; } = string.Empty;
 
         [Required]
         [StringLength(100, MinimumLength = 1)]

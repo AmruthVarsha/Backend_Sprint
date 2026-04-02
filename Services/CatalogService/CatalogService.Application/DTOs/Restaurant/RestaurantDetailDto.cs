@@ -11,7 +11,7 @@ namespace CatalogService.Application.DTOs.Restaurant
     public class RestaurantDetailDto
     {
         public Guid Id { get; set; }
-        public Guid OwnerId { get; set; }
+        public string OwnerId { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public string? Description { get; set; }
         public string? LogoUrl { get; set; }

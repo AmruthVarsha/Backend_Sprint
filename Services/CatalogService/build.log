@@ -1,0 +1,14 @@
+  Determining projects to restore...
+  Restored D:\.NET\ASPDotNet\FoodDelivery\Services\CatalogService\CatalogService.Infrastructure\CatalogService.Infrastructure.csproj (in 3.03 sec).
+  Restored D:\.NET\ASPDotNet\FoodDelivery\Services\CatalogService\CatalogService.API\CatalogService.API.csproj (in 3.03 sec).
+  2 of 4 projects are up-to-date for restore.
+  CatalogService.Domain -> D:\.NET\ASPDotNet\FoodDelivery\Services\CatalogService\CatalogService.Domain\bin\Debug\net10.0\CatalogService.Domain.dll
+  CatalogService.Application -> D:\.NET\ASPDotNet\FoodDelivery\Services\CatalogService\CatalogService.Application\bin\Debug\net10.0\CatalogService.Application.dll
+  CatalogService.Infrastructure -> D:\.NET\ASPDotNet\FoodDelivery\Services\CatalogService\CatalogService.Infrastructure\bin\Debug\net10.0\CatalogService.Infrastructure.dll
+  CatalogService.API -> D:\.NET\ASPDotNet\FoodDelivery\Services\CatalogService\CatalogService.API\bin\Debug\net10.0\CatalogService.API.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:20.26

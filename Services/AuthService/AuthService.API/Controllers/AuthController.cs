@@ -51,6 +51,12 @@ namespace AuthService.API.Controllers
         public async Task<IActionResult> Login([FromBody]  LoginDTO model)
         {
             var response = await authService.LoginAsync(model,GetIpAddress());
+
+            if (response.Token == null)
+            {
+                return Ok("Please continue for two factor verification");
+            }
+
             SetRefreshTokenCookie(response.RefreshToken.Token);
             return Ok(response);
         }

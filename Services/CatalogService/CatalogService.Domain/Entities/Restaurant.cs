@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -9,7 +9,7 @@ namespace CatalogService.Domain.Entities
         [Key]
         public Guid Id { get; set; }
 
-        public Guid OwnerId { get; set; } 
+        public string OwnerId { get; set; } = string.Empty;
 
         [Required]
         [StringLength(100)]

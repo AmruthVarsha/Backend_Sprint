@@ -23,6 +23,12 @@ namespace CatalogService.Infrastructure.Repositories
             return await _context.Cuisines.FindAsync(id);
         }
 
+        public async Task<Cuisine?> GetByNameAsync(string name)
+        {
+            return await _context.Cuisines
+                .FirstOrDefaultAsync(c => c.Name.ToLower() == name.Trim().ToLower());
+        }
+
         public async Task<bool> ExistsAsync(Guid id)
         {
             return await _context.Cuisines.AnyAsync(c => c.Id == id);

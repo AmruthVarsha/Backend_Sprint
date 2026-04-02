@@ -37,8 +37,8 @@ namespace CatalogService.Application.DTOs.Restaurant
         [Required]
         public UpdateAddressDto Address { get; set; } = new();
 
-        /// <summary>Full replacement list of cuisine IDs (replaces existing cuisines).</summary>
-        public List<Guid> CuisineIds { get; set; } = new();
+        /// <summary>Full replacement list of cuisine names (e.g. "Indian"). Replaces existing cuisines.</summary>
+        public List<string> CuisineNames { get; set; } = new();
     }
 
     /// <summary>Address sub-object used inside UpdateRestaurantDto.</summary>

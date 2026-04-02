@@ -37,8 +37,9 @@ namespace CatalogService.Application.DTOs.Restaurant
         [Required]
         public CreateAddressDto Address { get; set; } = new();
 
-        /// <summary>IDs of cuisines this restaurant serves.</summary>
-        public List<Guid> CuisineIds { get; set; } = new();
+        /// <summary>Names of cuisines this restaurant serves (e.g. "Indian", "Chinese").</summary>
+        [MinLength(1, ErrorMessage = "At least one cuisine name is required.")]
+        public List<string> CuisineNames { get; set; } = new();
     }
 
     /// <summary>Address sub-object used inside CreateRestaurantDto.</summary>
