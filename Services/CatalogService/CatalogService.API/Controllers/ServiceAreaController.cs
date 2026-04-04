@@ -36,6 +36,14 @@ namespace CatalogService.API.Controllers
             return Ok(id);
         }
 
+        /// <summary>Checks if a pincode is within a restaurant's service area. Public.</summary>
+        [HttpGet("{restaurantId:guid}/serviceable/{pincode}")]
+        public async Task<IActionResult> IsServiceable([FromRoute] Guid restaurantId, [FromRoute] string pincode)
+        {
+            var result = await _serviceAreaService.IsPincodeServiceableAsync(restaurantId, pincode);
+            return Ok(new { isServiceable = result });
+        }
+
         /// <summary>Removes a pincode from a restaurant's service area. Partner only.</summary>
         [Authorize(Roles = "Partner")]
         [HttpDelete("{id:guid}")]

@@ -1,6 +1,5 @@
 namespace CatalogService.Application.DTOs.Category
 {
-    /// <summary>Response for GET /categories/restaurant/{restaurantId} — menu sidebar.</summary>
     public class CategoryDto
     {
         public Guid Id { get; set; }

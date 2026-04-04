@@ -50,6 +50,7 @@ namespace CatalogService.Infrastructure.Repositories
         public async Task<IEnumerable<Restaurant>> SearchAsync(string searchTerm)
         {
             return await _context.Restaurants
+                .Include(r => r.Address)
                 .Include(r => r.RestaurantCuisines)
                     .ThenInclude(rc => rc.Cuisine)
                 .Where(r => r.Name.Contains(searchTerm) ||

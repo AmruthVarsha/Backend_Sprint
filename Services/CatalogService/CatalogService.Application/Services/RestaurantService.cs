@@ -170,18 +170,17 @@ namespace CatalogService.Application.Services
             await _restaurantRepo.UpdateAsync(restaurant);
         }
 
-        public async Task DeleteAsync(Guid id, string requestorId)
+        public async Task DeleteAsync(Guid id, string requestorId, bool isAdmin = false)
         {
             var restaurant = await _restaurantRepo.GetByIdAsync(id)
                 ?? throw new NotFoundException(nameof(Restaurant), id);
 
-            if (restaurant.OwnerId != requestorId)
+            if (!isAdmin && restaurant.OwnerId != requestorId)
                 throw new ForbiddenException("You do not own this restaurant.");
 
             await _restaurantRepo.DeleteAsync(id);
         }
 
-        // ─── Mapping helpers ─────────────────────────────────────────────────────
 
         private static RestaurantListItemDto MapToListItem(Restaurant r) => new()
         {

@@ -20,7 +20,9 @@ namespace CatalogService.Infrastructure.Repositories
         }
         public async Task<Cuisine?> GetByIdAsync(Guid id)
         {
-            return await _context.Cuisines.FindAsync(id);
+            return await _context.Cuisines
+                .Include(c => c.RestaurantCuisines)
+                .FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task<Cuisine?> GetByNameAsync(string name)

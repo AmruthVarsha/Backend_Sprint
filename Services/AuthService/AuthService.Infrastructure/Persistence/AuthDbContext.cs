@@ -2,6 +2,7 @@ using AuthService.Domain.Entities;
 using AuthService.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace AuthService.Infrastructure.Persistence
 {
@@ -11,6 +12,7 @@ namespace AuthService.Infrastructure.Persistence
 
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<OTPToken> OTPTokens { get; set; }
+        public DbSet<Address> Addresses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -25,6 +27,12 @@ namespace AuthService.Infrastructure.Persistence
             builder.Entity<OTPToken>()
                 .HasOne<ApplicationUser>()
                 .WithMany(a => a.OTPTokens)
+                .HasForeignKey(o => o.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Address>()
+                .HasOne<ApplicationUser>()
+                .WithMany(a => a.Addresses)
                 .HasForeignKey(o => o.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         }

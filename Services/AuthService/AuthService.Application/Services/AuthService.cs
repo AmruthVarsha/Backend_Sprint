@@ -122,7 +122,7 @@ namespace AuthService.Application.Service
             loginResponseDTO.RequireTwoFactor = false;
 
             var newRefreshToken = refreshTokenService.GenerateRefreshToken(ipAddress);
-            newRefreshToken.UserId = user.Id;
+            newRefreshToken.UserId = result.Id;
             await refreshTokenService.AddRefreshToken(newRefreshToken);
             loginResponseDTO.RefreshToken = newRefreshToken;
 
@@ -403,6 +403,11 @@ namespace AuthService.Application.Service
             if (adminEmail == model.Email)
             {
                 throw new ForbiddenException("You cannot change your own role");
+            }
+
+            if (!await authRepository.RoleExistsAsync(model.RoleName))
+            {
+                throw new BadRequestException($"Role '{model.RoleName}' does not exist");
             }
 
             var user = await authRepository.FindByEmailAsync(model.Email);

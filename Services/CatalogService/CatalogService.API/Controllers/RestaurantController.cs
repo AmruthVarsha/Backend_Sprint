@@ -1,4 +1,4 @@
-﻿using CatalogService.Application.DTOs.Restaurant;
+using CatalogService.Application.DTOs.Restaurant;
 using CatalogService.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -32,7 +32,7 @@ namespace CatalogService.API.Controllers
             return Ok(restaurant);
         }
 
-        [HttpGet("restaurant/{name}")]
+        [HttpGet("restaurant/search/{name}")]
         public async Task<IActionResult> GetByName([FromRoute] string name)
         {
             var restaurant = await restaurantService.SearchAsync(name);
@@ -64,7 +64,7 @@ namespace CatalogService.API.Controllers
 
         [Authorize(Roles = "Partner")]
         [HttpPut("restaurant/{id}")]
-        public async Task<IActionResult> UpdateRestaurant([FromBody] UpdateRestaurantDto dto,Guid id)
+        public async Task<IActionResult> UpdateRestaurant([FromBody] UpdateRestaurantDto dto, [FromRoute] Guid id)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             await restaurantService.UpdateAsync(id, dto, userId);
@@ -76,8 +76,9 @@ namespace CatalogService.API.Controllers
         public async Task<IActionResult> DeleteRestaurant([FromRoute] Guid id)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            await restaurantService.DeleteAsync(id, userId);
-            return Ok("Deletetion Succesfull");
+            var isAdmin = User.IsInRole("Admin");
+            await restaurantService.DeleteAsync(id, userId, isAdmin);
+            return Ok("Deletion Successful");
         }
 
     }

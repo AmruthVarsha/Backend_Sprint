@@ -2,6 +2,7 @@ using AuthService.API.Middleware;
 using AuthService.Application.DTOs;
 using AuthService.Application.Interfaces;
 using AuthService.Application.Service;
+using AuthService.Application.Services;
 using AuthService.Domain.Interfaces;
 using AuthService.Infrastructure.Identity;
 using AuthService.Infrastructure.Persistence;
@@ -35,6 +36,8 @@ namespace AuthService.API
             builder.Services.AddScoped<IAuthService,AuthService.Application.Service.AuthService>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IAddressRepository, AddressRepository>();
+            builder.Services.AddScoped<IAddressService, AddressService>();
 
 
 
@@ -143,7 +146,6 @@ namespace AuthService.API
                 await service.GenerateRoles();
                 await service.GenerateAdmin();
             }
-            // Configure the HTTP request pipeline.
 
             app.UseRouting();
 

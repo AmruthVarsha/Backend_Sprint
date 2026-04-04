@@ -22,7 +22,8 @@ namespace AuthService.API.Controllers
         {
             if (Request.Headers.ContainsKey("X-Forwarded-For"))
             {
-                return Request.Headers["X-Forwarded-For"];
+                var forwarded = Request.Headers["X-Forwarded-For"].ToString();
+                return forwarded.Split(',')[0].Trim();
             }
             return HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "Unknown";
         }
@@ -65,8 +66,10 @@ namespace AuthService.API.Controllers
         public async Task<IActionResult> Refresh()
         {
             var incomingToken = Request.Cookies["refreshToken"];
+            if (string.IsNullOrEmpty(incomingToken))
+                throw new AuthService.Application.Exceptions.UnauthorizedException("No refresh token found, please login again.");
 
-            var response = await authService.RefreshAsync(incomingToken,GetIpAddress());
+            var response = await authService.RefreshAsync(incomingToken, GetIpAddress());
 
             SetRefreshTokenCookie(response.RefreshToken.Token);
             return Ok(response);
@@ -77,7 +80,10 @@ namespace AuthService.API.Controllers
         public async Task<IActionResult> Logout()
         {
             var incomingToken = Request.Cookies["refreshToken"];
-            await authService.LogoutAsync(incomingToken,GetIpAddress());
+            if (!string.IsNullOrEmpty(incomingToken))
+            {
+                await authService.LogoutAsync(incomingToken, GetIpAddress());
+            }
             Response.Cookies.Delete("refreshToken");
             return Ok("Logged out");
         }
@@ -101,8 +107,8 @@ namespace AuthService.API.Controllers
         }
 
         [Authorize]
-        [HttpPost("SetTwoFactorAuth")]
-        public async Task<IActionResult> SetTwoFactorAuth(bool enable)
+        [HttpPut("SetTwoFactorAuth")]
+        public async Task<IActionResult> SetTwoFactorAuth([FromBody] bool enable)
         {
             var email = User.FindFirst(ClaimTypes.Email)?.Value;
             await authService.SetTwoFactorAsync(email, enable);
@@ -142,7 +148,7 @@ namespace AuthService.API.Controllers
         }
 
         [Authorize]
-        [HttpPost("ChangePassword")]
+        [HttpPut("ChangePassword")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDTO model)
         {
             var email = User.FindFirst(ClaimTypes.Email)?.Value;

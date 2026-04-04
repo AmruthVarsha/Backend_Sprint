@@ -32,7 +32,7 @@ namespace CatalogService.Application.Interfaces
         /// <summary>Updates an existing restaurant. Owner must match <paramref name="requestorId"/>.</summary>
         Task UpdateAsync(Guid id, UpdateRestaurantDto dto, string requestorId);
 
-        /// <summary>Soft-deletes a restaurant. Owner must match <paramref name="requestorId"/>.</summary>
-        Task DeleteAsync(Guid id, string requestorId);
+        /// <summary>Deletes a restaurant. Owner must match <paramref name="requestorId"/>, or caller must be an admin.</summary>
+        Task DeleteAsync(Guid id, string requestorId, bool isAdmin = false);
     }
 }

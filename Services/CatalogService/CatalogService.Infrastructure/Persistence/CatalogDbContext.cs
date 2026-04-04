@@ -188,6 +188,17 @@ namespace CatalogService.Infrastructure.Persistence
                     .HasForeignKey(m => m.RestaurantId)
                     .OnDelete(DeleteBehavior.NoAction);
             });
+
+            modelBuilder.Entity<Cuisine>().HasData(
+            new Cuisine { Id = Guid.Parse("a1b2c3d4-0001-0000-0000-000000000000"), Name = "North Indian", IsActive = true },
+            new Cuisine { Id = Guid.Parse("a1b2c3d4-0002-0000-0000-000000000000"), Name = "South Indian", IsActive = true },
+            new Cuisine { Id = Guid.Parse("a1b2c3d4-0003-0000-0000-000000000000"), Name = "Chinese", IsActive = true },
+            new Cuisine { Id = Guid.Parse("a1b2c3d4-0004-0000-0000-000000000000"), Name = "Italian", IsActive = true },
+            new Cuisine { Id = Guid.Parse("a1b2c3d4-0005-0000-0000-000000000000"), Name = "Fast Food", IsActive = true },
+            new Cuisine { Id = Guid.Parse("a1b2c3d4-0006-0000-0000-000000000000"), Name = "Biryani", IsActive = true },
+            new Cuisine { Id = Guid.Parse("a1b2c3d4-0007-0000-0000-000000000000"), Name = "Desserts", IsActive = true },
+            new Cuisine { Id = Guid.Parse("a1b2c3d4-0008-0000-0000-000000000000"), Name = "Beverages", IsActive = true }
+            );
         }
     }
 }

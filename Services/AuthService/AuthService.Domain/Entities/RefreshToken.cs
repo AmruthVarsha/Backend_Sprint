@@ -14,7 +14,7 @@ namespace AuthService.Domain.Entities
         [Required]
         public DateTime ExpiryDate { get; set; }
 
-        public DateTime CreateAt { get; set; } = DateTime.Now;
+        public DateTime CreateAt { get; set; } = DateTime.UtcNow;
 
         public bool IsRevoked { get; set; }
 

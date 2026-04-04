@@ -11,5 +11,6 @@ namespace AuthService.Infrastructure.Identity
 
         public ICollection<OTPToken>? OTPTokens { get; set; }
         public ICollection<RefreshToken>? RefreshTokens { get; set; }
+        public ICollection<Address>? Addresses { get; set; }
     }
 }

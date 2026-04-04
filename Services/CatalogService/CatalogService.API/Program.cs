@@ -13,7 +13,7 @@ using CatalogService.Application.Interfaces;
 using CatalogService.Application.Services;
 using CatalogService.API.Middleware;
 
-namespace AuthService.API
+namespace CatalogService.API
 {
     public class Program
     {

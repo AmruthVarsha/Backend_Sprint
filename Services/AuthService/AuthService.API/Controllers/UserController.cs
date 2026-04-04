@@ -1,6 +1,7 @@
 using AuthService.Application.DTOs;
 using AuthService.Application.Exceptions;
 using AuthService.Application.Interfaces;
+using Azure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -15,14 +16,21 @@ namespace AuthService.API.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IAddressService _addressService;
         
-        public UserController(IUserService userService)
+        public UserController(IUserService userService,IAddressService addressService)
         {
             _userService = userService;
+            _addressService = addressService;
         }
 
         private string GetIpAddress()
         {
+            if (Request.Headers.ContainsKey("X-Forwarded-For"))
+            {
+                var forwarded = Request.Headers["X-Forwarded-For"].ToString();
+                return forwarded.Split(',')[0].Trim();
+            }
             return HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "Unknown";
         }
 
@@ -71,6 +79,61 @@ namespace AuthService.API.Controllers
             await _userService.ReactivateAccountAsync(userId);
             
             return Ok("Account reactivated successfully");
+        }
+
+        [Authorize(Roles = "Customer")]
+        [HttpGet("Address/{id}")]
+        public async Task<IActionResult> GetAddressById([FromRoute] Guid id)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId)) throw new UnauthorizedException("Access Denied");
+
+            var response = await _addressService.GetById(id);
+            return Ok(response);
+        }
+
+        [Authorize(Roles = "Customer")]
+        [HttpGet("Addresses")]
+        public async Task<IActionResult> GetAddressByUserId()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId)) throw new UnauthorizedException("Access Denied");
+
+            var response = await _addressService.GetAllByUserId(userId);
+            return Ok(response);
+        }
+
+        [Authorize(Roles = "Customer")]
+        [HttpPost("Address")]
+        public async Task<IActionResult> AddAddress([FromBody] AddressDTO dto)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId)) throw new UnauthorizedException("Access Denied");
+
+            var response = await _addressService.AddAddress(dto,userId);
+            return Ok(response);
+        }
+
+        [Authorize(Roles = "Customer")]
+        [HttpPut("Address")]
+        public async Task<IActionResult> AddAddress([FromBody] UpdateAddressDTO dto)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId)) throw new UnauthorizedException("Access Denied");
+
+            var response = await _addressService.UpdateAddress(dto, userId);
+            return Ok(response);
+        }
+
+        [Authorize(Roles = "Customer")]
+        [HttpDelete("Address/{id}")]
+        public async Task<IActionResult> AddAddress([FromRoute] Guid id)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId)) throw new UnauthorizedException("Access Denied");
+
+            var response = await _addressService.DeleteAddress(id, userId);
+            return Ok(response);
         }
 
         [Authorize(Roles = "Admin")]

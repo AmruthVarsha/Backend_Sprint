@@ -31,7 +31,6 @@ namespace CatalogService.Application.Services
 
         public async Task<Guid> CreateAsync(CreateCuisineDto dto)
         {
-            // Ensure name is unique (case-insensitive)
             var all = await _cuisineRepo.GetAllAsync();
             if (all.Any(c => c.Name.Equals(dto.Name.Trim(), StringComparison.OrdinalIgnoreCase)))
                 throw new ConflictException($"A cuisine named '{dto.Name}' already exists.");
@@ -51,7 +50,6 @@ namespace CatalogService.Application.Services
             var cuisine = await _cuisineRepo.GetByIdAsync(id)
                 ?? throw new NotFoundException(nameof(Cuisine), id);
 
-            // Ensure new name is unique (ignore self)
             var all = await _cuisineRepo.GetAllAsync();
             if (all.Any(c => c.Id != id && c.Name.Equals(dto.Name.Trim(), StringComparison.OrdinalIgnoreCase)))
                 throw new ConflictException($"A cuisine named '{dto.Name}' already exists.");
@@ -67,7 +65,6 @@ namespace CatalogService.Application.Services
             var cuisine = await _cuisineRepo.GetByIdAsync(id)
                 ?? throw new NotFoundException(nameof(Cuisine), id);
 
-            // Guard: cannot delete if still referenced by restaurants
             if (cuisine.RestaurantCuisines.Any())
                 throw new BadRequestException(
                     $"Cannot delete cuisine '{cuisine.Name}' because it is still linked to one or more restaurants.");
@@ -75,7 +72,6 @@ namespace CatalogService.Application.Services
             await _cuisineRepo.DeleteAsync(id);
         }
 
-        // ─── Mapping ─────────────────────────────────────────────────────────────
 
         private static CuisineDto Map(Cuisine c) => new()
         {

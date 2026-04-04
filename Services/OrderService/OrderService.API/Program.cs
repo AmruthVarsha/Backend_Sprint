@@ -1,41 +1,135 @@
-var builder = WebApplication.CreateBuilder(args);
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using OrderService.API.Middleware;
+using OrderService.Application.Interfaces;
+using OrderService.Application.Services;
+using OrderService.Domain.Interfaces;
+using OrderService.Infrastructure.Persistence;
+using OrderService.Infrastructure.Repositories;
+using Swashbuckle.AspNetCore;
+using System.Security.Claims;
+using System.Text;
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+namespace OrderService.API
 {
-    app.MapOpenApi();
-}
+    public class Program
+    {
+        public static async Task Main(string[] args)
+        {
+            var builder = WebApplication.CreateBuilder(args);
 
-app.UseHttpsRedirection();
+            builder.Services.AddControllers();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddHttpClient();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Order Service API",
+                    Version = "v1"
+                });
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header
+                });
 
-app.Run();
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[]{}
+                    }
+                });
+            });
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+            builder.Services.AddDbContext<OrderDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("OrderConnection"))
+            );
+
+            var jwtSettings = builder.Configuration.GetSection("JWT");
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]));
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(options =>
+                {
+                    options.RequireHttpsMetadata = false;
+                    options.SaveToken = true;
+
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        IssuerSigningKey = key,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = jwtSettings["Issuer"],
+                        ValidAudience = jwtSettings["Audience"],
+                        ValidateAudience = true,
+                        ValidateIssuer = true,
+                        ValidateLifetime = true,
+                        RoleClaimType = ClaimTypes.Role
+                    };
+                });
+
+            builder.Services.AddAuthorization();
+
+            builder.Services.AddScoped<ICartRepository, CartRepository>();
+            builder.Services.AddScoped<ICartItemRepository, CartItemRepository>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
+            builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+            builder.Services.AddScoped<IDeliveryAssignmentRepository, DeliveryAssignmentRepository>();
+
+            builder.Services.AddScoped<ICartService, CartService>();
+            builder.Services.AddScoped<ICheckoutService, CheckoutService>();
+            builder.Services.AddScoped<IPaymentService, PaymentService>();
+            builder.Services.AddScoped<IOrderService, OrderManagementService>();
+            builder.Services.AddScoped<IDeliveryService, DeliveryService>();
+
+            builder.Services.AddHttpClient<ICatalogRepository, CatalogRepository>(client =>
+                client.BaseAddress = new Uri(builder.Configuration["Services:CatalogServiceUrl"]
+                ?? throw new InvalidOperationException("Catalog service not configured"))
+            );
+
+            builder.Services.AddHttpClient<IAuthRepository, AuthRepository>(client =>
+                client.BaseAddress = new Uri(builder.Configuration["Services:AuthServiceUrl"]
+                ?? throw new InvalidOperationException("Auth service not configured"))
+            );
+
+            var app = builder.Build();
+
+            app.UseMiddleware<ExceptionMiddleware>();
+
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
+
+            app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.MapControllers();
+
+            app.Run();
+        }
+    }
 }
