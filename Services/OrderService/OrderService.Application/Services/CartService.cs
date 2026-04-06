@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using OrderService.Application.DTOs.Cart;
 using OrderService.Application.Exceptions;
 using OrderService.Application.Interfaces;
@@ -52,6 +53,20 @@ namespace OrderService.Application.Services
             };
         }
 
+        public async Task<IEnumerable<CartResponseDTO>> GetUserActiveCarts(string userId)
+        {
+            var carts = await _cartRepository.GetByCustomerId(userId);
+            return carts
+                .Where(c => c.Status == CartStatus.Active)
+                .Select(c => new CartResponseDTO
+                {
+                    Id = c.Id,
+                    RestaurantId = c.RestaurantId,
+                    CustomerId = c.CustomerId,
+                    Status = c.Status
+                });
+        }
+
         public async Task<Guid> AddCartAsync(CartDTO cartDTO,string userId)
         {
             var restaurant = await _catalogRepository.GetRestaurantById(cartDTO.RestaurantId);
@@ -74,6 +89,12 @@ namespace OrderService.Application.Services
 
         public async Task<CartItemResponseDTO> AddCartItem(CartItemDTO cartItemDTO)
         {
+            if (cartItemDTO.Quantity <= 0)
+                throw new BadRequestException("Quantity must be greater than 0.");
+
+            if (cartItemDTO.Quantity > 100)
+                throw new BadRequestException("Quantity cannot exceed 100 items.");
+
             var menuItem = await _catalogRepository.GetItemById(cartItemDTO.MenuItemId);
             if (menuItem == null)
                 throw new NotFoundException("MenuItem", cartItemDTO.MenuItemId);
@@ -116,6 +137,12 @@ namespace OrderService.Application.Services
 
         public async Task<CartItemResponseDTO> UpdateCartItem(UpdateCartItemDTO cartItemDTO)
         {
+            if (cartItemDTO.Quantity <= 0)
+                throw new BadRequestException("Quantity must be greater than 0.");
+
+            if (cartItemDTO.Quantity > 100)
+                throw new BadRequestException("Quantity cannot exceed 100 items.");
+
             var cartItem = await _cartItemRepository.GetById(cartItemDTO.Id);
             if (cartItem == null)
                 throw new NotFoundException("CartItem", cartItemDTO.Id);
@@ -134,19 +161,27 @@ namespace OrderService.Application.Services
             };
         }
 
-        public async Task<bool> DeleteCartItem(Guid id)
+        public async Task<bool> DeleteCartItem(Guid id,Guid cartId,string userId)
         {
             var item = await _cartItemRepository.GetById(id);
             if (item == null)
                 throw new NotFoundException("CartItem", id);
+            if (item.CartId != cartId)
+            {
+                throw new ForbiddenException("invalid cart id item does not exist in this cart");
+            }
+            var cart = await _cartRepository.GetById(cartId);
+            if (cart.CustomerId != userId)
+            {
+                throw new ForbiddenException("Access Denied this is not your cart");
+            }
 
-            var cartId = item.CartId;
             await _cartItemRepository.DeleteAsync(id);
 
             var remaining = await _cartItemRepository.GetAllByCartId(cartId);
             if (!remaining.Any())
             {
-                var cart = await _cartRepository.GetById(cartId);
+                
                 if (cart != null)
                 {
                     cart.Status = CartStatus.Abandoned;

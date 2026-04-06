@@ -6,6 +6,7 @@ using AuthService.Domain.Enums;
 using AuthService.Domain.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Reflection;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -18,13 +19,15 @@ namespace AuthService.Application.Service
         private readonly JwtSettingsDTO jwtSettingsDTO;
         private readonly IEmailService emailService;
         private readonly IRefreshTokenService refreshTokenService;
+        private readonly IUserRepository userRepository;
 
-        public AuthService(IAuthRepository authRepository, JwtSettingsDTO jwtSettingsDTO, IRefreshTokenService refreshTokenService, IEmailService emailService)
+        public AuthService(IAuthRepository authRepository, JwtSettingsDTO jwtSettingsDTO, IRefreshTokenService refreshTokenService, IEmailService emailService, IUserRepository userRepository)
         {
             this.authRepository = authRepository;
             this.jwtSettingsDTO = jwtSettingsDTO;
             this.refreshTokenService = refreshTokenService;
             this.emailService = emailService;
+            this.userRepository =userRepository;
         }
 
         private string GenerateToken(string userId, string fullName, IList<string> roles, string email, bool emailConfirmed)
@@ -79,14 +82,17 @@ namespace AuthService.Application.Service
                 Email = model.Email,
                 PhoneNo = model.PhoneNo,
             };
-
+            if (model.Role != RoleEnum.Customer && model.Role != RoleEnum.DeliveryAgent)
+            {
+                newUser.IsActive = false;
+                await authRepository.AddRoleApprovalRequest(new RoleApprovalRequest { Email=model.Email, Role=model.Role,IsApproved = false });
+                await emailService.SendEmailAsync("amruthvarsha2005@gmail.com", "Request to approve to Role", $"This is a request mail to approve the user,\nUserName:{model.FullName}\nEmail:{model.Email}\nRole:{model.Role}");
+            }
             user = await authRepository.RegisterUserAsync(newUser, model.Password);
             if (user == null) throw new BadRequestException("Unexpected error occurred");
-
-            var result = await authRepository.AddToRoleAsync(user.Id, "Customer");
-            if (!result.Succeded)
+            if(model.Role == RoleEnum.Customer || model.Role == RoleEnum.DeliveryAgent)
             {
-                throw new BadRequestException(result.Error);
+                await authRepository.AddToRoleAsync(user.Id, model.Role.ToString());
             }
         }
 
@@ -448,6 +454,21 @@ namespace AuthService.Application.Service
             {
                 await refreshTokenService.RevokeAllTokens(user.Id, ipAddress);
             }
+        }
+
+        public async Task<IEnumerable<PendingRequestsDTO>> PendingRequests()
+        {
+            var requests = await authRepository.PendingRequests();
+            return requests.Select(r => new PendingRequestsDTO { Email = r.Email, Role = r.Role.ToString() });
+        }
+
+        public async Task ApproveRequest(string email)
+        {
+            var user = await authRepository.FindByEmailAsync(email);
+            if(user == null) { throw new NotFoundException($"User with email {email} not found"); }
+            user.IsActive = true;
+            await userRepository.UpdateAsync(user);
+            await authRepository.ApproveRequest(email);
         }
     }
 }

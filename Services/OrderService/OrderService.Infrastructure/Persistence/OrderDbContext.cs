@@ -50,7 +50,6 @@ public class OrderDbContext : DbContext
 
             entity.Property(e => e.CustomerId).HasMaxLength(450);
             entity.Property(e => e.Status).HasConversion<string>().HasMaxLength(30);
-            entity.Property(e => e.DeliveryAddress).HasMaxLength(500);
             entity.Property(e => e.DeliveryInstructions).HasMaxLength(300);
             entity.Property(e => e.ScheduledSlot).HasMaxLength(100);
             entity.Property(e => e.CancellationReason).HasMaxLength(500);

@@ -185,5 +185,22 @@ namespace AuthService.API.Controllers
             await authService.ChangeAccountStatusAsync(model, GetIpAddress());
             return Ok("Updated user status");
         }
+
+        [Authorize(Roles = ("Admin"))]
+        [HttpGet("PendingRequests")]
+        public async Task<IActionResult> PendingRequests()
+        {
+            var response = await authService.PendingRequests();
+            return Ok(response);
+        }
+
+        [Authorize(Roles = ("Admin"))]
+        [HttpPost("ApproveRequest/{email}")]
+        public async Task<IActionResult> ApproveRequest([FromRoute] string email)
+        {
+            await authService.ApproveRequest(email);
+            return Ok("Approved successfully");
+        }
+
     }
 }

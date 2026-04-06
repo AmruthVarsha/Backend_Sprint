@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using AuthService.Domain.Enums;
 
 namespace AuthService.Application.DTOs
 {
@@ -21,6 +22,8 @@ namespace AuthService.Application.DTOs
             @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$",
             ErrorMessage = "Password must be at least 8 characters and include uppercase, lowercase, a number, and a special character (@$!%*?&#)")]
         public string Password { get; set; }
+
+        public RoleEnum Role { get; set; }
 
         [Required(ErrorMessage = "Confirm password is required")]
         [Compare("Password", ErrorMessage = "Passwords do not match")]

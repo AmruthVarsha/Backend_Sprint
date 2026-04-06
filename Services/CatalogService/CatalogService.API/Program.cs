@@ -1,4 +1,3 @@
-
 using CatalogService.Domain.Interfaces;
 using CatalogService.Infrastructure.Persistence;
 using CatalogService.Infrastructure.Repositories;
@@ -12,6 +11,7 @@ using System.Security.Claims;
 using CatalogService.Application.Interfaces;
 using CatalogService.Application.Services;
 using CatalogService.API.Middleware;
+using Serilog;
 
 namespace CatalogService.API
 {
@@ -20,6 +20,14 @@ namespace CatalogService.API
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .WriteTo.File("logs/catalog-service-.txt", rollingInterval: RollingInterval.Day)
+                .WriteTo.Console()
+                .CreateLogger();
+
+            builder.Host.UseSerilog();
 
             builder.Services.AddControllers();
             builder.Services.AddDbContext<CatalogDbContext>(options =>

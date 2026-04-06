@@ -116,7 +116,7 @@ namespace AuthService.API.Controllers
 
         [Authorize(Roles = "Customer")]
         [HttpPut("Address")]
-        public async Task<IActionResult> AddAddress([FromBody] UpdateAddressDTO dto)
+        public async Task<IActionResult> UpdateAddress([FromBody] UpdateAddressDTO dto)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userId)) throw new UnauthorizedException("Access Denied");
@@ -127,7 +127,7 @@ namespace AuthService.API.Controllers
 
         [Authorize(Roles = "Customer")]
         [HttpDelete("Address/{id}")]
-        public async Task<IActionResult> AddAddress([FromRoute] Guid id)
+        public async Task<IActionResult> DeleteAddress([FromRoute] Guid id)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userId)) throw new UnauthorizedException("Access Denied");

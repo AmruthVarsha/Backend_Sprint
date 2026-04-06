@@ -11,6 +11,7 @@ namespace OrderService.Application.Services
     {
         private readonly IPaymentRepository _paymentRepository;
         private readonly IOrderRepository _orderRepository;
+        private static readonly Random _random = new();
 
         public PaymentService(IPaymentRepository paymentRepository, IOrderRepository orderRepository)
         {
@@ -26,62 +27,91 @@ namespace OrderService.Application.Services
 
             var existing = await _paymentRepository.GetByOrderId(dto.OrderId);
 
-            if (existing != null && order.Status != OrderStatus.PaymentFailed)
-                throw new ConflictException("A successful payment already exists for this order.");
+            if (existing != null && existing.Status == PaymentStatus.Completed)
+                throw new ConflictException("Payment already completed for this order.");
 
-            bool isSuccess = dto.Method == PaymentMethod.COD || new Random().NextDouble() < 0.8;
-
-            if (existing != null)
+            if (existing == null)
             {
-                existing.Method = dto.Method;
-                existing.Status = isSuccess ? PaymentStatus.Success : PaymentStatus.Failed;
-                existing.TransactionReference = isSuccess
-                    ? $"TXN-{Guid.NewGuid().ToString("N")[..12].ToUpper()}"
-                    : null;
-                existing.UpdatedAt = DateTime.UtcNow;
+                var payment = new Payment
+                {
+                    Id = Guid.NewGuid(),
+                    OrderId = order.Id,
+                    Method = dto.Method,
+                    Amount = order.TotalAmount,
+                    Status = PaymentStatus.Pending,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
 
-                await _paymentRepository.UpdateAsync(existing);
-
-                order.Status = isSuccess ? OrderStatus.Paid : OrderStatus.PaymentFailed;
-                order.UpdatedAt = DateTime.UtcNow;
-                await _orderRepository.UpdateAsync(order);
-
-                return ToDTO(existing);
+                await _paymentRepository.AddAsync(payment);
+                return MapToDTO(payment);
             }
 
-            var payment = new Payment
-            {
-                Id = Guid.NewGuid(),
-                OrderId = dto.OrderId,
-                Method = dto.Method,
-                Amount = order.TotalAmount,
-                Status = isSuccess ? PaymentStatus.Success : PaymentStatus.Failed,
-                TransactionReference = isSuccess
-                    ? $"TXN-{Guid.NewGuid().ToString("N")[..12].ToUpper()}"
-                    : null,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
-
-            await _paymentRepository.AddAsync(payment);
-
-            order.Status = isSuccess ? OrderStatus.Paid : OrderStatus.PaymentFailed;
-            order.UpdatedAt = DateTime.UtcNow;
-            await _orderRepository.UpdateAsync(order);
-
-            return ToDTO(payment);
+            return MapToDTO(existing);
         }
 
-        private static PaymentResponseDTO ToDTO(Payment payment) => new()
+        public async Task<PaymentResponseDTO> CompletePaymentAsync(Guid orderId)
         {
-            Id = payment.Id,
-            OrderId = payment.OrderId,
-            Method = payment.Method,
-            Status = payment.Status,
-            Amount = payment.Amount,
-            TransactionReference = payment.TransactionReference,
-            CreatedAt = payment.CreatedAt,
-            UpdatedAt = payment.UpdatedAt
-        };
+            var order = await _orderRepository.GetById(orderId);
+            if (order == null)
+                throw new NotFoundException("Order", orderId);
+
+            var payment = await _paymentRepository.GetByOrderId(orderId);
+            if (payment == null)
+                throw new NotFoundException("Payment", orderId);
+
+            if (payment.Status == PaymentStatus.Completed)
+                throw new ConflictException("Payment already completed.");
+
+            var isSuccess = DeterminePaymentSuccess(payment.Method);
+
+            payment.Status = isSuccess ? PaymentStatus.Completed : PaymentStatus.Failed;
+            payment.TransactionReference = isSuccess ? GenerateTransactionReference() : null;
+            payment.UpdatedAt = DateTime.UtcNow;
+
+            await _paymentRepository.UpdateAsync(payment);
+
+            return MapToDTO(payment);
+        }
+
+        private bool DeterminePaymentSuccess(PaymentMethod method)
+        {
+            if (method == PaymentMethod.COD)
+                return true;
+
+            lock (_random)
+            {
+                return _random.NextDouble() < 0.8;
+            }
+        }
+
+        public async Task<PaymentResponseDTO> GetPaymentStatusAsync(Guid orderId)
+        {
+            var payment = await _paymentRepository.GetByOrderId(orderId);
+            if (payment == null)
+                throw new NotFoundException("Payment", orderId);
+
+            return MapToDTO(payment);
+        }
+
+        private static string GenerateTransactionReference()
+        {
+            return $"TXN-{Guid.NewGuid().ToString("N")[..12].ToUpper()}";
+        }
+
+        private static PaymentResponseDTO MapToDTO(Payment payment)
+        {
+            return new PaymentResponseDTO
+            {
+                Id = payment.Id,
+                OrderId = payment.OrderId,
+                Method = payment.Method.ToString(),
+                Status = payment.Status.ToString(),
+                Amount = payment.Amount,
+                TransactionReference = payment.TransactionReference,
+                CreatedAt = payment.CreatedAt,
+                UpdatedAt = payment.UpdatedAt
+            };
+        }
     }
 }

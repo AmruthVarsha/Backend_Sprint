@@ -7,8 +7,11 @@ namespace OrderService.Domain.Entities
         public Guid Id { get; set; }
         public string CustomerId { get; set; } = string.Empty;
         public Guid RestaurantId { get; set; }
-        public OrderStatus Status { get; set; } = OrderStatus.PaymentPending;
-        public string DeliveryAddress { get; set; } = string.Empty;
+        public OrderStatus Status { get; set; } = OrderStatus.Pending;
+        public string Street { get; set; } = string.Empty;
+        public string City { get; set; } = string.Empty;
+        public string State { get; set; } = string.Empty;
+        public string Pincode { get; set; } = string.Empty;
         public string? DeliveryInstructions { get; set; }
         public string? ScheduledSlot { get; set; }
         public decimal TotalAmount { get; set; }

@@ -27,6 +27,14 @@ namespace OrderService.Infrastructure.Repositories
             return await _context.Carts.ToListAsync();
         }
 
+        public async Task<IEnumerable<Cart>> GetByCustomerId(string customerId)
+        {
+            return await _context.Carts
+                .Include(c => c.CartItems)
+                .Where(c => c.CustomerId == customerId)
+                .ToListAsync();
+        }
+
         public async Task AddAsync(Cart cart)
         {
             _context.Carts.Add(cart);

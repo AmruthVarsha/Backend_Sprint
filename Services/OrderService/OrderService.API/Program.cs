@@ -11,6 +11,9 @@ using OrderService.Infrastructure.Repositories;
 using Swashbuckle.AspNetCore;
 using System.Security.Claims;
 using System.Text;
+using Serilog;
+using MassTransit;
+using OrderService.Infrastructure.Messaging.Publishers;
 
 namespace OrderService.API
 {
@@ -19,6 +22,28 @@ namespace OrderService.API
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .WriteTo.File("logs/order-service-.txt", rollingInterval: RollingInterval.Day)
+                .WriteTo.Console()
+                .CreateLogger();
+
+            builder.Host.UseSerilog();
+
+            builder.Services.AddMassTransit(x =>
+            {
+                x.UsingRabbitMq((ctx, cfg) =>
+                {
+                    cfg.Host(builder.Configuration["RabbitMQ:Host"], h =>
+                    {
+                        h.Username(builder.Configuration["RabbitMQ:Username"]);
+                        h.Password(builder.Configuration["RabbitMQ:Password"]);
+                    });
+
+                    cfg.ConfigureEndpoints(ctx);
+                });
+            });
 
             builder.Services.AddControllers();
 
@@ -101,6 +126,7 @@ namespace OrderService.API
             builder.Services.AddScoped<IPaymentService, PaymentService>();
             builder.Services.AddScoped<IOrderService, OrderManagementService>();
             builder.Services.AddScoped<IDeliveryService, DeliveryService>();
+            builder.Services.AddScoped<IOrderStatusPublisher, OrderStatusPublisher>();
 
             builder.Services.AddHttpClient<ICatalogRepository, CatalogRepository>(client =>
                 client.BaseAddress = new Uri(builder.Configuration["Services:CatalogServiceUrl"]

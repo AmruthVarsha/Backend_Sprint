@@ -8,7 +8,7 @@ namespace OrderService.API.Controllers
 {
     [ApiController]
     [Route("api/carts")]
-    [Authorize]
+    [Authorize(Roles = "Customer")]
     public class CartController : ControllerBase
     {
         private readonly ICartService _cartService;
@@ -22,6 +22,14 @@ namespace OrderService.API.Controllers
         public async Task<IActionResult> GetCartInfo(Guid id)
         {
             var result = await _cartService.GetCartInfo(id);
+            return Ok(result);
+        }
+
+        [HttpGet("user/active")]
+        public async Task<IActionResult> GetUserActiveCarts()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var result = await _cartService.GetUserActiveCarts(userId);
             return Ok(result);
         }
 
@@ -40,27 +48,26 @@ namespace OrderService.API.Controllers
             return CreatedAtAction(nameof(GetCartInfo), new { id = cartId }, new { cartId });
         }
 
-        [HttpPost("{id:guid}/items")]
-        public async Task<IActionResult> AddCartItem(Guid id, [FromBody] CartItemDTO dto)
+        [HttpPost("items")]
+        public async Task<IActionResult> AddCartItem([FromBody] CartItemDTO dto)
         {
-            dto.CartId = id;
             var result = await _cartService.AddCartItem(dto);
             return Ok(result);
         }
 
-        [HttpPut("{id:guid}/items/{itemId:guid}")]
-        public async Task<IActionResult> UpdateCartItem(Guid id, Guid itemId, [FromBody] UpdateCartItemDTO dto)
+        [HttpPut("items")]
+        public async Task<IActionResult> UpdateCartItem([FromBody] UpdateCartItemDTO dto)
         {
-            dto.Id = itemId;
-            dto.CartId = id;
+
             var result = await _cartService.UpdateCartItem(dto);
             return Ok(result);
         }
 
-        [HttpDelete("{id:guid}/items/{itemId:guid}")]
-        public async Task<IActionResult> DeleteCartItem(Guid id, Guid itemId)
+        [HttpDelete("items/{itemId:guid}/{cartId:guid}")]
+        public async Task<IActionResult> DeleteCartItem(Guid itemId,Guid cartId)
         {
-            await _cartService.DeleteCartItem(itemId);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            await _cartService.DeleteCartItem(itemId,cartId,userId);
             return NoContent();
         }
     }

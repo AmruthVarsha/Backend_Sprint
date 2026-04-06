@@ -19,5 +19,7 @@ namespace AuthService.Application.Interfaces
         public Task<ProfileDTO> GetProfileAsync(string email);
         public Task PromoteRoleAsync(string adminEmail, PromoteRoleDTO model);
         public Task ChangeAccountStatusAsync(StatusChangeDTO model, string ipAddress);
+        public Task<IEnumerable<PendingRequestsDTO>> PendingRequests();
+        public Task ApproveRequest(string email);
     }
 }

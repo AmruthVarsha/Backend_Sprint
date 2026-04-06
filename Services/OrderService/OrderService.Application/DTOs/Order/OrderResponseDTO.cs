@@ -7,8 +7,11 @@ namespace OrderService.Application.DTOs.Order
         public Guid Id { get; set; }
         public string CustomerId { get; set; } = string.Empty;
         public Guid RestaurantId { get; set; }
-        public OrderStatus Status { get; set; }
-        public string DeliveryAddress { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public string Street { get; set; } = string.Empty;
+        public string City { get; set; } = string.Empty;
+        public string State { get; set; } = string.Empty;
+        public string Pincode { get; set; } = string.Empty;
         public string? DeliveryInstructions { get; set; }
         public string? ScheduledSlot { get; set; }
         public decimal TotalAmount { get; set; }
@@ -16,7 +19,6 @@ namespace OrderService.Application.DTOs.Order
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public List<OrderItemResponseDTO> Items { get; set; } = new();
-        public OrderPaymentDTO? Payment { get; set; }
     }
 
     public class OrderItemResponseDTO

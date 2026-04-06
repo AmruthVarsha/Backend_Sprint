@@ -2,20 +2,14 @@ namespace OrderService.Domain.Enums
 {
     public enum OrderStatus
     {
-        DraftCart,
-        CheckoutStarted,
-        PaymentPending,
-        Paid,
+        Pending,
         RestaurantAccepted,
+        RestaurantRejected,
         Preparing,
         ReadyForPickup,
         PickedUp,
         OutForDelivery,
         Delivered,
-        PaymentFailed,
-        CancelledByCustomer,
-        RestaurantRejected,
-        RefundInitiated,
-        Refunded
+        CancelledByCustomer
     }
 }

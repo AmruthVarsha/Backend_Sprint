@@ -1,4 +1,5 @@
 using OrderService.Application.DTOs.Order;
+using OrderService.Application.DTOs.Payment;
 using OrderService.Application.Exceptions;
 using OrderService.Application.Interfaces;
 using OrderService.Domain.Entities;
@@ -12,31 +13,27 @@ namespace OrderService.Application.Services
         private readonly IOrderRepository _orderRepository;
         private readonly ICartRepository _cartRepository;
         private readonly IPaymentRepository _paymentRepository;
-        private readonly IPaymentService _paymentService;
-
-        private static readonly OrderStatus[] CancellableStatuses =
-            { OrderStatus.PaymentPending, OrderStatus.Paid };
-
-        private static readonly Dictionary<OrderStatus, OrderStatus[]> PartnerTransitions = new()
-        {
-            [OrderStatus.Paid] = new[] { OrderStatus.RestaurantAccepted, OrderStatus.RestaurantRejected },
-            [OrderStatus.RestaurantAccepted] = new[] { OrderStatus.Preparing },
-            [OrderStatus.Preparing] = new[] { OrderStatus.ReadyForPickup }
-        };
+        private readonly IAuthRepository _authRepository;
+        private readonly IOrderStatusPublisher _orderStatusPublisher;
+        private readonly ICatalogRepository _catalogRepository;
 
         public OrderManagementService(
             IOrderRepository orderRepository,
             ICartRepository cartRepository,
             IPaymentRepository paymentRepository,
-            IPaymentService paymentService)
+            IAuthRepository authRepository,
+            IOrderStatusPublisher orderStatusPublisher,
+            ICatalogRepository catalogRepository)
         {
             _orderRepository = orderRepository;
             _cartRepository = cartRepository;
             _paymentRepository = paymentRepository;
-            _paymentService = paymentService;
+            _authRepository = authRepository;
+            _orderStatusPublisher = orderStatusPublisher;
+            _catalogRepository = catalogRepository;
         }
 
-        public async Task<OrderResponseDTO> PlaceOrderAsync(PlaceOrderDTO dto, string customerId)
+        public async Task<OrderResponseDTO> PlaceOrderAsync(PlaceOrderDTO dto, string customerId, string token)
         {
             var cart = await _cartRepository.GetById(dto.CartId);
             if (cart == null)
@@ -51,6 +48,13 @@ namespace OrderService.Application.Services
             if (!cart.CartItems.Any())
                 throw new BadRequestException("Cart has no items.");
 
+            var address = await _authRepository.GetAddressById(dto.AddressId, token);
+            if (address == null)
+                throw new NotFoundException("Address", dto.AddressId);
+
+            if (address.UserId != customerId)
+                throw new ForbiddenException("The selected address does not belong to you.");
+
             var totalAmount = cart.CartItems.Sum(ci => ci.UnitPrice * ci.Quantity);
 
             var order = new Order
@@ -58,8 +62,11 @@ namespace OrderService.Application.Services
                 Id = Guid.NewGuid(),
                 CustomerId = customerId,
                 RestaurantId = cart.RestaurantId,
-                Status = OrderStatus.PaymentPending,
-                DeliveryAddress = dto.DeliveryAddress,
+                Status = OrderStatus.Pending,
+                Street = address.Street,
+                City = address.City,
+                State = address.State,
+                Pincode = address.Pincode,
                 DeliveryInstructions = dto.DeliveryInstructions,
                 ScheduledSlot = dto.ScheduledSlot,
                 TotalAmount = totalAmount,
@@ -78,23 +85,28 @@ namespace OrderService.Application.Services
 
             await _orderRepository.AddAsync(order);
 
-            var paymentResult = await _paymentService.SimulatePaymentAsync(new DTOs.Payment.SimulatePaymentDTO
+            var payment = new Payment
             {
+                Id = Guid.NewGuid(),
                 OrderId = order.Id,
-                Method = dto.PaymentMethod
-            });
+                Method = dto.PaymentMethod,
+                Amount = totalAmount,
+                Status = PaymentStatus.Pending,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
 
-            order.Status = paymentResult.Status == PaymentStatus.Success
-                ? OrderStatus.Paid
-                : OrderStatus.PaymentFailed;
-            order.UpdatedAt = DateTime.UtcNow;
-            await _orderRepository.UpdateAsync(order);
+            await _paymentRepository.AddAsync(payment);
+
+            var restaurant = await _catalogRepository.GetRestaurantById(order.RestaurantId);
+
+            await _orderStatusPublisher.PublishOrderStatus(order.Id, order.CustomerId,restaurant.Name, order.TotalAmount, order.Status.ToString(), order.CreatedAt);
 
             cart.Status = CartStatus.Ordered;
             cart.UpdatedAt = DateTime.UtcNow;
             await _cartRepository.UpdateAsync(cart);
 
-            return MapToResponse(order, paymentResult);
+            return MapToResponse(order, null);
         }
 
         public async Task<IEnumerable<OrderSummaryDTO>> GetOrderHistoryAsync(string customerId)
@@ -103,7 +115,7 @@ namespace OrderService.Application.Services
             return orders.Select(o => new OrderSummaryDTO
             {
                 Id = o.Id,
-                Status = o.Status,
+                Status = o.Status.ToString(),
                 TotalAmount = o.TotalAmount,
                 ItemCount = o.OrderItems.Count,
                 CreatedAt = o.CreatedAt
@@ -120,21 +132,7 @@ namespace OrderService.Application.Services
                 throw new ForbiddenException("You do not have access to this order.");
 
             var payment = await _paymentRepository.GetByOrderId(id);
-            DTOs.Payment.PaymentResponseDTO? paymentDto = null;
-            if (payment != null)
-            {
-                paymentDto = new DTOs.Payment.PaymentResponseDTO
-                {
-                    Id = payment.Id,
-                    OrderId = payment.OrderId,
-                    Method = payment.Method,
-                    Status = payment.Status,
-                    Amount = payment.Amount,
-                    TransactionReference = payment.TransactionReference,
-                    CreatedAt = payment.CreatedAt,
-                    UpdatedAt = payment.UpdatedAt
-                };
-            }
+            var paymentDto = payment == null ? null : MapPaymentToDTO(payment);
 
             return MapToResponse(order, paymentDto);
         }
@@ -148,16 +146,20 @@ namespace OrderService.Application.Services
             if (order.CustomerId != customerId)
                 throw new ForbiddenException("You do not have access to this order.");
 
-            if (!CancellableStatuses.Contains(order.Status))
-                throw new BadRequestException($"Order cannot be cancelled in its current status '{order.Status}'.");
+            if (!CanCancelOrder(order.Status))
+                throw new BadRequestException($"Order cannot be cancelled in status '{order.Status}'.");
 
             if (DateTime.UtcNow - order.CreatedAt > TimeSpan.FromMinutes(10))
-                throw new BadRequestException("The cancellation window of 10 minutes has passed.");
+                throw new BadRequestException("Cancellation window of 10 minutes has passed.");
 
             order.Status = OrderStatus.CancelledByCustomer;
             order.CancellationReason = dto.CancellationReason;
             order.UpdatedAt = DateTime.UtcNow;
             await _orderRepository.UpdateAsync(order);
+
+            var restaurant = await _catalogRepository.GetRestaurantById(order.RestaurantId);
+
+            await _orderStatusPublisher.PublishOrderStatus(order.Id, order.CustomerId, restaurant.Name, order.TotalAmount, order.Status.ToString(), order.CreatedAt);
         }
 
         public async Task UpdateOrderStatusAsync(Guid id, UpdateOrderStatusDTO dto)
@@ -166,23 +168,48 @@ namespace OrderService.Application.Services
             if (order == null)
                 throw new NotFoundException("Order", id);
 
-            if (!PartnerTransitions.TryGetValue(order.Status, out var allowed) || !allowed.Contains(dto.Status))
-                throw new BadRequestException($"Cannot transition order from '{order.Status}' to '{dto.Status}'.");
+            if (!IsValidTransition(order.Status, dto.Status))
+                throw new BadRequestException($"Cannot transition from '{order.Status}' to '{dto.Status}'.");
 
             order.Status = dto.Status;
             order.UpdatedAt = DateTime.UtcNow;
             await _orderRepository.UpdateAsync(order);
+
+            var restaurant = await _catalogRepository.GetRestaurantById(order.RestaurantId);
+
+            await _orderStatusPublisher.PublishOrderStatus(order.Id, order.CustomerId, restaurant.Name, order.TotalAmount, order.Status.ToString(), order.CreatedAt);
         }
 
-        private static OrderResponseDTO MapToResponse(Order order, DTOs.Payment.PaymentResponseDTO? payment)
+        private static bool CanCancelOrder(OrderStatus status)
+        {
+            return status == OrderStatus.Pending;
+        }
+
+        private static bool IsValidTransition(OrderStatus from, OrderStatus to)
+        {
+            return (from, to) switch
+            {
+                (OrderStatus.Pending, OrderStatus.RestaurantAccepted) => true,
+                (OrderStatus.Pending, OrderStatus.RestaurantRejected) => true,
+                (OrderStatus.RestaurantAccepted, OrderStatus.Preparing) => true,
+                (OrderStatus.Preparing, OrderStatus.ReadyForPickup) => true,
+                (OrderStatus.ReadyForPickup, OrderStatus.OutForDelivery) => true,
+                _ => false
+            };
+        }
+
+        private static OrderResponseDTO MapToResponse(Order order, PaymentResponseDTO? payment)
         {
             return new OrderResponseDTO
             {
                 Id = order.Id,
                 CustomerId = order.CustomerId,
                 RestaurantId = order.RestaurantId,
-                Status = order.Status,
-                DeliveryAddress = order.DeliveryAddress,
+                Status = order.Status.ToString(),
+                Street = order.Street,
+                City = order.City,
+                State = order.State,
+                Pincode = order.Pincode,
                 DeliveryInstructions = order.DeliveryInstructions,
                 ScheduledSlot = order.ScheduledSlot,
                 TotalAmount = order.TotalAmount,
@@ -198,14 +225,22 @@ namespace OrderService.Application.Services
                     Quantity = oi.Quantity,
                     TotalPrice = oi.TotalPrice
                 }).ToList(),
-                Payment = payment == null ? null : new OrderPaymentDTO
-                {
-                    Id = payment.Id,
-                    Method = payment.Method.ToString(),
-                    Status = payment.Status.ToString(),
-                    Amount = payment.Amount,
-                    TransactionReference = payment.TransactionReference
-                }
+             
+            };
+        }
+
+        private static PaymentResponseDTO MapPaymentToDTO(Payment payment)
+        {
+            return new PaymentResponseDTO
+            {
+                Id = payment.Id,
+                OrderId = payment.OrderId,
+                Method = payment.Method.ToString(),
+                Status = payment.Status.ToString(),
+                Amount = payment.Amount,
+                TransactionReference = payment.TransactionReference,
+                CreatedAt = payment.CreatedAt,
+                UpdatedAt = payment.UpdatedAt
             };
         }
     }

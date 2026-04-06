@@ -38,7 +38,5 @@
     <Project Path="Services/PaymentService/PaymentService.Infrastructure/PaymentService.Infrastructure.csproj" />
     <Project Path="Services/PaymentService/PaymentService.Tests/PaymentService.Tests.csproj" />
   </Folder>
-  <Folder Name="/Shared/">
-    <Project Path="Shared/FoodDelivery.Shared/FoodDelivery.Shared.csproj" />
-  </Folder>
+  <Project Path="Shared/Shared.csproj" />
 </Solution>

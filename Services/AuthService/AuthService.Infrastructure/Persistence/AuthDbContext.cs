@@ -14,6 +14,8 @@ namespace AuthService.Infrastructure.Persistence
         public DbSet<OTPToken> OTPTokens { get; set; }
         public DbSet<Address> Addresses { get; set; }
 
+        public DbSet<RoleApprovalRequest> RoleApprovalRequests { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -35,6 +37,14 @@ namespace AuthService.Infrastructure.Persistence
                 .WithMany(a => a.Addresses)
                 .HasForeignKey(o => o.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<RoleApprovalRequest>(entity =>
+            {
+                entity.HasKey(e => e.Email);
+                entity.Property(e => e.Email).HasMaxLength(255);
+                entity.Property(e => e.Role).HasConversion<string>().HasMaxLength(50);
+            });
+
         }
     }
 }

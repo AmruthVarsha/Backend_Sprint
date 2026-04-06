@@ -25,5 +25,8 @@ namespace AuthService.Domain.Interfaces
         public Task SaveOtpAsync(string userId, string otp, PurposeEnum purpose);
         public Task<bool> VerifyOtpAsync(string userId, string token, PurposeEnum purpose);
         public Task<RepositoryResult> ChangeAccountStatusAsync(string userId, bool isActive);
+        public Task AddRoleApprovalRequest(RoleApprovalRequest request);
+        public Task<IEnumerable<RoleApprovalRequest>> PendingRequests();
+        public Task ApproveRequest(string email);
     }
 }

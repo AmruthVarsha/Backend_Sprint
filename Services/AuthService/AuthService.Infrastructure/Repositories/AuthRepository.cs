@@ -5,6 +5,7 @@ using AuthService.Infrastructure.Identity;
 using AuthService.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Collections;
 
 namespace AuthService.Infrastructure.Repositories
 {
@@ -241,6 +242,28 @@ namespace AuthService.Infrastructure.Repositories
                 return RepositoryResult.Ok();
             }
             return RepositoryResult.Fail(result.Errors.First().Description);
+        }
+
+        public async Task AddRoleApprovalRequest(RoleApprovalRequest request)
+        {
+            context.RoleApprovalRequests.Add(request);
+            await context.SaveChangesAsync();
+        }
+
+        public async Task ApproveRequest(string email)
+        {
+            var request = await context.RoleApprovalRequests.FirstOrDefaultAsync(r => r.Email == email);
+            request.IsApproved = true;
+            context.RoleApprovalRequests.Update(request);
+            await context.SaveChangesAsync();
+        }
+        public async Task<IEnumerable<RoleApprovalRequest>> PendingRequests()
+        {
+            var approved = await context.RoleApprovalRequests.Where(r => r.IsApproved).ToListAsync();
+            context.RemoveRange(approved);
+            await context.SaveChangesAsync();
+
+            return await context.RoleApprovalRequests.ToListAsync();
         }
     }
 }

@@ -9,8 +9,7 @@ namespace OrderService.Application.DTOs.Order
         public Guid CartId { get; set; }
 
         [Required]
-        [StringLength(500, MinimumLength = 5)]
-        public string DeliveryAddress { get; set; } = string.Empty;
+        public Guid AddressId { get; set; }
 
         [StringLength(300)]
         public string? DeliveryInstructions { get; set; }

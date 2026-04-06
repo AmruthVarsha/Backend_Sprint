@@ -11,18 +11,6 @@ namespace OrderService.Application.Services
         private readonly IDeliveryAssignmentRepository _deliveryRepository;
         private readonly IOrderRepository _orderRepository;
 
-        private static readonly Dictionary<DeliveryStatus, DeliveryStatus> AllowedTransitions = new()
-        {
-            [DeliveryStatus.Assigned] = DeliveryStatus.PickedUp,
-            [DeliveryStatus.PickedUp] = DeliveryStatus.Delivered
-        };
-
-        private static readonly Dictionary<DeliveryStatus, OrderStatus> OrderStatusSync = new()
-        {
-            [DeliveryStatus.PickedUp] = OrderStatus.PickedUp,
-            [DeliveryStatus.Delivered] = OrderStatus.Delivered
-        };
-
         public DeliveryService(IDeliveryAssignmentRepository deliveryRepository, IOrderRepository orderRepository)
         {
             _deliveryRepository = deliveryRepository;
@@ -38,7 +26,10 @@ namespace OrderService.Application.Services
                 OrderId = a.OrderId,
                 DeliveryAgentId = a.DeliveryAgentId,
                 Status = a.Status,
-                DeliveryAddress = a.Order?.DeliveryAddress ?? string.Empty,
+                Street = a.Order?.Street ?? string.Empty,
+                City = a.Order?.City ?? string.Empty,
+                State = a.Order?.State ?? string.Empty,
+                Pincode = a.Order?.Pincode ?? string.Empty,
                 TotalAmount = a.Order?.TotalAmount ?? 0,
                 PickedUpAt = a.PickedUpAt,
                 DeliveredAt = a.DeliveredAt
@@ -54,36 +45,70 @@ namespace OrderService.Application.Services
             if (assignment.DeliveryAgentId != agentId)
                 throw new ForbiddenException("You are not assigned to this delivery.");
 
-            if (!AllowedTransitions.TryGetValue(assignment.Status, out var next) || next != dto.Status)
-                throw new BadRequestException($"Cannot transition delivery from '{assignment.Status}' to '{dto.Status}'.");
+            if (!IsValidTransition(assignment.Status, dto.Status))
+                throw new BadRequestException($"Cannot transition from '{assignment.Status}' to '{dto.Status}'.");
 
             assignment.Status = dto.Status;
-
-            if (dto.Status == DeliveryStatus.PickedUp)
-                assignment.PickedUpAt = DateTime.UtcNow;
-            else if (dto.Status == DeliveryStatus.Delivered)
-                assignment.DeliveredAt = DateTime.UtcNow;
-
+            UpdateDeliveryTimestamps(assignment, dto.Status);
             await _deliveryRepository.UpdateAsync(assignment);
 
-            if (OrderStatusSync.TryGetValue(dto.Status, out var orderStatus))
-            {
-                var order = await _orderRepository.GetById(assignment.OrderId);
-                if (order != null)
-                {
-                    order.Status = orderStatus;
-                    order.UpdatedAt = DateTime.UtcNow;
-                    await _orderRepository.UpdateAsync(order);
-                }
-            }
+            await SyncOrderStatus(assignment.OrderId, dto.Status);
 
+            return MapToResponse(assignment);
+        }
+
+        private static bool IsValidTransition(DeliveryStatus from, DeliveryStatus to)
+        {
+            return (from, to) switch
+            {
+                (DeliveryStatus.Assigned, DeliveryStatus.PickedUp) => true,
+                (DeliveryStatus.PickedUp, DeliveryStatus.Delivered) => true,
+                _ => false
+            };
+        }
+
+        private static void UpdateDeliveryTimestamps(Domain.Entities.DeliveryAssignment assignment, DeliveryStatus status)
+        {
+            if (status == DeliveryStatus.PickedUp)
+                assignment.PickedUpAt = DateTime.UtcNow;
+            else if (status == DeliveryStatus.Delivered)
+                assignment.DeliveredAt = DateTime.UtcNow;
+        }
+
+        private async Task SyncOrderStatus(Guid orderId, DeliveryStatus deliveryStatus)
+        {
+            var order = await _orderRepository.GetById(orderId);
+            if (order == null)
+                return;
+
+            var newOrderStatus = deliveryStatus switch
+            {
+                DeliveryStatus.Assigned => OrderStatus.OutForDelivery,
+                DeliveryStatus.PickedUp => OrderStatus.PickedUp,
+                DeliveryStatus.Delivered => OrderStatus.Delivered,
+                _ => order.Status
+            };
+
+            if (newOrderStatus != order.Status)
+            {
+                order.Status = newOrderStatus;
+                order.UpdatedAt = DateTime.UtcNow;
+                await _orderRepository.UpdateAsync(order);
+            }
+        }
+
+        private static DeliveryAssignmentResponseDTO MapToResponse(Domain.Entities.DeliveryAssignment assignment)
+        {
             return new DeliveryAssignmentResponseDTO
             {
                 Id = assignment.Id,
                 OrderId = assignment.OrderId,
                 DeliveryAgentId = assignment.DeliveryAgentId,
                 Status = assignment.Status,
-                DeliveryAddress = assignment.Order?.DeliveryAddress ?? string.Empty,
+                Street = assignment.Order?.Street ?? string.Empty,
+                City = assignment.Order?.City ?? string.Empty,
+                State = assignment.Order?.State ?? string.Empty,
+                Pincode = assignment.Order?.Pincode ?? string.Empty,
                 TotalAmount = assignment.Order?.TotalAmount ?? 0,
                 PickedUpAt = assignment.PickedUpAt,
                 DeliveredAt = assignment.DeliveredAt
