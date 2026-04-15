@@ -6,16 +6,16 @@ namespace AuthService.Domain.Entities
     public class User
     {
         [Key]
-        public string Id {  get; set; }
+        public string Id {  get; set; } = string.Empty;
 
         [Required]
         [MaxLength(100)]
-        public string FullName { get; set; }
+        public string FullName { get; set; } = string.Empty;
 
         [Required]
         [EmailAddress]
         [MaxLength(256)]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         public bool EmailConfirmed { get; set; }
 
@@ -26,6 +26,6 @@ namespace AuthService.Domain.Entities
         [Required]
         [Phone]
         [MaxLength(20)]
-        public string PhoneNo { get; set; }
+        public string PhoneNo { get; set; } = string.Empty;
     }
 }

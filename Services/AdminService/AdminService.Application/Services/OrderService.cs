@@ -3,6 +3,7 @@ using AdminService.Application.Exceptions;
 using AdminService.Application.Interfaces.Services;
 using AdminService.Domain.Enums;
 using AdminService.Domain.Interfaces;
+using AdminService.Infrastructure.Messaging.Publishers;
 
 namespace AdminService.Application.Services
 {
@@ -10,11 +11,16 @@ namespace AdminService.Application.Services
     {
         private readonly IOrderSummaryRepository _orderSummaryRepository;
         private readonly IAuditLogRepository _auditLogRepository;
+        private readonly AdminOrderStatusUpdatePublisher _statusUpdatePublisher;
 
-        public OrderService(IOrderSummaryRepository orderSummaryRepository, IAuditLogRepository auditLogRepository)
+        public OrderService(
+            IOrderSummaryRepository orderSummaryRepository, 
+            IAuditLogRepository auditLogRepository,
+            AdminOrderStatusUpdatePublisher statusUpdatePublisher)
         {
             _orderSummaryRepository = orderSummaryRepository;
             _auditLogRepository = auditLogRepository;
+            _statusUpdatePublisher = statusUpdatePublisher;
         }
 
         public async Task<List<OrderSummaryDto>> GetAllOrdersAsync()
@@ -39,10 +45,7 @@ namespace AdminService.Application.Services
             if (order == null)
                 throw new NotFoundException("Order", orderId);
 
-            if (!Enum.TryParse<OrderStatus>(dto.NewStatus, out var newStatus))
-                throw new BadRequestException($"Invalid status: {dto.NewStatus}");
-
-            await _orderSummaryRepository.UpdateStatusAsync(orderId, newStatus, DateTime.UtcNow);
+            await _orderSummaryRepository.UpdateStatusAsync(orderId, dto.NewStatus, DateTime.UtcNow);
 
             var auditLog = new Domain.Entities.AuditLog
             {
@@ -54,6 +57,13 @@ namespace AdminService.Application.Services
             };
 
             await _auditLogRepository.AddAsync(auditLog);
+
+            // Publish event to sync status back to OrderService
+            await _statusUpdatePublisher.PublishOrderStatusUpdate(
+                orderId, 
+                dto.NewStatus.ToString(), 
+                adminId, 
+                dto.Reason);
         }
     }
 }

@@ -14,6 +14,7 @@ using System.Text;
 using Serilog;
 using MassTransit;
 using OrderService.Infrastructure.Messaging.Publishers;
+using OrderService.Infrastructure.Messaging.Consumers;
 
 namespace OrderService.API
 {
@@ -33,6 +34,8 @@ namespace OrderService.API
 
             builder.Services.AddMassTransit(x =>
             {
+                x.AddConsumer<AdminOrderStatusUpdateConsumer>();
+
                 x.UsingRabbitMq((ctx, cfg) =>
                 {
                     cfg.Host(builder.Configuration["RabbitMQ:Host"], h =>

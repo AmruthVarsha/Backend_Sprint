@@ -8,7 +8,7 @@ namespace AuthService.Application.DTOs
     public class StatusChangeDTO
     {
         [Required]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         [Required]
         public bool IsActive { get; set; }

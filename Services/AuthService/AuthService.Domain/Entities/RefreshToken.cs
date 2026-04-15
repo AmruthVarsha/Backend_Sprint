@@ -9,7 +9,7 @@ namespace AuthService.Domain.Entities
         public Guid Id { get; set; }
 
         [Required]
-        public string Token { get; set; } 
+        public string Token { get; set; } = string.Empty;
 
         [Required]
         public DateTime ExpiryDate { get; set; }
@@ -20,12 +20,12 @@ namespace AuthService.Domain.Entities
 
         [Required]
         [MaxLength(50)]
-        public string CreateByIp { get; set; }
+        public string CreateByIp { get; set; } = string.Empty;
 
         [MaxLength(50)]
         public string? RevokedIp { get; set; }
 
         [Required]
-        public string UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
     }
 }

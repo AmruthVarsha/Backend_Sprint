@@ -11,22 +11,22 @@ namespace AuthService.Application.DTOs
         public Guid Id { get; set; }
 
         [Required]
-        public string UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
 
         [Required]
         [StringLength(100)]
-        public string Street { get; set; }
+        public string Street { get; set; } = string.Empty;
 
         [Required]
         [StringLength(50)]
-        public string City { get; set; }
+        public string City { get; set; } = string.Empty;
 
         [Required]
         [StringLength(50)]
-        public string State { get; set; }
+        public string State { get; set; } = string.Empty;
 
         [Required]
-        [RegularExpression(@"^/d{6}$")]
-        public string Pincode { get; set; }
+        [RegularExpression(@"^\d{6}$")]
+        public string Pincode { get; set; } = string.Empty;
     }
 }

@@ -139,6 +139,7 @@ namespace AdminService.API
             builder.Services.AddScoped<RestaurantApprovalResponsePublisher>();
             builder.Services.AddScoped<UserUpdatePublisher>();
             builder.Services.AddScoped<RestaurantUpdatePublisher>();
+            builder.Services.AddScoped<AdminOrderStatusUpdatePublisher>();
 
             var app = builder.Build();
 

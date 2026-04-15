@@ -4,11 +4,11 @@ namespace AuthService.Application.DTOs
 {
     public class ConfirmEmailDTO
     {
-        [Required(ErrorMessage = "Email is required")]
-        [EmailAddress(ErrorMessage = "Invalid email format")]
-        public string Email { get; set; }
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "OTP token is required")]
-        public string Token { get; set; }
+        [Required]
+        public string Token { get; set; } = string.Empty;
     }
 }

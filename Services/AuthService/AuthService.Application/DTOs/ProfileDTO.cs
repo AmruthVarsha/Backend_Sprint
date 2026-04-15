@@ -6,14 +6,14 @@ namespace AuthService.Application.DTOs
 {
     public class ProfileDTO
     {
-        public string UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
 
-        public string FullName { get; set; }
-        public string Email { get; set; }
+        public string FullName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
 
-        public string PhoneNo { get; set; }
+        public string PhoneNo { get; set; } = string.Empty;
         public bool IsEmailConfirmed { get; set; }
-        public string Role { get; set; }
+        public string Role { get; set; } = string.Empty;
 
     }
 }

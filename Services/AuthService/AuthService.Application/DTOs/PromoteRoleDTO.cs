@@ -4,12 +4,12 @@ namespace AuthService.Application.DTOs
 {
     public class PromoteRoleDTO
     {
-        [Required(ErrorMessage = "Email is required")]
-        [EmailAddress(ErrorMessage = "Invalid email format")]
-        public string Email { get; set; }
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Role name is required")]
-        [RegularExpression(@"^(Customer|Partner|DeliveryAgent|Admin)$", ErrorMessage = "Role must be Customer, Partner, DeliveryAgent, or Admin")]
-        public string RoleName { get; set; }
+        [Required]
+        [RegularExpression(@"^(Customer|Partner|DeliveryAgent|Admin)$")]
+        public string RoleName { get; set; } = string.Empty;
     }
 }

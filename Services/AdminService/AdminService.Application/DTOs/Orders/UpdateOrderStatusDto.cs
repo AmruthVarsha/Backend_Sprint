@@ -1,11 +1,12 @@
 using System.ComponentModel.DataAnnotations;
+using AdminService.Domain.Enums;
 
 namespace AdminService.Application.DTOs.Orders
 {
     public class UpdateOrderStatusDto
     {
         [Required]
-        public string NewStatus { get; set; } = string.Empty;
+        public OrderStatus NewStatus { get; set; }
 
         [Required]
         [MinLength(5)]
