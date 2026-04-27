@@ -72,19 +72,11 @@ export class CatalogService {
   }
 
   // Category endpoints
-  getCategories(): Observable<Category[]> {
-    return this.api.get<Category[]>(API_ENDPOINTS.CATALOG.CATEGORIES);
-  }
-
-  getCategoryById(id: string): Observable<Category> {
-    return this.api.get<Category>(API_ENDPOINTS.CATALOG.CATEGORY_BY_ID(id));
+  getCategoriesByRestaurant(restaurantId: string): Observable<Category[]> {
+    return this.api.get<Category[]>(API_ENDPOINTS.CATALOG.CATEGORIES_BY_RESTAURANT(restaurantId));
   }
 
   // Menu Item endpoints
-  getMenuItems(): Observable<MenuItem[]> {
-    return this.api.get<MenuItem[]>(API_ENDPOINTS.CATALOG.MENU_ITEMS);
-  }
-
   getMenuItemById(id: string): Observable<MenuItem> {
     return this.api.get<MenuItem>(API_ENDPOINTS.CATALOG.MENU_ITEM_BY_ID(id));
   }

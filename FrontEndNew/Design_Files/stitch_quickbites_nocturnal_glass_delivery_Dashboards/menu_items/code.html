@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>QuickBites - Menu Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary": "#003919",
+                    "surface-tint": "#00e479",
+                    "primary": "#f1ffef",
+                    "inverse-primary": "#006d37",
+                    "surface-bright": "#323c32",
+                    "secondary-fixed": "#ffd9e2",
+                    "on-tertiary-fixed-variant": "#584400",
+                    "on-surface": "#dae6d8",
+                    "on-surface-variant": "#b9cbb9",
+                    "surface-container-lowest": "#071009",
+                    "surface-container-low": "#141e16",
+                    "secondary-container": "#ff4994",
+                    "on-primary-fixed-variant": "#005228",
+                    "surface-container-high": "#222c24",
+                    "primary-container": "#00ff88",
+                    "surface-container-highest": "#2d372e",
+                    "surface-variant": "#2d372e",
+                    "primary-fixed-dim": "#00e479",
+                    "tertiary": "#fffaf7",
+                    "background": "#0c160e",
+                    "primary-fixed": "#60ff99",
+                    "on-secondary-container": "#59002b",
+                    "on-tertiary-fixed": "#241a00",
+                    "secondary": "#ffb1c7",
+                    "surface-dim": "#0c160e",
+                    "on-tertiary-container": "#795f01",
+                    "outline-variant": "#3b4b3d",
+                    "on-secondary": "#650032",
+                    "error-container": "#93000a",
+                    "on-primary-container": "#007139",
+                    "on-error-container": "#ffdad6",
+                    "inverse-on-surface": "#29332a",
+                    "on-error": "#690005",
+                    "tertiary-fixed-dim": "#e5c364",
+                    "on-primary-fixed": "#00210c",
+                    "surface": "#0c160e",
+                    "error": "#ffb4ab",
+                    "tertiary-container": "#ffdb79",
+                    "secondary-fixed-dim": "#ffb1c7",
+                    "outline": "#849585",
+                    "inverse-surface": "#dae6d8",
+                    "tertiary-fixed": "#ffe08d",
+                    "on-background": "#dae6d8",
+                    "on-secondary-fixed": "#3e001d",
+                    "surface-container": "#18221a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-sm": "8px",
+                    "stack-md": "16px",
+                    "card-padding": "24px",
+                    "gutter": "24px",
+                    "container-margin": "32px",
+                    "stack-lg": "32px",
+                    "unit": "8px"
+            },
+            "fontFamily": {
+                    "display-md": ["Inter"],
+                    "label-caps": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "display-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "display-md": ["24px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                    "body-md": ["14px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                    "display-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #0c160e;
+            color: #dae6d8;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .neon-glow-green {
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.4), -2px -2px 10px rgba(255, 255, 255, 0.05);
+        }
+        .neomorphic-inset {
+            background: #1a1a1a;
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5), inset -1px -1px 3px rgba(255,255,255,0.05);
+        }
+        .bg-glow-spot-1 {
+            position: fixed;
+            top: -10%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(0, 255, 136, 0.1) 0%, transparent 70%);
+            z-index: -1;
+        }
+        .bg-glow-spot-2 {
+            position: fixed;
+            bottom: -10%;
+            left: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255, 73, 148, 0.08) 0%, transparent 70%);
+            z-index: -1;
+        }
+    </style>
+</head>
+<body class="dark">
+<div class="bg-glow-spot-1"></div>
+<div class="bg-glow-spot-2"></div>
+<!-- SideNavBar Shell -->
+<nav class="fixed left-0 top-0 h-full flex flex-col pt-20 bg-black/90 backdrop-blur-[40px] text-[#00ff88] font-['Inter'] text-sm font-medium h-screen w-64 border-r border-white/10 shadow-[10px_0_30px_rgba(0,0,0,0.5)] z-40 hidden md:flex">
+<div class="px-6 mb-8">
+<h1 class="text-[#00ff88] font-bold text-xl tracking-tighter">QuickBites</h1>
+<p class="text-gray-500 text-xs">Partner Portal</p>
+</div>
+<div class="flex flex-col flex-1 space-y-1">
+<a class="flex items-center px-6 py-3 text-gray-500 hover:bg-white/5 hover:text-white transition-colors cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center px-6 py-3 text-gray-500 hover:bg-white/5 hover:text-white transition-colors cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="receipt_long">receipt_long</span>
+                Orders
+            </a>
+<a class="flex items-center px-6 py-3 text-[#00ff88] bg-[#00ff88]/10 border-r-2 border-[#00ff88] cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="restaurant_menu">restaurant_menu</span>
+                Menu Items
+            </a>
+<a class="flex items-center px-6 py-3 text-gray-500 hover:bg-white/5 hover:text-white transition-colors cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="category">category</span>
+                Categories
+            </a>
+<a class="flex items-center px-6 py-3 text-gray-500 hover:bg-white/5 hover:text-white transition-colors cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="settings">settings</span>
+                Restaurant Settings
+            </a>
+</div>
+<div class="mt-auto pb-8">
+<a class="flex items-center px-6 py-3 text-gray-500 hover:bg-white/5 hover:text-white transition-colors cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="logout">logout</span>
+                Logout
+            </a>
+</div>
+</nav>
+<!-- TopAppBar Shell -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-black/80 backdrop-blur-[40px] text-[#00ff88] font-['Inter'] tracking-tight border-b border-white/10 shadow-[5px_5px_15px_rgba(0,0,0,0.4),-2px_-2px_10px_rgba(255,255,255,0.05)]">
+<div class="flex items-center gap-4">
+<span class="md:hidden material-symbols-outlined text-white" data-icon="menu">menu</span>
+<div class="text-xl font-black text-[#00ff88] drop-shadow-[0_0_8px_rgba(0,255,136,0.5)]">QuickBites</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden md:block text-gray-400 text-sm">The Burger Theory • Live</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-gray-400 hover:text-[#00ff88] transition-all" data-icon="notifications">notifications</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-[#00ff88]/30">
+<img alt="User profile" data-alt="close up professional headshot of a restaurant manager wearing a black uniform with a friendly smile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLSSsazCKyVzDA9lyx-U5c8e_7U946QGw6w81sWFpl7B-BpJt1SZYpGetEIQr3YF2zm2teMyfnFan1Hoj2eXJ74SkV0VDoQkQdLnlhKQep-aDU7B1Zk81vnUJ6QiAoOI8uxsXRnYoqjcGUe5DyCi3IPuwZnec2YYTZ5ZeTv_Sg_w4tlFeJoMy5seuV6aT-KfweT2oqpCez9MpHH7pXScF2iRB8hZEta9HdgLXrzsQc4iMxs-T-3D2TDxJbNUesw1t00I9R8pcnac8"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 pt-24 px-6 pb-12">
+<div class="max-w-7xl mx-auto">
+<!-- Action Header -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+<div>
+<h2 class="font-display-lg text-display-lg text-primary">Menu Items Management</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Manage your digital menu and item availability.</p>
+</div>
+<div class="flex flex-col sm:flex-row gap-4">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-[#00ff88] transition-colors" data-icon="search">search</span>
+<input class="neomorphic-inset w-full sm:w-64 h-12 pl-10 pr-4 rounded-xl border-none text-white focus:ring-1 focus:ring-[#00ff88] placeholder:text-gray-600 font-body-md text-body-md" placeholder="Search items..." type="text"/>
+</div>
+<button class="h-12 px-6 rounded-xl bg-primary-container text-on-primary-container font-bold flex items-center justify-center gap-2 neon-glow-green active:scale-95 transition-all duration-150">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                        Add New Item
+                    </button>
+</div>
+</div>
+<!-- Dashboard Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-gutter">
+<!-- Menu Card 1 -->
+<div class="glass-card rounded-xl overflow-hidden flex flex-col group transition-all duration-300 hover:translate-y-[-4px]">
+<div class="h-48 relative overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="gourmet double truffle burger with melting cheese, caramelized onions and fresh arugula on a toasted brioche bun, dramatic top lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuADQi6jWeI39yiXhxdj4LVLumyTnE1IC6-uSTwZ61XYRn1DxrlzI1T6OStnzlrYbGhZBZzGC9h4I_7ys00lIOI24Gbb21gG4vXBzVEvyHYeRmW40lg4PxnU2qNMZitdNW4_QrrhusenRAN0J2RPyEH8qW3dS_KJzLLuPMgZFHuYj7C4gWHfDQjnMA4lk8IY0_Ye2ryKpXCHMRk2fY1H3R4o_bdBJ_j-ozt9f4IKe2t_1kxwQdSU_lY7Wv9NHNKAWttoDK6OK15GNX0"/>
+<div class="absolute top-3 left-3 flex gap-2">
+<span class="px-2 py-1 rounded bg-black/60 backdrop-blur-md border border-[#00ff88]/30 text-[#00ff88] text-[10px] font-bold uppercase tracking-wider">Burgers</span>
+<span class="px-2 py-1 rounded bg-black/60 backdrop-blur-md border border-green-500/30 text-green-500 text-[10px] flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Veg
+                            </span>
+</div>
+<div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:text-[#00ff88] transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+</button>
+<button class="w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="delete">delete</span>
+</button>
+</div>
+</div>
+<div class="p-card-padding flex flex-col flex-1">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-display-md text-body-lg text-primary truncate pr-2">Double Truffle Burger</h3>
+<span class="font-bold text-[#00ff88] whitespace-nowrap">₹450</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2 mb-6">Double wagyu beef patties infused with truffle oil, topped with aged cheddar and balsamic glaze.</p>
+<div class="mt-auto pt-4 border-t border-white/5 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="text-xs text-gray-500 uppercase font-bold tracking-widest">Available</span>
+<div class="w-10 h-5 rounded-full bg-[#00ff88]/20 relative flex items-center px-1 cursor-pointer">
+<div class="w-3 h-3 rounded-full bg-[#00ff88] shadow-[0_0_8px_#00ff88] translate-x-5"></div>
+</div>
+</div>
+<span class="text-[10px] text-gray-500 italic">Updated 2h ago</span>
+</div>
+</div>
+</div>
+<!-- Menu Card 2 -->
+<div class="glass-card rounded-xl overflow-hidden flex flex-col group transition-all duration-300 hover:translate-y-[-4px]">
+<div class="h-48 relative overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="artisan sourdough pizza with fresh buffalo mozzarella, cherry tomatoes and basil leaves on a rustic wooden board with flour dusting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2cDvW8VQnUsjwEYXn9iDth038LXEZeWePPrdV3pA4Vd1FMogD4lBKox_TX9Z182RZOUIcr3-YdP6aU9I-2fhfUPpu4iuH7lnVEHx9eyhuGcGHn1QwHTJTTVXA1j66nZVEHz62t4cKporLWkJ4fyDuYVwHiAnGhlejQUi83PCdKDHZu5kws3u_XtGw8dqtJqxfif0JEpUIzsr-4FCGEfacEhZ6_RiyqT3FWkN2tZZ20ENoe5i_PhU3y-5NODDQj1UOJkQ9X6SZT2c"/>
+<div class="absolute top-3 left-3 flex gap-2">
+<span class="px-2 py-1 rounded bg-black/60 backdrop-blur-md border border-[#00ff88]/30 text-[#00ff88] text-[10px] font-bold uppercase tracking-wider">Main Course</span>
+<span class="px-2 py-1 rounded bg-black/60 backdrop-blur-md border border-green-500/30 text-green-500 text-[10px] flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Veg
+                            </span>
+</div>
+<div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:text-[#00ff88] transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+</button>
+<button class="w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="delete">delete</span>
+</button>
+</div>
+</div>
+<div class="p-card-padding flex flex-col flex-1">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-display-md text-body-lg text-primary truncate pr-2">Burrata Margherita</h3>
+<span class="font-bold text-[#00ff88] whitespace-nowrap">₹650</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2 mb-6">Hand-stretched sourdough base with san marzano tomatoes and a whole fresh burrata cheese.</p>
+<div class="mt-auto pt-4 border-t border-white/5 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="text-xs text-gray-500 uppercase font-bold tracking-widest">Available</span>
+<div class="w-10 h-5 rounded-full bg-[#00ff88]/20 relative flex items-center px-1 cursor-pointer">
+<div class="w-3 h-3 rounded-full bg-[#00ff88] shadow-[0_0_8px_#00ff88] translate-x-5"></div>
+</div>
+</div>
+<span class="text-[10px] text-gray-500 italic">Updated 5h ago</span>
+</div>
+</div>
+</div>
+<!-- Menu Card 3 (Out of Stock State) -->
+<div class="glass-card rounded-xl overflow-hidden flex flex-col group transition-all duration-300 opacity-80 hover:opacity-100">
+<div class="h-48 relative overflow-hidden grayscale-[0.5]">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="platter of premium salmon and tuna nigiri sushi on a black stone plate with pickled ginger and wasabi, moody lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQJMs6SX9q05aQDZaH_2HA2ZFec7ZT21KU032X94yUZ4HU4ZxX0Zka1k-S0ketTI3cIdOx0k9_Ay3aQJOpuj5yvWppNUfB2V0pDT-I1iMQvGjc4p1EUCz0hdOiEWtvXnvIBUBEPEKcBai3DON3a9OkDn31fVqpv0TZPW8_jHpww5RJFfMyRr9mugbMr5oEtQGj0PEmuM1Pu9oBeUY3CG3m8Zkt9__dOopX7Q4dLb3zfbKmPQclK2t8k5RH_cqQI6vLjzdYothMOKU"/>
+<div class="absolute inset-0 bg-black/40 flex items-center justify-center">
+<span class="bg-red-500/20 text-red-500 border border-red-500/50 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest backdrop-blur-sm">Sold Out</span>
+</div>
+<div class="absolute top-3 left-3 flex gap-2">
+<span class="px-2 py-1 rounded bg-black/60 backdrop-blur-md border border-[#00ff88]/30 text-[#00ff88] text-[10px] font-bold uppercase tracking-wider">Appetizers</span>
+<span class="px-2 py-1 rounded bg-black/60 backdrop-blur-md border border-red-500/30 text-red-500 text-[10px] flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Non-Veg
+                            </span>
+</div>
+<div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:text-[#00ff88] transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+</button>
+<button class="w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="delete">delete</span>
+</button>
+</div>
+</div>
+<div class="p-card-padding flex flex-col flex-1">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-display-md text-body-lg text-primary truncate pr-2">Signature Nigiri Set</h3>
+<span class="font-bold text-gray-500 whitespace-nowrap">₹890</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2 mb-6">Chef's selection of fresh seasonal fish on premium vinegared rice. Served with real wasabi.</p>
+<div class="mt-auto pt-4 border-t border-white/5 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="text-xs text-gray-500 uppercase font-bold tracking-widest">Available</span>
+<div class="w-10 h-5 rounded-full bg-gray-800 relative flex items-center px-1 cursor-pointer">
+<div class="w-3 h-3 rounded-full bg-gray-600 transition-transform duration-200"></div>
+</div>
+</div>
+<span class="text-[10px] text-gray-500 italic">Updated 10m ago</span>
+</div>
+</div>
+</div>
+<!-- Menu Card 4 -->
+<div class="glass-card rounded-xl overflow-hidden flex flex-col group transition-all duration-300 hover:translate-y-[-4px]">
+<div class="h-48 relative overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="vibrant blue mocktail in a crystal glass with lime slices and fresh mint, glowing neon background with condensation on the glass" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSjmygsbYlgvYIqIl0sMOilVKSpW4tMNGcSBv00jcqm23oMSvVuxccNmumzeP_Sz1Cnzja1-aSDI8mma3t1HFS_Q2k21cTWMmTWqfXsKRwnOvCDfOQmsYsUBpi3r9FAueszZRqNVI-r966QqNz1EvB2LGWbHgz54_gFi_LapBQETSWEr1yTkIwu1alU9Ht_b2JmNV7bLeLrRYAXqjFrY-YWz1e4Qc-9lyAGVCvhXwyqHYlC3jyibxpjHD6gMcpO4mT2IiSqEnwhE4"/>
+<div class="absolute top-3 left-3 flex gap-2">
+<span class="px-2 py-1 rounded bg-black/60 backdrop-blur-md border border-[#00ff88]/30 text-[#00ff88] text-[10px] font-bold uppercase tracking-wider">Beverages</span>
+<span class="px-2 py-1 rounded bg-black/60 backdrop-blur-md border border-green-500/30 text-green-500 text-[10px] flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Veg
+                            </span>
+</div>
+<div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:text-[#00ff88] transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+</button>
+<button class="w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="delete">delete</span>
+</button>
+</div>
+</div>
+<div class="p-card-padding flex flex-col flex-1">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-display-md text-body-lg text-primary truncate pr-2">Electric Blue Mojito</h3>
+<span class="font-bold text-[#00ff88] whitespace-nowrap">₹220</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2 mb-6">A refreshing blend of blue curacao, fresh lime, mint leaves and sparkling soda water.</p>
+<div class="mt-auto pt-4 border-t border-white/5 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="text-xs text-gray-500 uppercase font-bold tracking-widest">Available</span>
+<div class="w-10 h-5 rounded-full bg-[#00ff88]/20 relative flex items-center px-1 cursor-pointer">
+<div class="w-3 h-3 rounded-full bg-[#00ff88] shadow-[0_0_8px_#00ff88] translate-x-5"></div>
+</div>
+</div>
+<span class="text-[10px] text-gray-500 italic">Updated 1d ago</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Summary Bar -->
+<div class="mt-12 p-6 glass-card rounded-2xl flex flex-wrap gap-8 items-center justify-between border-l-4 border-l-[#00ff88]">
+<div class="flex gap-8">
+<div class="flex flex-col">
+<span class="text-xs text-gray-500 font-bold uppercase tracking-widest">Total Items</span>
+<span class="text-2xl font-black text-primary">124</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs text-gray-500 font-bold uppercase tracking-widest">Active Now</span>
+<span class="text-2xl font-black text-[#00ff88]">118</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs text-gray-500 font-bold uppercase tracking-widest">Most Popular</span>
+<span class="text-2xl font-black text-secondary">Truffle Burger</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-4 py-2 rounded-lg border border-white/10 text-gray-400 hover:text-white hover:bg-white/5 transition-all text-sm font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="download">download</span> Export PDF
+                    </button>
+<button class="px-4 py-2 rounded-lg border border-white/10 text-gray-400 hover:text-white hover:bg-white/5 transition-all text-sm font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="print">print</span> Print Menu
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation for Mobile -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-black/90 backdrop-blur-xl border-t border-white/10 flex items-center justify-around h-16 z-50">
+<button class="flex flex-col items-center gap-1 text-gray-500">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-[10px] font-bold">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-[#00ff88]">
+<span class="material-symbols-outlined" data-icon="restaurant_menu">restaurant_menu</span>
+<span class="text-[10px] font-bold">Menu</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-gray-500">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="text-[10px] font-bold">Orders</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-gray-500">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-[10px] font-bold">More</span>
+</button>
+</nav>
+</body></html>

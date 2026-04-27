@@ -25,6 +25,15 @@ namespace CatalogService.API.Controllers
             return Ok(restaurants);
         }
 
+        [Authorize(Roles = "Partner")]
+        [HttpGet("my-restaurants")]
+        public async Task<IActionResult> GetMyRestaurants()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var restaurants = await restaurantService.GetByOwnerIdAsync(userId!);
+            return Ok(restaurants);
+        }
+
         [HttpGet("restaurant/{id}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {

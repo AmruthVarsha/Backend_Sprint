@@ -107,9 +107,15 @@
           <div class="pt-3">
             <button
               type="submit"
-              class="w-full bg-primary-container text-primary-dark text-sm font-semibold py-4 rounded-xl border-none cursor-pointer shadow-button-glow hover:bg-primary-light active:scale-[0.98] transition-all"
+              [disabled]="isSubmitting"
+              class="w-full bg-primary-container text-primary-dark text-sm font-semibold py-4 rounded-xl border-none cursor-pointer shadow-button-glow hover:bg-primary-light active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2"
             >
-              Sign In
+              @if (isSubmitting) {
+                <span class="material-symbols-outlined animate-spin text-xl">autorenew</span>
+                <span>Logging in...</span>
+              } @else {
+                <span>Sign In</span>
+              }
             </button>
           </div>
         </form>

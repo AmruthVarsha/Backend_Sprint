@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed": "#ffd9e2",
+                        "surface-tint": "#00e479",
+                        "secondary-fixed-dim": "#ffb1c7",
+                        "on-primary-container": "#007139",
+                        "on-error-container": "#ffdad6",
+                        "surface-container": "#18221a",
+                        "surface": "#0c160e",
+                        "surface-bright": "#323c32",
+                        "outline": "#849585",
+                        "inverse-surface": "#dae6d8",
+                        "surface-container-high": "#222c24",
+                        "on-background": "#dae6d8",
+                        "tertiary-container": "#ffdb79",
+                        "secondary": "#ffb1c7",
+                        "on-secondary-fixed": "#3e001d",
+                        "on-secondary": "#650032",
+                        "tertiary": "#fffaf7",
+                        "on-surface": "#dae6d8",
+                        "error-container": "#93000a",
+                        "on-primary-fixed-variant": "#005228",
+                        "tertiary-fixed-dim": "#e5c364",
+                        "on-tertiary-container": "#795f01",
+                        "on-secondary-fixed-variant": "#8e0049",
+                        "primary-fixed": "#60ff99",
+                        "background": "#0c160e",
+                        "primary-fixed-dim": "#00e479",
+                        "tertiary-fixed": "#ffe08d",
+                        "on-surface-variant": "#b9cbb9",
+                        "on-primary-fixed": "#00210c",
+                        "on-tertiary-fixed-variant": "#584400",
+                        "surface-variant": "#2d372e",
+                        "inverse-primary": "#006d37",
+                        "error": "#ffb4ab",
+                        "surface-dim": "#0c160e",
+                        "on-secondary-container": "#59002b",
+                        "on-tertiary-fixed": "#241a00",
+                        "surface-container-low": "#141e16",
+                        "on-primary": "#003919",
+                        "inverse-on-surface": "#29332a",
+                        "on-tertiary": "#3d2f00",
+                        "surface-container-lowest": "#071009",
+                        "primary": "#f1ffef",
+                        "outline-variant": "#3b4b3d",
+                        "surface-container-highest": "#2d372e",
+                        "secondary-container": "#ff4994",
+                        "primary-container": "#00ff88",
+                        "on-error": "#690005"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "8px",
+                        "unit": "8px",
+                        "card-padding": "24px",
+                        "stack-md": "16px",
+                        "stack-lg": "32px",
+                        "container-margin": "32px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "display-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-md": ["24px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "display-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                        "body-lg": ["16px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.4), -2px -2px 10px rgba(255, 255, 255, 0.02);
+        }
+        .neomorphic-inset {
+            background: #1a1a1a;
+            box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.6), inset -2px -2px 8px rgba(255, 255, 255, 0.02);
+        }
+        .neon-glow {
+            text-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
+        }
+        .neon-border {
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            background: rgba(0, 255, 136, 0.1);
+        }
+        .progress-glow {
+            box-shadow: 0 0 12px rgba(0, 255, 136, 0.6);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md overflow-x-hidden">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full h-16 border-b border-white/10 bg-zinc-950/80 backdrop-blur-[40px] flex justify-between items-center px-6 z-50 shadow-[0_4px_30px_rgba(0,0,0,0.4)] font-['Inter'] antialiased">
+<div class="flex items-center gap-stack-md">
+<div class="text-2xl font-black tracking-tighter text-[#00ff88] drop-shadow-[0_0_8px_rgba(0,255,136,0.5)]">QuickBites</div>
+<div class="ml-12 neomorphic-inset h-10 px-4 flex items-center gap-3 rounded-full w-64">
+<span class="material-symbols-outlined text-zinc-500">search</span>
+<span class="text-zinc-500">Search orders...</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2 px-3 py-1.5 rounded-full neon-border">
+<div class="w-2 h-2 rounded-full bg-[#00ff88] animate-pulse"></div>
+<span class="text-xs font-semibold text-[#00ff88] uppercase tracking-wider">Status: Online</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-zinc-400 hover:text-[#00ff88] hover:bg-white/5 transition-all p-2 rounded-lg active:scale-95 duration-200">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-zinc-400 hover:text-[#00ff88] hover:bg-white/5 transition-all p-2 rounded-lg active:scale-95 duration-200">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="h-10 w-10 rounded-full border border-white/10 overflow-hidden">
+<img alt="Agent Profile Picture" class="w-full h-full object-cover" data-alt="Close-up portrait of a professional male delivery agent with a friendly expression in modern techwear with neon lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEMQgoiM8_dWkuMVvi3ySItmp3IyGjrcW7fJJ6II-hWIpk7tcVSHZt6AsdfXqo2xhrSdX8EJBHP8veCN5iXnBbv3jMnWZfJqISBraMyZge1f9pPxz7qJu40cIIjMZmldCN7WUDI_dfmzsqh6CsxXPmNgQVJrZXpSzkZRQUbwYc_aXDI-Ru1rLlSZ9QP7xSBhOmf2VzdqtNTKgo-HvsN0f7whKnyM0aiOU0J-ybzS5b2fwj7qBTaS0wmxaaPmMRV5Rqm7jk2XXhXM8"/>
+</div>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-full w-64 border-r border-white/10 bg-zinc-950/90 backdrop-blur-[40px] shadow-[10px_0_30px_rgba(0,0,0,0.5)] flex flex-col pt-20 pb-6 font-['Inter'] text-sm font-medium z-40">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-8 h-8 rounded-lg bg-[#00ff88] flex items-center justify-center">
+<span class="material-symbols-outlined text-zinc-950 font-bold" data-weight="fill">electric_bolt</span>
+</div>
+<div>
+<h2 class="text-[#00ff88] font-bold">Agent Suite</h2>
+<p class="text-[10px] text-zinc-500 tracking-widest uppercase">V2.0.4</p>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<a class="flex items-center gap-4 px-6 py-3 bg-white/5 text-[#00ff88] shadow-[inset_0_0_10px_rgba(0,255,136,0.1)] border-r-4 border-[#00ff88] transition-colors duration-300" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-3 text-zinc-500 hover:bg-white/5 hover:text-zinc-200 transition-colors duration-300" href="#">
+<span class="material-symbols-outlined">assignment_turned_in</span>
+<span>Assigned Tasks</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-3 text-zinc-500 hover:bg-white/5 hover:text-zinc-200 transition-colors duration-300" href="#">
+<span class="material-symbols-outlined">history</span>
+<span>History</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-3 text-zinc-500 hover:bg-white/5 hover:text-zinc-200 transition-colors duration-300" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span>Profile</span>
+</a>
+</div>
+<div class="mt-auto px-6">
+<div class="p-4 glass-card rounded-xl border border-white/5">
+<p class="text-zinc-400 text-xs mb-2">Daily Goal</p>
+<div class="w-full h-1.5 bg-white/5 rounded-full overflow-hidden mb-2">
+<div class="h-full w-[80%] bg-[#00ff88] progress-glow"></div>
+</div>
+<p class="text-[10px] text-zinc-500 text-right">8/10 Deliveries</p>
+</div>
+</div>
+</nav>
+<!-- Main Canvas -->
+<main class="ml-64 pt-16 p-container-margin">
+<div class="max-w-7xl mx-auto space-y-stack-lg">
+<!-- Header Section -->
+<div class="flex justify-between items-end">
+<div>
+<h1 class="font-display-lg text-display-lg text-primary mb-2">Welcome back, Agent 402</h1>
+<p class="text-on-surface-variant">Here's your operational overview for today.</p>
+</div>
+<div class="flex gap-stack-md">
+<div class="px-4 py-2 neomorphic-inset rounded-lg text-zinc-400 text-xs flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">calendar_today</span>
+                        Oct 24, 2023
+                    </div>
+</div>
+</div>
+<!-- Bento Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- Stat Card 1 -->
+<div class="glass-card p-card-padding rounded-2xl flex flex-col justify-between h-40">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-[#00ff88]">local_shipping</span>
+<span class="text-[10px] font-bold text-[#00ff88] neon-border px-2 py-0.5 rounded-full">+12%</span>
+</div>
+<div>
+<p class="text-zinc-400 font-label-caps text-label-caps mb-1">DELIVERIES TODAY</p>
+<h3 class="font-display-md text-display-md text-white">8</h3>
+</div>
+</div>
+<!-- Stat Card 2 -->
+<div class="glass-card p-card-padding rounded-2xl flex flex-col justify-between h-40">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-[#00ff88]">payments</span>
+<span class="text-[10px] font-bold text-zinc-400">Target: ₹2,000</span>
+</div>
+<div>
+<p class="text-zinc-400 font-label-caps text-label-caps mb-1">TOTAL EARNINGS</p>
+<h3 class="font-display-md text-display-md text-white">₹1,240</h3>
+</div>
+</div>
+<!-- Stat Card 3 -->
+<div class="glass-card p-card-padding rounded-2xl flex flex-col justify-between h-40">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-[#00ff88]">star</span>
+<div class="flex gap-0.5">
+<span class="material-symbols-outlined text-[12px] text-[#00ff88]" data-weight="fill">star</span>
+<span class="material-symbols-outlined text-[12px] text-[#00ff88]" data-weight="fill">star</span>
+<span class="material-symbols-outlined text-[12px] text-[#00ff88]" data-weight="fill">star</span>
+</div>
+</div>
+<div>
+<p class="text-zinc-400 font-label-caps text-label-caps mb-1">AVERAGE RATING</p>
+<h3 class="font-display-md text-display-md text-white">4.9</h3>
+</div>
+</div>
+<!-- Stat Card 4 -->
+<div class="glass-card p-card-padding rounded-2xl flex flex-col justify-between h-40">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-[#00ff88]">verified</span>
+<span class="material-symbols-outlined text-zinc-600">info</span>
+</div>
+<div>
+<p class="text-zinc-400 font-label-caps text-label-caps mb-1">COMPLETION RATE</p>
+<h3 class="font-display-md text-display-md text-white">98%</h3>
+</div>
+</div>
+</div>
+<!-- Live Active Delivery Panel -->
+<div class="glass-card rounded-3xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-[500px]">
+<!-- Left Info Panel -->
+<div class="lg:col-span-5 p-card-padding flex flex-col h-full border-r border-white/5">
+<div class="flex items-center gap-3 mb-8">
+<span class="material-symbols-outlined text-[#00ff88] animate-pulse">radio_button_checked</span>
+<h2 class="font-display-md text-display-md text-white">Live Active Delivery</h2>
+</div>
+<div class="space-y-8 flex-grow">
+<!-- Pickup -->
+<div class="relative pl-8">
+<div class="absolute left-[7px] top-8 bottom-0 w-0.5 bg-gradient-to-b from-[#00ff88] to-transparent"></div>
+<div class="absolute left-0 top-1 w-4 h-4 rounded-full border-2 border-[#00ff88] bg-background flex items-center justify-center">
+<div class="w-1.5 h-1.5 rounded-full bg-[#00ff88]"></div>
+</div>
+<p class="text-zinc-500 text-xs font-label-caps mb-1">PICK-UP FROM</p>
+<h4 class="text-lg font-bold text-white mb-1">The Burger Theory</h4>
+<p class="text-zinc-400 text-sm">Industrial Hub, Sector 42, Ground Floor</p>
+<div class="mt-2 inline-flex items-center gap-2 px-2 py-1 rounded bg-white/5 text-[10px] text-[#00ff88] font-bold">
+<span class="material-symbols-outlined text-xs">timer</span>
+                                READY IN 4 MINS
+                            </div>
+</div>
+<!-- Drop-off -->
+<div class="relative pl-8">
+<div class="absolute left-0 top-1 w-4 h-4 rounded-full border-2 border-zinc-600 bg-background flex items-center justify-center">
+<div class="w-1.5 h-1.5 rounded-full bg-zinc-600"></div>
+</div>
+<p class="text-zinc-500 text-xs font-label-caps mb-1">DELIVERY TO</p>
+<h4 class="text-lg font-bold text-white mb-1">Sunset Heights</h4>
+<p class="text-zinc-400 text-sm">Tower B, Penthouse 402, Skyline Blvd</p>
+<p class="text-zinc-500 text-xs mt-1 italic">"Leave at the door and ring the bell."</p>
+</div>
+</div>
+<div class="mt-auto pt-8">
+<button class="w-full py-5 bg-[#00ff88] text-zinc-950 font-black text-lg rounded-2xl hover:brightness-110 active:scale-[0.98] transition-all shadow-[0_0_20px_rgba(0,255,136,0.3)] flex items-center justify-center gap-3">
+<span class="material-symbols-outlined font-bold">check_circle</span>
+                            Mark as Picked Up
+                        </button>
+</div>
+</div>
+<!-- Right Map Panel -->
+<div class="lg:col-span-7 relative h-64 lg:h-auto overflow-hidden">
+<img alt="Delivery route map" class="w-full h-full object-cover" data-alt="Modern dark themed stylized map interface with glowing neon green navigation route and vehicle icon" data-location="Mumbai" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyLOwYp8L77I_9thfK7jyRIV-ob8WjV0GSiXNaBOVatyLjzBJrffPFK1tnExrWAwTWQIbew7g7sw-cEPSlVLSkwWI-CX221ol643Ezg_cdWMC0HLlccZu0Nix9uDYOQfArXsKxHSB2l3KSnbK-BZPtIbILlJl_Dp-5EuoM89eSC0rh4shuD5ZLnv0MLW54ZMqbRaZ4Ty_gE1HbC4_93YJXNEO-XsdtES6eEjBkRkDDxrr6rt4hA5hPSsP1QtyoI6alCDr9UI5OJ_g"/>
+<!-- Floating Map Controls -->
+<div class="absolute top-6 right-6 flex flex-col gap-2">
+<button class="glass-card w-10 h-10 rounded-lg flex items-center justify-center hover:bg-white/10">
+<span class="material-symbols-outlined text-white">add</span>
+</button>
+<button class="glass-card w-10 h-10 rounded-lg flex items-center justify-center hover:bg-white/10">
+<span class="material-symbols-outlined text-white">remove</span>
+</button>
+</div>
+<div class="absolute bottom-6 right-6">
+<button class="glass-card px-6 py-3 rounded-full flex items-center gap-3 hover:bg-white/10 transition-all text-white font-bold border border-[#00ff88]/30">
+<span class="material-symbols-outlined text-[#00ff88]">navigation</span>
+                            Open in Maps
+                        </button>
+</div>
+<!-- Map Overlay Stats -->
+<div class="absolute top-6 left-6 p-4 glass-card rounded-2xl border border-[#00ff88]/20 min-w-[160px]">
+<p class="text-zinc-500 text-[10px] font-bold mb-1 uppercase">Distance</p>
+<h5 class="text-white text-xl font-black">2.4 km</h5>
+<div class="mt-3 pt-3 border-t border-white/5">
+<p class="text-zinc-500 text-[10px] font-bold mb-1 uppercase">Est. Time</p>
+<h5 class="text-[#00ff88] text-xl font-black">12 mins</h5>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Sections: Recent Activity & Order Details -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter pb-stack-lg">
+<div class="lg:col-span-2 glass-card rounded-2xl p-card-padding">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-bold text-white text-lg">Order Details</h3>
+<span class="text-zinc-500 text-xs">Order ID: #QB-9821</span>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-4 neomorphic-inset rounded-xl">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg overflow-hidden">
+<img alt="Burger" class="w-full h-full object-cover" data-alt="Juicy gourmet cheeseburger with melting cheese and fresh vegetables on a dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6cvkwWpis1eMQ7beAG7NOBBFVIe_Ur5Ddfl6x-X1gfdLA0gfp60dG7Mf7KrOhi-tWC7CfWdAIyIU1O3RUO4hB8nYGmMnZvLPVoLea1x04fyhlg3Uon1jP2c5IBAaz6H-mcgvLhGEIjo4Y0XSXq_OsIxFG2o9n3rAhlpstSjXly2iMviuaH24RryIberzzcL88FvAvKL2mSypqp0RfSXbDAlTz36kooA-EVL7c91JRgrj-0yWlyJPaMI71tLl_Gp-fOAAXAFojHoA"/>
+</div>
+<div>
+<p class="text-white font-bold">Double Truffle Burger</p>
+<p class="text-zinc-500 text-xs">x 2</p>
+</div>
+</div>
+<span class="text-white font-bold">₹798</span>
+</div>
+<div class="flex items-center justify-between p-4 neomorphic-inset rounded-xl">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg overflow-hidden">
+<img alt="Fries" class="w-full h-full object-cover" data-alt="Golden crispy french fries in a premium container with sea salt flakes" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCydEXZCacN6GIO8w-b4fxS2pP5R5E4qPsLKe_wXgmAF5sDc4U8gXrv0kl5u3-qOdvUIXu4gVrDsOwCaK2KYv0w7tyttGkDUw3MGf_Ir5g1gS2TzVGnjsd9FqFw-j0_5XBE1X19inJThULtjcLY-dFmItCQW5tDjzg7bqebd1q48IbPUmUOlu7tKyiLjtrdQDF2oyTKXwXFbZwv7KuZ404I162Uyc2xihnlX23kjsGeNTJtOsi24eMcr7bufeXSURxHtQJkTsgRou4"/>
+</div>
+<div>
+<p class="text-white font-bold">Peri-Peri Large Fries</p>
+<p class="text-zinc-500 text-xs">x 1</p>
+</div>
+</div>
+<span class="text-white font-bold">₹189</span>
+</div>
+</div>
+</div>
+<div class="glass-card rounded-2xl p-card-padding">
+<h3 class="font-bold text-white text-lg mb-6">Recent Activity</h3>
+<div class="space-y-6">
+<div class="flex gap-4">
+<div class="w-2 h-2 rounded-full bg-[#00ff88] mt-2 shadow-[0_0_8px_#00ff88]"></div>
+<div>
+<p class="text-white text-sm">Delivery completed to Sector 12</p>
+<p class="text-zinc-500 text-[10px]">14:20 PM • Earned ₹140</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="w-2 h-2 rounded-full bg-zinc-600 mt-2"></div>
+<div>
+<p class="text-white text-sm">Picked up order from 'Cafe Roma'</p>
+<p class="text-zinc-500 text-[10px]">13:45 PM • 3.2 km distance</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="w-2 h-2 rounded-full bg-zinc-600 mt-2"></div>
+<div>
+<p class="text-white text-sm">Shift started</p>
+<p class="text-zinc-500 text-[10px]">11:00 AM • Online for 3h 20m</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

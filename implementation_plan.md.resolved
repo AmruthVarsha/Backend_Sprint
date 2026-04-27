@@ -1,0 +1,251 @@
+# Cart, Checkout, Order & Payment Redesign
+
+## What's Wrong With The Current System
+
+After a thorough review, here are the specific problems with the current implementation:
+
+### Cart
+- **Requires manually creating a cart first, then adding items separately** — Two API calls just to start shopping. Poor UX.
+- **Cart is tied to a restaurant at creation time** — The user must know the `restaurantId` before they add a single item, which is backwards.
+- **Multiple active carts per user** — The system allows a user to have many active carts simultaneously. No app works this way.
+- **`CartStatus.Abandoned`** is set when the last item is deleted — This is a weird state. Abandoned should mean the user left, not that they removed an item.
+- **Checkout service does nothing useful** — It just re-reads the cart and formats an address. It doesn't gate or validate anything. The order placement service already does all the real validation redundantly.
+
+### Orders & Payment
+- **Payment is created inside `PlaceOrderAsync`** — This mixes concerns. Order placement should not handle payment creation.
+- **`PaymentService` inside OrderService** simulates payment with an 80% random success rate — There is no real payment flow; the simulation is scattered across two endpoints (`SimulatePaymentAsync` and `CompletePaymentAsync`) which is confusing.
+- **Separate `PaymentService` microservice exists but is completely empty** — The project exists but has no entities, services, or controllers. This is dead code.
+- **No concept of `PaymentMethod` at checkout** — The method is passed at `PlaceOrder` time, not at cart/checkout time, making the flow feel awkward.
+- **Delivery assignment is manual** — There is no auto-assignment logic when an order becomes `ReadyForPickup`.
+- **Status transitions are too granular and confusing** — `PickedUp` → `OutForDelivery` is backwards. Logically, a delivery agent picks up → goes out for delivery → delivers.
+
+---
+
+## Proposed New Flow
+
+```
+Add to Cart (upsert) → View Checkout Summary → Place Order → Process Payment → Restaurant Accepts → Preparing → ReadyForPickup → Assigned to Agent → PickedUp → Delivered
+```
+
+### Key Design Principles
+1. **One active cart per user** — Always. Adding an item from a different restaurant clears the cart (with a warning).
+2. **Cart is item-first** — The restaurant is derived from the first item added, not pre-specified.
+3. **Checkout is a read-only summary** — It returns everything the customer sees before confirming.
+4. **Place Order converts cart to order** — Cart is cleared/locked after placing an order.
+5. **Payment is a separate, explicit step** — After order is placed, the user initiates payment. On success, order moves to `Confirmed`.
+6. **COD orders auto-confirm** — No payment step needed.
+7. **Delivery is auto-assigned** when a `ReadyForPickup` event fires.
+
+---
+
+## Open Questions
+
+> [!IMPORTANT]
+> **Payment Gateway**: Do you want to integrate a real payment gateway (e.g. Razorpay, Stripe) or keep a simulation? If simulation, I'll design a clean mock that properly simulates pending → success/failure without two separate API calls.
+
+> [!IMPORTANT]
+> **Delivery Agent Assignment**: Should the system auto-assign a delivery agent from the `UserSummaries` table (randomly picking an available DeliveryAgent), or should it remain manual (admin/partner assigns)?
+
+> [!IMPORTANT]
+> **Cart Conflict on Restaurant Switch**: When a user adds an item from a different restaurant, should we:
+> - **A)** Auto-clear the cart and add the new item (with a 200 response that includes a `cartCleared: true` flag)
+> - **B)** Return a 409 Conflict and let the frontend ask the user
+
+---
+
+## Proposed Changes
+
+### 1. Domain Layer — `OrderService.Domain`
+
+#### [MODIFY] `Cart.cs`
+- Remove `RestaurantId` — it will be derived from the items.
+- Remove `Status` enum usage — replace with a simple `IsCheckedOut` flag.
+- Add `LastActivityAt` timestamp.
+
+#### [MODIFY] `CartItem.cs`
+- Add `RestaurantId` to each item (denormalized for easy cross-restaurant detection).
+- Add `ImageUrl` (optional, for display in checkout summary).
+
+#### [MODIFY] `Order.cs`
+- Add `RestaurantName` (snapshot at order time, so the name doesn't change if the restaurant renames).
+- Add `PaymentMethod` enum field directly on the Order (snapshot).
+- Add `PaymentStatus` enum field directly on the Order (for quick lookups without joining Payment table).
+- Add `ConfirmedAt`, `DeliveredAt` timestamps.
+
+#### [MODIFY] `Payment.cs`
+- Add `FailureReason` string (why the payment failed).
+- Add `PaidAt` timestamp.
+- Add `GatewayResponse` string (raw gateway response for debugging).
+
+#### [MODIFY] `DeliveryAssignment.cs`
+- Add `AssignedAt` timestamp.
+- Add `EstimatedDeliveryTime` (calculated on assignment).
+
+#### [MODIFY] `OrderStatus.cs` (Enum)
+```
+Pending              ← Order placed, awaiting payment (or COD)
+Confirmed            ← Payment succeeded / COD order
+RestaurantRejected   ← Restaurant explicitly rejected
+Preparing            ← Restaurant accepted and is cooking
+ReadyForPickup       ← Food is ready, waiting for delivery agent
+OutForDelivery       ← Delivery agent picked up and is en-route
+Delivered            ← Completed successfully
+CancelledByCustomer  ← Customer cancelled within window
+CancelledByRestaurant← Restaurant cancelled
+```
+
+Removed confusing states: `RestaurantAccepted`, `PickedUp` (merged into `OutForDelivery`).
+
+#### [MODIFY] `CartStatus.cs` (Enum) — simplify or remove
+- Replace with `IsCheckedOut: bool` on the Cart entity.
+
+---
+
+### 2. Application Layer — `OrderService.Application`
+
+#### [MODIFY] `CartService.cs`
+Rewrite with the following methods:
+
+| Method | Description |
+|--------|-------------|
+| `GetCartAsync(userId)` | Returns the single active cart for the user with all items |
+| `UpsertCartItemAsync(userId, menuItemId, quantity)` | Add or update a cart item. If quantity = 0, removes item. Handles restaurant conflict. |
+| `ClearCartAsync(userId)` | Clears all items (user-initiated clear) |
+| `GetCartSummaryAsync(userId)` | Returns item list, totals, restaurant info |
+
+**Key behavior changes:**
+- No `CartDTO` to create a cart — cart is created implicitly on first `UpsertCartItemAsync`.
+- One cart per user — enforced at service level.
+- Restaurant is derived from first item, not pre-set.
+
+#### [DELETE] `CheckoutService.cs`
+The checkout summary is now served by `GetCartSummaryAsync` in `CartService`. The separate service is redundant.
+
+#### [DELETE] `CheckoutController.cs`
+Merged into `CartController` as `GET /api/cart/summary`.
+
+#### [MODIFY] `OrderManagementService.cs`
+Simplify `PlaceOrderAsync`:
+- Accepts `(userId, addressId, paymentMethod, deliveryInstructions?, scheduledSlot?)`.
+- Validates cart, address, restaurant.
+- Creates `Order` and `OrderItems`.
+- **Does NOT create Payment** anymore.
+- For **COD**: sets `OrderStatus.Confirmed` immediately, publishes `OrderConfirmedEvent`.
+- For **Card/Wallet**: sets `OrderStatus.Pending`, returns `orderId` for payment step.
+- Clears/locks cart after successful order creation.
+
+Add new method `ConfirmOrderAsync(orderId)` — called internally after payment succeeds.
+
+#### [MODIFY] `PaymentService.cs` (inside OrderService)
+Redesigned as a clean single-step flow:
+
+| Method | Description |
+|--------|-------------|
+| `InitiatePaymentAsync(orderId, userId)` | Validates order is in Pending status, creates/returns Payment record |
+| `ProcessPaymentAsync(orderId, userId, gatewayToken?)` | Simulates/calls gateway, updates payment status, calls `ConfirmOrderAsync` on success |
+| `GetPaymentAsync(orderId, userId)` | Returns current payment status |
+| `RefundPaymentAsync(orderId, adminId, reason)` | Marks payment as refunded (for cancellations) |
+
+#### [MODIFY] `DeliveryService.cs`
+
+| Method | Description |
+|--------|-------------|
+| `AutoAssignDeliveryAgent(orderId)` | Picks an available delivery agent from `UserSummaries`, creates `DeliveryAssignment` |
+| `GetMyAssignmentsAsync(agentId)` | Returns all active assignments for the agent |
+| `UpdateDeliveryStatusAsync(id, agentId, dto)` | Agent updates: `Accepted → PickedUp → Delivered` |
+
+---
+
+### 3. API Layer — `OrderService.API`
+
+#### [MODIFY] `CartController.cs`
+
+| Endpoint | Method | Role | Description |
+|----------|--------|------|-------------|
+| `GET /api/cart` | GET | Customer | Get active cart with all items |
+| `POST /api/cart/items` | POST | Customer | Upsert item (add/update/remove) |
+| `DELETE /api/cart` | DELETE | Customer | Clear entire cart |
+| `GET /api/cart/summary` | GET | Customer | Checkout summary (replaces CheckoutController) |
+
+**Removed:**
+- `POST /api/carts` (create cart explicitly)
+- `GET /api/carts/{id}` (no more cart IDs in URLs)
+- `GET /api/carts/user/active` (there is only one cart)
+
+#### [MODIFY] `OrderController.cs`
+
+| Endpoint | Method | Role | Description |
+|----------|--------|------|-------------|
+| `POST /api/orders` | POST | Customer | Place order from active cart |
+| `GET /api/orders` | GET | Customer, Partner | Order history |
+| `GET /api/orders/{id}` | GET | Customer, Partner | Order detail |
+| `PUT /api/orders/{id}/cancel` | PUT | Customer | Cancel order |
+| `PUT /api/orders/{id}/status` | PUT | Partner, Admin | Update status |
+
+#### [MODIFY] `PaymentController.cs`
+
+| Endpoint | Method | Role | Description |
+|----------|--------|------|-------------|
+| `POST /api/payments/{orderId}/initiate` | POST | Customer | Initiate payment session |
+| `POST /api/payments/{orderId}/process` | POST | Customer | Process payment |
+| `GET /api/payments/{orderId}` | GET | Customer, Partner | Get payment status |
+
+#### [DELETE] `CheckoutController.cs`
+Functionality moved to `GET /api/cart/summary`.
+
+---
+
+### 4. Infrastructure — Events & Messaging
+
+#### New Events in `Shared/Events`
+
+| Event | Published By | Consumed By | Purpose |
+|-------|-------------|-------------|---------|
+| `OrderPlacedEvent` | OrderService | AdminService | Sync new order to admin dashboard |
+| `OrderConfirmedEvent` | OrderService | AdminService, NotificationService | Payment succeeded, order confirmed |
+| `OrderStatusChangedEvent` | OrderService | AdminService | Replaces current `OrderStatusPublisher` with richer payload |
+| `PaymentProcessedEvent` | OrderService | AdminService | Payment result sync |
+
+#### [MODIFY] `OrderStatusPublisher.cs`
+Enrich the published payload to include `RestaurantName`, `CustomerName`, `PaymentMethod`, `PaymentStatus`.
+
+---
+
+### 5. Dead Code Removal
+
+#### [DELETE] `PaymentService` microservice project
+The entire `Services/PaymentService` project is empty and unused. We will keep payment logic inside `OrderService` where it belongs for this scale. The project can be cleaned up.
+
+#### [DELETE] `CheckoutService.cs` and `CheckoutController.cs`
+Merged into cart summary endpoint.
+
+---
+
+## Migration Plan
+
+> [!WARNING]
+> Schema changes are required. A new EF Core migration will be added for:
+> - Cart: drop `RestaurantId`, `Status` columns; add `IsCheckedOut`, `LastActivityAt`
+> - CartItem: add `RestaurantId`, `ImageUrl`
+> - Order: add `RestaurantName`, `PaymentMethod`, `PaymentStatus`, `ConfirmedAt`, `DeliveredAt`
+> - Payment: add `FailureReason`, `PaidAt`, `GatewayResponse`
+> - DeliveryAssignment: add `AssignedAt`, `EstimatedDeliveryTime`
+
+---
+
+## Verification Plan
+
+### Automated Tests
+- Unit tests for `CartService.UpsertCartItemAsync` covering: new item, update quantity, remove item (qty=0), restaurant switch conflict.
+- Unit tests for `OrderManagementService.PlaceOrderAsync` for COD vs card flows.
+- Unit tests for `PaymentService.ProcessPaymentAsync` for success and failure simulation.
+
+### Manual E2E Flow Test
+1. Customer adds item → cart auto-created ✓
+2. Customer adds item from different restaurant → conflict response ✓
+3. Customer views `/api/cart/summary` → correct totals ✓
+4. Customer places order with COD → status is `Confirmed` immediately ✓
+5. Customer places order with Card → status is `Pending` ✓
+6. Customer calls `/api/payments/{orderId}/process` → status becomes `Confirmed` ✓
+7. Partner updates status to `ReadyForPickup` → delivery auto-assigned ✓
+8. Delivery agent updates to `Delivered` → order closes ✓

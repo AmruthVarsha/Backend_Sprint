@@ -11,32 +11,45 @@ namespace AdminService.Application.Services
     {
         private readonly IOrderSummaryRepository _orderSummaryRepository;
         private readonly IAuditLogRepository _auditLogRepository;
+        private readonly IUserSummaryRepository _userSummaryRepository;
         private readonly AdminOrderStatusUpdatePublisher _statusUpdatePublisher;
 
         public OrderService(
             IOrderSummaryRepository orderSummaryRepository, 
             IAuditLogRepository auditLogRepository,
+            IUserSummaryRepository userSummaryRepository,
             AdminOrderStatusUpdatePublisher statusUpdatePublisher)
         {
             _orderSummaryRepository = orderSummaryRepository;
             _auditLogRepository = auditLogRepository;
+            _userSummaryRepository = userSummaryRepository;
             _statusUpdatePublisher = statusUpdatePublisher;
         }
 
         public async Task<List<OrderSummaryDto>> GetAllOrdersAsync()
         {
             var orders = await _orderSummaryRepository.GetAllAsync();
+            var dtos = new List<OrderSummaryDto>();
 
-            return orders.Select(o => new OrderSummaryDto
+            // Optimize by fetching needed users or fetching as needed
+            // Assuming the scale is manageable for now, we iterate
+            foreach (var o in orders)
             {
-                OrderId = o.OrderId,
-                CustomerId = o.CustomerId,
-                RestaurantName = o.RestaurantName,
-                TotalAmount = o.TotalAmount,
-                Status = o.Status.ToString(),
-                PlacedAt = o.PlacedAt,
-                LastUpdatedAt = o.LastUpdatedAt
-            }).ToList();
+                var user = await _userSummaryRepository.GetByUserIdAsync(o.CustomerId);
+                dtos.Add(new OrderSummaryDto
+                {
+                    OrderId = o.OrderId,
+                    CustomerId = o.CustomerId,
+                    CustomerName = user?.FullName ?? o.CustomerId,
+                    RestaurantName = o.RestaurantName,
+                    TotalAmount = o.TotalAmount,
+                    Status = o.Status.ToString(),
+                    PlacedAt = o.PlacedAt,
+                    LastUpdatedAt = o.LastUpdatedAt
+                });
+            }
+
+            return dtos;
         }
 
         public async Task UpdateOrderStatusAsync(Guid orderId, UpdateOrderStatusDto dto, string adminId)
@@ -67,3 +80,4 @@ namespace AdminService.Application.Services
         }
     }
 }
+

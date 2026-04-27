@@ -1,0 +1,111 @@
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-black/80 backdrop-blur-[40px] border-b border-white/10">
+  <span class="text-xl font-black text-emerald-400">QuickBites</span>
+  <button class="material-symbols-outlined text-gray-400">person</button>
+</nav>
+
+<aside class="fixed left-0 top-0 h-full w-64 bg-black/90 backdrop-blur-[40px] border-r border-white/10 pt-20 z-40 hidden md:flex flex-col">
+  <div class="px-6 mb-8"><p class="text-emerald-400 font-bold text-sm uppercase">System Admin</p></div>
+  <nav class="flex-1 px-4 space-y-1">
+    <a routerLink="/admin/dashboard" class="flex items-center px-6 py-4 text-gray-500 hover:bg-white/5 hover:text-emerald-200 transition-colors"><span class="material-symbols-outlined mr-4">dashboard</span> Dashboard</a>
+    <a routerLink="/admin/pending-approvals" class="flex items-center px-6 py-4 text-gray-500 hover:bg-white/5 hover:text-emerald-200 transition-colors"><span class="material-symbols-outlined mr-4">verified_user</span> Pending Approvals</a>
+    <a routerLink="/admin/user-management" class="flex items-center px-6 py-4 text-gray-500 hover:bg-white/5 hover:text-emerald-200 transition-colors"><span class="material-symbols-outlined mr-4">group</span> User Management</a>
+    <a routerLink="/admin/restaurant-management" class="flex items-center px-6 py-4 text-gray-500 hover:bg-white/5 hover:text-emerald-200 transition-colors"><span class="material-symbols-outlined mr-4">restaurant</span> Restaurant Management</a>
+    <a routerLink="/admin/order-management" class="flex items-center px-6 py-4 text-gray-500 hover:bg-white/5 hover:text-emerald-200 transition-colors"><span class="material-symbols-outlined mr-4">receipt_long</span> Order Management</a>
+    <a routerLink="/admin/reports" class="bg-emerald-400/10 text-emerald-400 border-r-4 border-emerald-400 flex items-center px-6 py-4"><span class="material-symbols-outlined mr-4">analytics</span> Reports</a>
+  </nav>
+</aside>
+
+<main class="ml-64 p-6 pt-24 min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a1a1a] to-[#0a0a0a]">
+  <header class="mb-8">
+    <h1 class="text-3xl font-bold text-white">Reports & Analytics</h1>
+    <p class="text-gray-400 mt-1">Platform insights and performance metrics</p>
+  </header>
+
+  <!-- Loading State -->
+  @if (isLoading) {
+    <div class="flex justify-center items-center py-12">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-400"></div>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (errorMessage) {
+    <div class="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg mb-6">
+      {{ errorMessage }}
+    </div>
+  }
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="glass-card p-6 rounded-xl">
+      <div class="flex items-center justify-between mb-4">
+        <span class="material-symbols-outlined text-4xl text-emerald-400">payments</span>
+      </div>
+      <p class="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1">Total Revenue</p>
+      <p class="text-3xl font-black text-white">₹{{ stats.totalRevenue | number }}</p>
+    </div>
+
+    <div class="glass-card p-6 rounded-xl">
+      <div class="flex items-center justify-between mb-4">
+        <span class="material-symbols-outlined text-4xl text-emerald-400">shopping_cart</span>
+      </div>
+      <p class="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1">Total Orders</p>
+      <p class="text-3xl font-black text-white">{{ stats.totalOrders | number }}</p>
+    </div>
+
+    <div class="glass-card p-6 rounded-xl">
+      <div class="flex items-center justify-between mb-4">
+        <span class="material-symbols-outlined text-4xl text-emerald-400">restaurant</span>
+      </div>
+      <p class="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1">Active Restaurants</p>
+      <p class="text-3xl font-black text-white">{{ stats.activeRestaurants }}</p>
+    </div>
+
+    <div class="glass-card p-6 rounded-xl">
+      <div class="flex items-center justify-between mb-4">
+        <span class="material-symbols-outlined text-4xl text-emerald-400">group</span>
+      </div>
+      <p class="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1">Active Users</p>
+      <p class="text-3xl font-black text-white">{{ stats.activeUsers | number }}</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <div class="glass-card rounded-2xl p-6">
+      <h3 class="text-xl font-bold text-white mb-6">Top Performing Restaurants</h3>
+      <div class="flex justify-center items-center h-48 border border-white/5 rounded-xl bg-white/5">
+        <p class="text-gray-400 flex items-center gap-2">
+          <span class="material-symbols-outlined">construction</span>
+          Advanced reporting coming soon
+        </p>
+      </div>
+    </div>
+
+    <div class="glass-card rounded-2xl p-6">
+      <h3 class="text-xl font-bold text-white mb-6">Export Reports</h3>
+      <div class="space-y-4">
+        <button (click)="exportReport('revenue')" class="w-full flex items-center justify-between p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-all">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-emerald-400">download</span>
+            <span class="text-white font-medium">Revenue Report</span>
+          </div>
+          <span class="material-symbols-outlined text-gray-400">chevron_right</span>
+        </button>
+        <button (click)="exportReport('orders')" class="w-full flex items-center justify-between p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-all">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-emerald-400">download</span>
+            <span class="text-white font-medium">Orders Report</span>
+          </div>
+          <span class="material-symbols-outlined text-gray-400">chevron_right</span>
+        </button>
+        <button (click)="exportReport('users')" class="w-full flex items-center justify-between p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-all">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-emerald-400">download</span>
+            <span class="text-white font-medium">Users Report</span>
+          </div>
+          <span class="material-symbols-outlined text-gray-400">chevron_right</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</main>
+

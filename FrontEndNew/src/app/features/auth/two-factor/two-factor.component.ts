@@ -276,10 +276,17 @@ export class TwoFactorComponent implements OnInit {
         
         // Clear the code inputs
         this.code = ['', '', '', '', '', ''];
-        this.codeInputs.forEach(input => {
-          input.nativeElement.value = '';
+        this.twoFactorForm.patchValue({ code: '' });
+        
+        // Use setTimeout to ensure DOM is updated before focusing
+        setTimeout(() => {
+          this.codeInputs.forEach(input => {
+            input.nativeElement.value = '';
+          });
+          if (this.codeInputs.first) {
+            this.codeInputs.first.nativeElement.focus();
+          }
         });
-        this.codeInputs.first.nativeElement.focus();
       }
     });
   }

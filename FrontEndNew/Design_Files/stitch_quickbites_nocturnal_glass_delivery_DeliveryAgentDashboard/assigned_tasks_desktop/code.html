@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>QuickBites Agent Suite | Assigned Deliveries</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.4), -2px -2px 10px rgba(255, 255, 255, 0.02);
+        }
+        .glass-inset {
+            background: #1a1a1a;
+            box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.5), inset -1px -1px 4px rgba(255, 255, 255, 0.05);
+        }
+        .neon-glow-primary {
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed": "#ffd9e2",
+                        "surface-tint": "#00e479",
+                        "secondary-fixed-dim": "#ffb1c7",
+                        "on-primary-container": "#007139",
+                        "on-error-container": "#ffdad6",
+                        "surface-container": "#18221a",
+                        "surface": "#0c160e",
+                        "surface-bright": "#323c32",
+                        "outline": "#849585",
+                        "inverse-surface": "#dae6d8",
+                        "surface-container-high": "#222c24",
+                        "on-background": "#dae6d8",
+                        "tertiary-container": "#ffdb79",
+                        "secondary": "#ffb1c7",
+                        "on-secondary-fixed": "#3e001d",
+                        "on-secondary": "#650032",
+                        "tertiary": "#fffaf7",
+                        "on-surface": "#dae6d8",
+                        "error-container": "#93000a",
+                        "on-primary-fixed-variant": "#005228",
+                        "tertiary-fixed-dim": "#e5c364",
+                        "on-tertiary-container": "#795f01",
+                        "on-secondary-fixed-variant": "#8e0049",
+                        "primary-fixed": "#60ff99",
+                        "background": "#0c160e",
+                        "primary-fixed-dim": "#00e479",
+                        "tertiary-fixed": "#ffe08d",
+                        "on-surface-variant": "#b9cbb9",
+                        "on-primary-fixed": "#00210c",
+                        "on-tertiary-fixed-variant": "#584400",
+                        "surface-variant": "#2d372e",
+                        "inverse-primary": "#006d37",
+                        "error": "#ffb4ab",
+                        "surface-dim": "#0c160e",
+                        "on-secondary-container": "#59002b",
+                        "on-tertiary-fixed": "#241a00",
+                        "surface-container-low": "#141e16",
+                        "on-primary": "#003919",
+                        "inverse-on-surface": "#29332a",
+                        "on-tertiary": "#3d2f00",
+                        "surface-container-lowest": "#071009",
+                        "primary": "#f1ffef",
+                        "outline-variant": "#3b4b3d",
+                        "surface-container-highest": "#2d372e",
+                        "secondary-container": "#ff4994",
+                        "primary-container": "#00ff88",
+                        "on-error": "#690005"
+                    },
+                    "spacing": {
+                        "stack-sm": "8px",
+                        "unit": "8px",
+                        "card-padding": "24px",
+                        "stack-md": "16px",
+                        "stack-lg": "32px",
+                        "container-margin": "32px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "display-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased min-h-screen">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full h-16 border-b border-white/10 bg-zinc-950/80 backdrop-blur-[40px] flex justify-between items-center px-6 z-50 shadow-[0_4px_30px_rgba(0,0,0,0.4)]">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-black tracking-tighter text-[#00ff88] drop-shadow-[0_0_8px_rgba(0,255,136,0.5)]">QuickBites</span>
+<div class="hidden md:flex glass-inset px-4 py-1.5 rounded-full items-center gap-2 text-zinc-400">
+<span class="material-symbols-outlined text-sm">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-64 placeholder-zinc-500" placeholder="Search orders..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<span class="text-label-caps font-label-caps text-[#00ff88] flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-[#00ff88] animate-pulse"></span>
+                Status: Online
+            </span>
+<div class="flex gap-4">
+<button class="text-zinc-400 hover:text-[#00ff88] transition-all active:scale-95">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-zinc-400 hover:text-[#00ff88] transition-all active:scale-95">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-[#00ff88]/50">
+<img alt="Agent Profile" class="h-full w-full object-cover" data-alt="Close-up portrait of a professional delivery agent with a friendly expression in modern urban lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdayRLLmBYAlpTRFJ0ZKCGSx9xDtQ4LDL8ttOkHvXBCMJ3j1I35A-2i40Q7orKFFRjPYQglNmqoMtbPe6bjtk6PqwkL9CtZMuz_6kAq7lrfj8HJb30O8UWlOzD9AHzFi0c4rmjHobAPKbosbgDpLCt2i1GM75O1QL1hd2Xin0XuKyVDUklHRywzHtWGNBjM-uvsobuCnVSL4q6b6w4YXH9F1DsE_wcibocoDNxIxgdrfBc0OZaIBLvfU0WbumWlybIKe1YQ0JkeLI"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-64 border-r border-white/10 bg-zinc-950/90 backdrop-blur-[40px] shadow-[10px_0_30px_rgba(0,0,0,0.5)] flex flex-col pt-20 pb-6 z-40">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary">bolt</span>
+</div>
+<div>
+<h2 class="text-[#00ff88] font-bold text-sm">Agent Suite</h2>
+<p class="text-xs text-zinc-500">V2.0.4</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-6 py-3 text-zinc-500 hover:bg-white/5 hover:text-zinc-200 transition-colors duration-300" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-medium text-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 bg-white/5 text-[#00ff88] shadow-[inset_0_0_10px_rgba(0,255,136,0.1)] border-r-4 border-[#00ff88] transition-colors duration-300" href="#">
+<span class="material-symbols-outlined">assignment_turned_in</span>
+<span class="font-medium text-sm">Assigned Tasks</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-zinc-500 hover:bg-white/5 hover:text-zinc-200 transition-colors duration-300" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="font-medium text-sm">History</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-zinc-500 hover:bg-white/5 hover:text-zinc-200 transition-colors duration-300" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="font-medium text-sm">Profile</span>
+</a>
+</nav>
+<div class="px-6 mt-auto">
+<div class="glass-card p-4 rounded-xl border-dashed border-white/20">
+<p class="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Daily Earnings</p>
+<p class="text-xl font-bold text-white">$142.50</p>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="ml-64 pt-24 px-8 pb-12">
+<div class="max-w-6xl mx-auto">
+<header class="mb-stack-lg">
+<h1 class="font-display-lg text-display-lg text-white mb-2">Assigned Deliveries</h1>
+<p class="text-zinc-400">Manage your active flow and pending pickups.</p>
+</header>
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Order QB-9940 (Out for Delivery) - Map Card -->
+<div class="col-span-12 lg:col-span-8 glass-card rounded-3xl overflow-hidden flex flex-col">
+<div class="p-card-padding flex justify-between items-start border-b border-white/5">
+<div>
+<div class="flex items-center gap-3 mb-2">
+<span class="font-bold text-white text-lg">Order #QB-9940</span>
+<span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#00ff88]/15 border border-[#00ff88] text-[#00ff88]">
+                                    Out for Delivery
+                                </span>
+</div>
+<p class="text-zinc-400 text-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">location_on</span>
+                                1224 Neon Plaza, Sector 7
+                            </p>
+</div>
+<div class="text-right">
+<p class="text-xs text-zinc-500 uppercase tracking-widest">ETA</p>
+<p class="text-xl font-bold text-[#00ff88]">8 mins</p>
+</div>
+</div>
+<div class="flex-1 relative min-h-[300px] w-full bg-zinc-900 overflow-hidden">
+<img alt="Map snippet" class="absolute inset-0 w-full h-full object-cover opacity-60" data-alt="Dark themed navigation map with neon green route lines showing a delivery path through city streets" data-location="San Francisco" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDU4iPqEifYbKn9oSUMIKZiFv1ggXsJnf4dpd14QEnSbnWax6huakGtGjLQQ_Pd63hS-0pkICKBc3zyG7bOHZBPZpqQKI-jq6HeEd1jxpMp0w4V1p5P2hZOltg0hV79bpD09R9Uh1cZhEyo0Jw-oQOFDJ25QGD1rud6WPMIcavo-NCHEkWLc12M5PndATRHB6xLVI2xOjyjqncinLZTIOhsqg4NE8VHdP7hXrSdo7bkrc19y7j7-DDf6ZV--3iRxGcL4jyN2KBcaZs"/>
+<!-- Simulated Navigation Overlay -->
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+<div class="absolute bottom-6 left-6 right-6 flex justify-between items-end">
+<div class="flex gap-4">
+<div class="glass-card px-4 py-2 rounded-xl">
+<p class="text-[10px] text-zinc-400">Distance</p>
+<p class="text-sm font-bold">1.4 km</p>
+</div>
+<div class="glass-card px-4 py-2 rounded-xl">
+<p class="text-[10px] text-zinc-400">Fee</p>
+<p class="text-sm font-bold text-[#00ff88]">$5.50</p>
+</div>
+</div>
+<button class="px-6 py-3 bg-[#00ff88] text-zinc-950 font-bold rounded-xl active:scale-95 transition-transform flex items-center gap-2 neon-glow-primary">
+<span class="material-symbols-outlined">navigation</span>
+                                View Full Route
+                            </button>
+</div>
+</div>
+</div>
+<!-- Order Stats / Summary -->
+<div class="col-span-12 lg:col-span-4 flex flex-col gap-gutter">
+<div class="glass-card p-card-padding rounded-3xl">
+<h3 class="text-white font-bold mb-stack-md flex items-center gap-2">
+<span class="material-symbols-outlined text-[#00ff88]">analytics</span>
+                            Session Stats
+                        </h3>
+<div class="space-y-4">
+<div class="flex justify-between items-center">
+<span class="text-zinc-400 text-sm">Completed Tasks</span>
+<span class="text-white font-bold">12</span>
+</div>
+<div class="w-full h-1.5 glass-inset rounded-full overflow-hidden">
+<div class="h-full bg-[#00ff88] rounded-full shadow-[0_0_8px_#00ff88]" style="width: 75%"></div>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-zinc-400 text-sm">Rating</span>
+<div class="flex items-center gap-1 text-[#00ff88]">
+<span class="font-bold">4.9</span>
+<span class="material-symbols-outlined text-xs" data-weight="fill">star</span>
+</div>
+</div>
+</div>
+</div>
+<div class="glass-card p-card-padding rounded-3xl flex-1 border-t-2 border-[#00ff88]/30">
+<div class="mb-stack-md">
+<p class="text-[10px] text-zinc-500 uppercase tracking-widest">Active Shift</p>
+<p class="text-2xl font-bold text-white">04h 22m</p>
+</div>
+<div class="flex flex-col gap-3">
+<div class="flex items-center gap-3 p-3 rounded-2xl glass-inset">
+<div class="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center">
+<span class="material-symbols-outlined text-[#00ff88]">restaurant</span>
+</div>
+<div>
+<p class="text-xs text-white font-bold">Pizza Galaxy</p>
+<p class="text-[10px] text-zinc-500">Pick-up confirmed</p>
+</div>
+</div>
+<div class="flex items-center gap-3 p-3 rounded-2xl glass-inset">
+<div class="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center">
+<span class="material-symbols-outlined text-[#00ff88]">lunch_dining</span>
+</div>
+<div>
+<p class="text-xs text-white font-bold">Burger Protocol</p>
+<p class="text-[10px] text-zinc-500">Awaiting pickup</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Order QB-9945 (Assigned) - Detailed Row -->
+<div class="col-span-12 glass-card rounded-3xl overflow-hidden">
+<div class="p-card-padding border-b border-white/5 bg-white/[0.02] flex justify-between items-center">
+<h3 class="font-bold text-white">Pending Assignments</h3>
+<span class="text-xs text-zinc-500">1 task waiting</span>
+</div>
+<div class="p-card-padding">
+<div class="grid grid-cols-1 md:grid-cols-4 items-center gap-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-2xl glass-inset flex items-center justify-center">
+<span class="material-symbols-outlined text-[#00ff88]">inventory_2</span>
+</div>
+<div>
+<p class="font-bold text-white">Order #QB-9945</p>
+<span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase bg-zinc-800 text-zinc-400 border border-zinc-700">Assigned</span>
+</div>
+</div>
+<div class="flex flex-col">
+<p class="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Pick-up Point</p>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-zinc-400">store</span>
+<p class="text-sm text-zinc-200">The Sushi Lab (400m)</p>
+</div>
+</div>
+<div class="flex items-center gap-8">
+<div>
+<p class="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Fee</p>
+<p class="text-sm font-bold text-white">$4.20</p>
+</div>
+<div>
+<p class="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Total Distance</p>
+<p class="text-sm font-bold text-white">3.1 km</p>
+</div>
+</div>
+<div class="flex justify-end">
+<button class="px-8 py-3 rounded-xl border border-[#00ff88] text-[#00ff88] font-bold text-sm hover:bg-[#00ff88]/10 transition-all active:scale-95">
+                                    Start Task
+                                </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Activity Bento -->
+<div class="col-span-12 grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<div class="glass-card p-card-padding rounded-3xl flex flex-col justify-between">
+<span class="material-symbols-outlined text-[#00ff88] mb-4">history</span>
+<div>
+<p class="text-zinc-400 text-xs mb-1">Last Completion</p>
+<p class="text-lg font-bold text-white">Order #QB-9938</p>
+<p class="text-[10px] text-zinc-500">Completed 14 mins ago</p>
+</div>
+</div>
+<div class="glass-card p-card-padding rounded-3xl flex flex-col justify-between">
+<span class="material-symbols-outlined text-secondary-fixed-dim mb-4">speed</span>
+<div>
+<p class="text-zinc-400 text-xs mb-1">Avg. Delivery Time</p>
+<p class="text-lg font-bold text-white">18.5 Minutes</p>
+<p class="text-[10px] text-zinc-500">Top 5% in Sector 7</p>
+</div>
+</div>
+<div class="glass-card p-card-padding rounded-3xl border-2 border-white/5 relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-[#00ff88]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="relative z-10 flex flex-col h-full justify-between">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-[#00ff88]">verified_user</span>
+<span class="text-[10px] font-bold text-[#00ff88] bg-[#00ff88]/10 px-2 py-0.5 rounded-full">Elite Agent</span>
+</div>
+<div>
+<p class="text-white font-bold">New Perk Available</p>
+<p class="text-xs text-zinc-400">Unlock priority queues</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button - Only for Dashboard Context -->
+<div class="fixed bottom-8 right-8 z-50">
+<button class="w-16 h-16 rounded-full bg-[#00ff88] text-zinc-950 flex items-center justify-center shadow-[0_0_20px_rgba(0,255,136,0.4)] active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-3xl font-bold">add</span>
+</button>
+</div>
+</body></html>

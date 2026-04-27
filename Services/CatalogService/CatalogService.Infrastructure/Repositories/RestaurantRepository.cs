@@ -68,6 +68,16 @@ namespace CatalogService.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Restaurant>> GetByOwnerIdAsync(string ownerId)
+        {
+            return await _context.Restaurants
+                .Include(r => r.Address)
+                .Include(r => r.RestaurantCuisines)
+                    .ThenInclude(rc => rc.Cuisine)
+                .Where(r => r.OwnerId == ownerId)
+                .ToListAsync();
+        }
+
         public async Task<Guid> CreateAsync(Restaurant restaurant)
         {
             _context.Restaurants.Add(restaurant);

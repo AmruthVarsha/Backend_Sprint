@@ -66,42 +66,42 @@ export const API_ENDPOINTS = {
   CATALOG: {
     // Restaurants
     RESTAURANTS: '/gateway/catalog/Restaurant/restaurants',
+    MY_RESTAURANTS: '/gateway/catalog/Restaurant/my-restaurants',
     RESTAURANT_BY_ID: (id: string) => `/gateway/catalog/Restaurant/restaurant/${id}`,
-    RESTAURANT_SEARCH: '/gateway/catalog/Restaurant/search',
+    RESTAURANT_SEARCH: (name: string) => `/gateway/catalog/Restaurant/restaurant/search/${name}`,
+    RESTAURANT_BY_PINCODE: (pincode: string) => `/gateway/catalog/Restaurant/restaurant/near/${pincode}`,
+    RESTAURANT_BY_CUISINE: (cuisineId: string) => `/gateway/catalog/Restaurant/restaurant/cuisine/${cuisineId}`,
+    CREATE_RESTAURANT: '/gateway/catalog/Restaurant/restaurant',
+    UPDATE_RESTAURANT: (id: string) => `/gateway/catalog/Restaurant/restaurant/${id}`,
+    DELETE_RESTAURANT: (id: string) => `/gateway/catalog/Restaurant/restaurant/${id}`,
     
     // Categories
-    CATEGORIES: '/gateway/catalog/Category',
-    CATEGORY_BY_ID: (id: string) => `/gateway/catalog/Category/${id}`,
+    CATEGORIES_BY_RESTAURANT: (restaurantId: string) => `/gateway/catalog/Category/restaurant/${restaurantId}`,
+    CREATE_CATEGORY: '/gateway/catalog/Category',
+    UPDATE_CATEGORY: (id: string) => `/gateway/catalog/Category/${id}`,
+    TOGGLE_CATEGORY_STATUS: (id: string) => `/gateway/catalog/Category/${id}/toggle-status`,
+    DELETE_CATEGORY: (id: string) => `/gateway/catalog/Category/${id}`,
     
     // Menu Items
-    MENU_ITEMS: '/gateway/catalog/MenuItem',
     MENU_ITEM_BY_ID: (id: string) => `/gateway/catalog/MenuItem/${id}`,
     MENU_ITEMS_BY_RESTAURANT: (restaurantId: string) => `/gateway/catalog/MenuItem/restaurant/${restaurantId}`,
     MENU_ITEMS_BY_CATEGORY: (categoryId: string) => `/gateway/catalog/MenuItem/category/${categoryId}`,
+    MENU_ITEMS_SEARCH: (name: string) => `/gateway/catalog/MenuItem/search?name=${name}`,
+    CREATE_MENU_ITEM: '/gateway/catalog/MenuItem',
+    UPDATE_MENU_ITEM: (id: string) => `/gateway/catalog/MenuItem/${id}`,
+    DELETE_MENU_ITEM: (id: string) => `/gateway/catalog/MenuItem/${id}`,
   },
 
   // ============================================
   // ORDER SERVICE ENDPOINTS
   // ============================================
   ORDER: {
-    // Orders
-    ORDERS: '/gateway/order/Order',
-    ORDER_BY_ID: (id: number) => `/gateway/order/Order/${id}`,
-    CREATE_ORDER: '/gateway/order/Order',
-    UPDATE_ORDER_STATUS: (id: number) => `/gateway/order/Order/${id}/status`,
-    CANCEL_ORDER: (id: number) => `/gateway/order/Order/${id}/cancel`,
-    
-    // Customer Orders
-    MY_ORDERS: '/gateway/order/Order/my-orders',
-    ORDER_HISTORY: '/gateway/order/Order/history',
-    
-    // Partner Orders
-    RESTAURANT_ORDERS: (restaurantId: number) => `/gateway/order/Order/restaurant/${restaurantId}`,
-    
-    // Payments
-    PAYMENTS: '/gateway/order/Payment',
-    PAYMENT_BY_ID: (id: number) => `/gateway/order/Payment/${id}`,
-    PROCESS_PAYMENT: '/gateway/order/Payment/process',
+    // Orders (uses role-based filtering)
+    ORDERS: '/gateway/order/orders', // GET returns orders based on user role (Customer or Partner)
+    ORDER_BY_ID: (id: string) => `/gateway/order/orders/${id}`,
+    CREATE_ORDER: '/gateway/order/orders',
+    UPDATE_ORDER_STATUS: (id: string) => `/gateway/order/orders/${id}/status`,
+    CANCEL_ORDER: (id: string) => `/gateway/order/orders/${id}/cancel`,
   },
 
   // ============================================
@@ -110,38 +110,38 @@ export const API_ENDPOINTS = {
   ADMIN: {
     // Dashboard
     DASHBOARD: '/gateway/admin/Dashboard',
-    DASHBOARD_STATS: '/gateway/admin/Dashboard/stats',
     
     // User Management
     USERS: '/gateway/admin/UserManagement',
     USER_BY_ID: (id: string) => `/gateway/admin/UserManagement/${id}`,
-    UPDATE_USER_STATUS: '/gateway/admin/UserManagement/status',
+    UPDATE_USER: (id: string) => `/gateway/admin/UserManagement/${id}`,
+    DELETE_USER: (id: string) => `/gateway/admin/UserManagement/${id}`,
+    USERS_BY_ROLE: (role: string) => `/gateway/admin/UserManagement/role/${role}`,
     
     // Restaurant Management
     RESTAURANTS: '/gateway/admin/RestaurantManagement',
-    RESTAURANT_BY_ID: (id: number) => `/gateway/admin/RestaurantManagement/${id}`,
-    APPROVE_RESTAURANT: (id: number) => `/gateway/admin/RestaurantManagement/${id}/approve`,
-    REJECT_RESTAURANT: (id: number) => `/gateway/admin/RestaurantManagement/${id}/reject`,
+    RESTAURANT_BY_ID: (id: string) => `/gateway/admin/RestaurantManagement/${id}`,
+    RESTAURANTS_BY_OWNER: (ownerId: string) => `/gateway/admin/RestaurantManagement/owner/${ownerId}`,
+    DELETE_RESTAURANT: (id: string) => `/gateway/admin/RestaurantManagement/${id}`,
     
     // Restaurant Approval
     PENDING_RESTAURANTS: '/gateway/admin/RestaurantApproval/pending',
-    APPROVE_RESTAURANT_REQUEST: (id: number) => `/gateway/admin/RestaurantApproval/${id}/approve`,
-    REJECT_RESTAURANT_REQUEST: (id: number) => `/gateway/admin/RestaurantApproval/${id}/reject`,
+    APPROVE_RESTAURANT_REQUEST: (id: string) => `/gateway/admin/RestaurantApproval/${id}/approve`,
+    REJECT_RESTAURANT_REQUEST: (id: string) => `/gateway/admin/RestaurantApproval/${id}/reject`,
     
     // User Approval
     PENDING_USERS: '/gateway/admin/UserApproval/pending',
-    APPROVE_USER_REQUEST: (id: string) => `/gateway/admin/UserApproval/${id}/approve`,
-    REJECT_USER_REQUEST: (id: string) => `/gateway/admin/UserApproval/${id}/reject`,
+    APPROVE_USER_REQUEST: (email: string) => `/gateway/admin/UserApproval/${email}/approve`,
+    REJECT_USER_REQUEST: (email: string) => `/gateway/admin/UserApproval/${email}/reject`,
     
     // Orders
-    ALL_ORDERS: '/gateway/admin/Order/all',
-    ORDER_DETAILS: (id: number) => `/gateway/admin/Order/${id}`,
+    ALL_ORDERS: '/gateway/admin/Order',
+    UPDATE_ORDER_STATUS: (id: string) => `/gateway/admin/Order/${id}/status`,
     
     // Reports
-    REPORTS: '/gateway/admin/Report',
-    REVENUE_REPORT: '/gateway/admin/Report/revenue',
-    USER_GROWTH_REPORT: '/gateway/admin/Report/user-growth',
-    ORDER_STATISTICS: '/gateway/admin/Report/order-statistics',
+    SALES_REPORT: '/gateway/admin/Report/sales',
+    USERS_REPORT: '/gateway/admin/Report/users',
+    RESTAURANTS_REPORT: '/gateway/admin/Report/restaurants',
   },
 
 } as const;

@@ -23,6 +23,9 @@ namespace CatalogService.Application.Interfaces
         /// <summary>Returns restaurants that deliver to the supplied pincode.</summary>
         Task<IEnumerable<RestaurantListItemDto>> GetByPincodeAsync(string pincode);
 
+        /// <summary>Returns restaurants owned by a specific user.</summary>
+        Task<IEnumerable<RestaurantListItemDto>> GetByOwnerIdAsync(string ownerId);
+
         /// <summary>
         /// Creates a new restaurant owned by <paramref name="ownerId"/>.
         /// Returns the newly assigned restaurant ID.

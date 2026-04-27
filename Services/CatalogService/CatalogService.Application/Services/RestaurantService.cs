@@ -71,6 +71,15 @@ namespace CatalogService.Application.Services
             return restaurants.Select(MapToListItem);
         }
 
+        public async Task<IEnumerable<RestaurantListItemDto>> GetByOwnerIdAsync(string ownerId)
+        {
+            if (string.IsNullOrWhiteSpace(ownerId))
+                throw new BadRequestException("Owner ID cannot be empty.");
+
+            var restaurants = await _restaurantRepo.GetByOwnerIdAsync(ownerId);
+            return restaurants.Select(MapToListItem);
+        }
+
         // ─── Commands ────────────────────────────────────────────────────────────
 
         public async Task<Guid> CreateAsync(CreateRestaurantDto dto, string ownerId)

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>User Management | QuickBites Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline-variant": "#3b4b3d",
+                        "on-primary-container": "#007139",
+                        "surface-container-highest": "#2d372e",
+                        "secondary-fixed": "#ffd9e2",
+                        "tertiary": "#fffaf7",
+                        "surface-container-lowest": "#071009",
+                        "surface-container-high": "#222c24",
+                        "on-secondary-fixed-variant": "#8e0049",
+                        "on-tertiary-container": "#795f01",
+                        "background": "#0c160e",
+                        "primary-fixed": "#60ff99",
+                        "surface-tint": "#00e479",
+                        "on-surface": "#dae6d8",
+                        "primary-container": "#00ff88",
+                        "on-primary": "#003919",
+                        "on-background": "#dae6d8",
+                        "surface-variant": "#2d372e",
+                        "on-surface-variant": "#b9cbb9",
+                        "on-primary-fixed-variant": "#005228",
+                        "outline": "#849585",
+                        "error-container": "#93000a",
+                        "error": "#ffb4ab",
+                        "surface-dim": "#0c160e",
+                        "surface-container": "#18221a",
+                        "on-secondary": "#650032",
+                        "primary-fixed-dim": "#00e479",
+                        "tertiary-container": "#ffdb79",
+                        "on-tertiary-fixed": "#241a00",
+                        "on-secondary-container": "#59002b",
+                        "secondary": "#ffb1c7",
+                        "on-secondary-fixed": "#3e001d",
+                        "on-error": "#690005",
+                        "primary": "#f1ffef",
+                        "on-tertiary-fixed-variant": "#584400",
+                        "surface-container-low": "#141e16",
+                        "inverse-surface": "#dae6d8",
+                        "tertiary-fixed-dim": "#e5c364",
+                        "on-tertiary": "#3d2f00",
+                        "tertiary-fixed": "#ffe08d",
+                        "surface-bright": "#323c32",
+                        "surface": "#0c160e",
+                        "secondary-container": "#ff4994",
+                        "secondary-fixed-dim": "#ffb1c7",
+                        "inverse-on-surface": "#29332a",
+                        "on-error-container": "#ffdad6",
+                        "on-primary-fixed": "#00210c",
+                        "inverse-primary": "#006d37"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "container-margin": "32px",
+                        "card-padding": "24px",
+                        "stack-sm": "8px",
+                        "stack-lg": "32px",
+                        "stack-md": "16px",
+                        "unit": "8px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "display-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["14px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                        "display-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["16px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                        "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "display-md": ["24px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.5), -2px -2px 10px rgba(255, 255, 255, 0.05);
+        }
+        .glass-inset {
+            background: #1a1a1a;
+            box-shadow: inset 4px 4px 8px rgba(0,0,0,0.4), inset -2px -2px 6px rgba(255,255,255,0.05);
+        }
+        .neon-glow {
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+        .neon-border {
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            background: rgba(0, 255, 136, 0.05);
+        }
+        body {
+            background-color: #0c160e;
+            color: #dae6d8;
+        }
+    </style>
+</head>
+<body class="font-body-md antialiased overflow-hidden">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center px-6 py-3 w-full sticky top-0 z-50 bg-gray-900/40 backdrop-blur-3xl border-b border-white/10 shadow-[5px_5px_15px_rgba(0,0,0,0.4),-2px_-2px_10px_rgba(255,255,255,0.05)]">
+<div class="flex items-center gap-8">
+<span class="text-xl font-black text-emerald-400 tracking-tighter">QuickBites</span>
+<div class="hidden md:flex gap-6">
+<span class="text-gray-400 font-body-md font-inter text-sm cursor-pointer hover:bg-white/5 hover:text-emerald-300 transition-all active:scale-95 duration-200">Live Kitchen</span>
+<span class="text-emerald-400 font-bold font-inter text-sm cursor-pointer hover:bg-white/5 hover:text-emerald-300 transition-all active:scale-95 duration-200">User Management</span>
+<span class="text-gray-400 font-body-md font-inter text-sm cursor-pointer hover:bg-white/5 hover:text-emerald-300 transition-all active:scale-95 duration-200">Inventory</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-gray-400 hover:text-emerald-400 transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-gray-400 hover:text-emerald-400 transition-colors">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-emerald-400/50">
+<img alt="Admin Profile Avatar" class="w-full h-full object-cover" data-alt="close-up portrait of a professional male administrator in a clean dark studio setting with soft glowing green rim light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBT9NuWbBRUMi_rwPrUAXqBzVVQXV05iQtaZgi7TYPJ0U199nxsiksbccJQ3uHOdl6BHd-_1bIaGm8sDroJeTSV6-RVj6xIXkT1GXLN0_eXW6Z0GM0j66XETwqqYfmQn9jK58XWNCJKGgRa3gC5_NrQumEFCYrwsCrPdQLgB1rNHJS-PQ9ti_n8e7nTmEUORyinVNJ4zdaOILb96lsK9IyfDbCEr4ziFmYrsdzqDn17YqsOoDHNaGDDMvxmoDBx2xb5rzyjJQWgD2c"/>
+</div>
+</div>
+</header>
+<div class="flex h-[calc(100vh-60px)]">
+<!-- SideNavBar -->
+<nav class="fixed md:relative left-0 top-0 h-full w-64 bg-gray-950/60 backdrop-blur-2xl border-r border-white/10 shadow-[10px_0_30px_rgba(0,0,0,0.5)] flex flex-col pt-4 pb-8 z-40">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg overflow-hidden glass-card p-1">
+<img alt="Admin User" class="w-full h-full object-cover rounded-md" data-alt="headshot of a focused system administrator with subtle tech lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3ShW39a8Q0C0VNFrA1iijqcjg8JgWYnWFn_w2ejYnKU7thj45sCPCy__E5xFw8p-VTMXiEScDq2A6BsziCbP6cuEm38O9fRfF63p2KYMEiILNd_JlXG2-cecxaMcWGXBbuK401GOE78aAbuW3Y0yMhiXGeNnywzQcbn5cTxgYNqvlwsiPtB_10I8-jKxgH5XMDAYmrnXVn98k7fexjQxATvjtmV7GkpOQV3iWJlKV4wvOFkduzaCBtTVdWUshXjXfOjTh7_E1b3w"/>
+</div>
+<div>
+<h3 class="font-display-md text-sm text-on-surface">System Admin</h3>
+<p class="text-[10px] uppercase tracking-tighter text-emerald-400/70">Terminal Access</p>
+</div>
+</div>
+<div class="flex-1 space-y-1">
+<a class="text-gray-500 flex items-center px-6 py-4 font-inter text-xs uppercase tracking-widest font-semibold hover:bg-white/5 hover:text-emerald-200 transition-all duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="dashboard">dashboard</span> Dashboard
+                </a>
+<a class="text-gray-500 flex items-center px-6 py-4 font-inter text-xs uppercase tracking-widest font-semibold hover:bg-white/5 hover:text-emerald-200 transition-all duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="verified_user">verified_user</span> Pending Approvals
+                </a>
+<a class="bg-emerald-400/10 text-emerald-400 border-r-4 border-emerald-400 flex items-center px-6 py-4 font-inter text-xs uppercase tracking-widest font-semibold transition-all duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="group">group</span> User Management
+                </a>
+<a class="text-gray-500 flex items-center px-6 py-4 font-inter text-xs uppercase tracking-widest font-semibold hover:bg-white/5 hover:text-emerald-200 transition-all duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="restaurant">restaurant</span> Restaurant Management
+                </a>
+<a class="text-gray-500 flex items-center px-6 py-4 font-inter text-xs uppercase tracking-widest font-semibold hover:bg-white/5 hover:text-emerald-200 transition-all duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="receipt_long">receipt_long</span> Order Management
+                </a>
+<a class="text-gray-500 flex items-center px-6 py-4 font-inter text-xs uppercase tracking-widest font-semibold hover:bg-white/5 hover:text-emerald-200 transition-all duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="analytics">analytics</span> Reports
+                </a>
+<a class="text-gray-500 flex items-center px-6 py-4 font-inter text-xs uppercase tracking-widest font-semibold hover:bg-white/5 hover:text-emerald-200 transition-all duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="settings">settings</span> Settings
+                </a>
+</div>
+<div class="px-6 mt-auto">
+<a class="text-error flex items-center py-4 font-inter text-xs uppercase tracking-widest font-semibold hover:bg-white/5 transition-all" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="logout">logout</span> Logout
+                </a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 overflow-y-auto p-gutter relative">
+<div class="max-w-7xl mx-auto space-y-stack-lg">
+<!-- Page Header & Filters -->
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div class="space-y-2">
+<h1 class="font-display-lg text-primary neon-glow">User Directory</h1>
+<p class="text-body-md text-on-surface-variant">Manage credentials and access levels for the QuickBites ecosystem.</p>
+</div>
+<div class="flex flex-wrap items-center gap-4">
+<div class="relative w-full md:w-80">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">search</span>
+<input class="glass-inset border-none rounded-xl pl-10 pr-4 py-3 w-full text-sm text-on-surface focus:ring-1 focus:ring-emerald-400 placeholder-gray-600" placeholder="Search by name, email, or ID..." type="text"/>
+</div>
+<button class="bg-primary-container text-on-primary font-bold px-6 py-3 rounded-xl flex items-center gap-2 hover:brightness-110 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-lg" data-icon="person_add">person_add</span>
+                            Add New User
+                        </button>
+</div>
+</section>
+<!-- Role Filter Tabs -->
+<div class="flex overflow-x-auto gap-2 pb-2 scrollbar-hide">
+<button class="px-5 py-2 rounded-full neon-border text-emerald-400 font-label-caps text-xs">All Users</button>
+<button class="px-5 py-2 rounded-full bg-white/5 text-gray-400 font-label-caps text-xs hover:text-emerald-300 transition-colors">Customer</button>
+<button class="px-5 py-2 rounded-full bg-white/5 text-gray-400 font-label-caps text-xs hover:text-emerald-300 transition-colors">Partner</button>
+<button class="px-5 py-2 rounded-full bg-white/5 text-gray-400 font-label-caps text-xs hover:text-emerald-300 transition-colors">Delivery Agent</button>
+<button class="px-5 py-2 rounded-full bg-white/5 text-gray-400 font-label-caps text-xs hover:text-emerald-300 transition-colors">Admin</button>
+</div>
+<!-- User Table Glass Card -->
+<div class="glass-card rounded-2xl overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead class="bg-white/5 border-b border-white/10">
+<tr>
+<th class="px-6 py-4 font-label-caps text-gray-400 text-[10px] tracking-widest">User Profile</th>
+<th class="px-6 py-4 font-label-caps text-gray-400 text-[10px] tracking-widest">Contact Information</th>
+<th class="px-6 py-4 font-label-caps text-gray-400 text-[10px] tracking-widest">Role</th>
+<th class="px-6 py-4 font-label-caps text-gray-400 text-[10px] tracking-widest">Status</th>
+<th class="px-6 py-4 font-label-caps text-gray-400 text-[10px] tracking-widest">Joined</th>
+<th class="px-6 py-4 font-label-caps text-gray-400 text-[10px] tracking-widest text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5">
+<!-- Row 1 -->
+<tr class="hover:bg-white/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full glass-inset flex items-center justify-center font-bold text-emerald-400">AM</div>
+<div>
+<div class="font-body-lg text-primary font-semibold">Alex Martinez</div>
+<div class="text-[10px] text-gray-500">ID: #QB-9981</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="text-body-md">alex.m@example.com</div>
+<div class="text-xs text-gray-500">+1 (555) 012-3456</div>
+</td>
+<td class="px-6 py-4">
+<span class="bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full text-[10px] border border-blue-400/20 font-bold uppercase">Partner</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(0,255,136,0.8)]"></div>
+<span class="text-xs text-emerald-400 font-semibold">Active</span>
+</div>
+</td>
+<td class="px-6 py-4 text-gray-400 text-xs">Oct 24, 2023</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 glass-inset rounded-lg text-gray-400 hover:text-emerald-400 transition-colors"><span class="material-symbols-outlined text-lg" data-icon="visibility">visibility</span></button>
+<button class="p-2 glass-inset rounded-lg text-emerald-400 hover:brightness-125 transition-colors"><span class="material-symbols-outlined text-lg" data-icon="edit">edit</span></button>
+<button class="p-2 glass-inset rounded-lg text-error hover:brightness-125 transition-colors"><span class="material-symbols-outlined text-lg" data-icon="block">block</span></button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-white/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full glass-inset flex items-center justify-center font-bold text-gray-400 overflow-hidden">
+<img alt="Sarah Chen" class="w-full h-full object-cover" data-alt="portrait of a young asian woman with a warm friendly expression and soft studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1PFM9wnlM2QJSN2_De3MyI6MI9lyABhXUZ3TnooOFICa6yf9N8cV6kW6HIWvOoXtXoNjFnYllt6qCWUeLn8oqp6xp26AAJaDryV1tFhWPBukn5DKSruevryOJyvVK5ka-b8-E5WonD53k7w_Pci9K7HkRNGuZ93SL-dn9OXkUiOvuS-nYiqgJIQ06J1elu3smWeAqcT-S7dJ5GXTqfRc5Kk_QsWY8OmUaP0zYuEbLULrea8blJKk6Kn-OMj1ipwmKlwlz0A_bHSQ"/>
+</div>
+<div>
+<div class="font-body-lg text-primary font-semibold">Sarah Chen</div>
+<div class="text-[10px] text-gray-500">ID: #QB-1120</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="text-body-md">sarah.c@delivery.net</div>
+<div class="text-xs text-gray-500">+1 (555) 098-7654</div>
+</td>
+<td class="px-6 py-4">
+<span class="bg-orange-500/10 text-orange-400 px-3 py-1 rounded-full text-[10px] border border-orange-400/20 font-bold uppercase">Delivery Agent</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-gray-500">
+<div class="w-2 h-2 rounded-full bg-gray-600"></div>
+<span class="text-xs font-semibold">Inactive</span>
+</div>
+</td>
+<td class="px-6 py-4 text-gray-400 text-xs">Jan 12, 2024</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 glass-inset rounded-lg text-gray-400 hover:text-emerald-400 transition-colors"><span class="material-symbols-outlined text-lg" data-icon="visibility">visibility</span></button>
+<button class="p-2 glass-inset rounded-lg text-emerald-400 hover:brightness-125 transition-colors"><span class="material-symbols-outlined text-lg" data-icon="edit">edit</span></button>
+<button class="p-2 glass-inset rounded-lg text-emerald-400/50 cursor-not-allowed"><span class="material-symbols-outlined text-lg" data-icon="check_circle">check_circle</span></button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-white/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full glass-inset flex items-center justify-center font-bold text-emerald-400">JD</div>
+<div>
+<div class="font-body-lg text-primary font-semibold">Jordan David</div>
+<div class="text-[10px] text-gray-500">ID: #QB-4432</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="text-body-md">jordan.d@quickbites.com</div>
+<div class="text-xs text-gray-500">+1 (555) 234-5678</div>
+</td>
+<td class="px-6 py-4">
+<span class="bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full text-[10px] border border-emerald-400/20 font-bold uppercase">Admin</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+<span class="text-xs text-emerald-400 font-semibold">Active</span>
+</div>
+</td>
+<td class="px-6 py-4 text-gray-400 text-xs">Mar 05, 2023</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 glass-inset rounded-lg text-gray-400 hover:text-emerald-400 transition-colors"><span class="material-symbols-outlined text-lg" data-icon="visibility">visibility</span></button>
+<button class="p-2 glass-inset rounded-lg text-emerald-400 hover:brightness-125 transition-colors"><span class="material-symbols-outlined text-lg" data-icon="edit">edit</span></button>
+<button class="p-2 glass-inset rounded-lg text-error hover:brightness-125 transition-colors"><span class="material-symbols-outlined text-lg" data-icon="block">block</span></button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination Placeholder -->
+<div class="flex items-center justify-between px-6 py-4 glass-card rounded-2xl">
+<span class="text-xs text-gray-500 font-label-caps">Showing 1 to 10 of 2,450 users</span>
+<div class="flex gap-2">
+<button class="w-8 h-8 rounded-lg glass-inset flex items-center justify-center text-gray-500 hover:text-emerald-400 transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded-lg neon-border flex items-center justify-center text-emerald-400 text-xs font-bold">1</button>
+<button class="w-8 h-8 rounded-lg glass-inset flex items-center justify-center text-gray-400 text-xs hover:text-emerald-400 transition-colors">2</button>
+<button class="w-8 h-8 rounded-lg glass-inset flex items-center justify-center text-gray-400 text-xs hover:text-emerald-400 transition-colors">3</button>
+<button class="w-8 h-8 rounded-lg glass-inset flex items-center justify-center text-gray-500 hover:text-emerald-400 transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Edit User Modal -->
+<div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+<div class="glass-card w-full max-w-lg rounded-3xl overflow-hidden shadow-[20px_20px_60px_rgba(0,0,0,0.8)] border border-emerald-400/20">
+<div class="bg-white/5 px-gutter py-stack-md flex items-center justify-between border-b border-white/10">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-emerald-400" data-icon="edit_square">edit_square</span>
+<h2 class="font-display-md text-lg text-primary">Edit User Credentials</h2>
+</div>
+<button class="text-gray-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<form class="p-gutter space-y-stack-md">
+<div class="flex justify-center mb-6">
+<div class="relative group">
+<div class="w-24 h-24 rounded-full overflow-hidden border-2 border-emerald-400/30 p-1 glass-card">
+<img alt="User Profile" class="w-full h-full object-cover rounded-full" data-alt="portrait of a professional user for account management interface with soft studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXrgN6xAy0hOwjzGYL-tFEACPk2MkddmB-hdW3qQh8tSBMsoWYvLBGPv6F_v1FA-VvwYzft5Bx5O1ZfF9R39pxJ1GMysAHC56yp8cteiPQcrMXUnXhRk1hKuL1M-RsiBzBYPO4aT0Dn8rCXd5WB2-efhrg9ljPOEUTJ_Ca1fBtT-BZybyQrZsIsUJh_rRneBdBZaCfv-JVtno-3ZDmfbq80xso9W_D4_KIHoR2esQyMWGRUOuIBC2c5FxKBYQ-kkaqv1gJdJgMmy0"/>
+</div>
+<button class="absolute bottom-0 right-0 bg-emerald-400 text-on-primary w-8 h-8 rounded-full flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-sm" data-icon="photo_camera">photo_camera</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-1 col-span-2">
+<label class="text-[10px] uppercase tracking-widest text-gray-500 font-bold ml-1">Full Name</label>
+<input class="glass-inset border-none rounded-xl px-4 py-3 w-full text-sm text-on-surface focus:ring-1 focus:ring-emerald-400" type="text" value="Alex Martinez"/>
+</div>
+<div class="space-y-1">
+<label class="text-[10px] uppercase tracking-widest text-gray-500 font-bold ml-1">Email Address</label>
+<input class="glass-inset border-none rounded-xl px-4 py-3 w-full text-sm text-on-surface focus:ring-1 focus:ring-emerald-400" type="email" value="alex.m@example.com"/>
+</div>
+<div class="space-y-1">
+<label class="text-[10px] uppercase tracking-widest text-gray-500 font-bold ml-1">Phone Number</label>
+<input class="glass-inset border-none rounded-xl px-4 py-3 w-full text-sm text-on-surface focus:ring-1 focus:ring-emerald-400" type="tel" value="+1 555 012 3456"/>
+</div>
+<div class="space-y-1">
+<label class="text-[10px] uppercase tracking-widest text-gray-500 font-bold ml-1">User Role</label>
+<select class="glass-inset border-none rounded-xl px-4 py-3 w-full text-sm text-on-surface focus:ring-1 focus:ring-emerald-400 appearance-none">
+<option>Customer</option>
+<option selected="">Partner</option>
+<option>Delivery Agent</option>
+<option>Admin</option>
+</select>
+</div>
+<div class="space-y-1">
+<label class="text-[10px] uppercase tracking-widest text-gray-500 font-bold ml-1">Account Status</label>
+<select class="glass-inset border-none rounded-xl px-4 py-3 w-full text-sm text-on-surface focus:ring-1 focus:ring-emerald-400 appearance-none">
+<option selected="">Active</option>
+<option>Inactive</option>
+<option>Suspended</option>
+</select>
+</div>
+</div>
+<div class="pt-6 flex gap-3">
+<button class="flex-1 glass-inset text-gray-400 font-bold py-3 rounded-xl hover:bg-white/5 transition-all" type="button">Cancel</button>
+<button class="flex-1 bg-primary-container text-on-primary font-bold py-3 rounded-xl shadow-[0_0_20px_rgba(0,255,136,0.3)] hover:brightness-110 active:scale-95 transition-all" type="submit">Save Changes</button>
+</div>
+</form>
+</div>
+</div>
+</main>
+</div>
+</body></html>

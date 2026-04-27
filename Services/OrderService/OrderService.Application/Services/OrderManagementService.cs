@@ -149,7 +149,7 @@ namespace OrderService.Application.Services
             return MapToResponse(order, null);
         }
 
-        public async Task<IEnumerable<OrderSummaryDTO>> GetOrderHistoryAsync(string userId, string userRole)
+        public async Task<IEnumerable<OrderResponseDTO>> GetOrderHistoryAsync(string userId, string userRole)
         {
             IEnumerable<Order> orders;
 
@@ -178,14 +178,7 @@ namespace OrderService.Application.Services
                 orders = new List<Order>();
             }
 
-            return orders.Select(o => new OrderSummaryDTO
-            {
-                Id = o.Id,
-                Status = o.Status.ToString(),
-                TotalAmount = o.TotalAmount,
-                ItemCount = o.OrderItems.Count,
-                CreatedAt = o.CreatedAt
-            });
+            return orders.Select(o => MapToResponse(o, null));
         }
 
         public async Task<OrderResponseDTO> GetOrderByIdAsync(Guid id, string customerId)

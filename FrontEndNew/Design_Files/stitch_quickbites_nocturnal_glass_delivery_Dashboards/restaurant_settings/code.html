@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Restaurant Settings - QuickBites</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary": "#003919",
+                        "surface-tint": "#00e479",
+                        "primary": "#f1ffef",
+                        "inverse-primary": "#006d37",
+                        "surface-bright": "#323c32",
+                        "secondary-fixed": "#ffd9e2",
+                        "on-tertiary-fixed-variant": "#584400",
+                        "on-surface": "#dae6d8",
+                        "on-tertiary": "#3d2f00",
+                        "on-secondary-fixed-variant": "#8e0049",
+                        "surface-container-lowest": "#071009",
+                        "on-surface-variant": "#b9cbb9",
+                        "surface-container-low": "#141e16",
+                        "secondary-container": "#ff4994",
+                        "on-primary-fixed-variant": "#005228",
+                        "surface-container-high": "#222c24",
+                        "primary-container": "#00ff88",
+                        "surface-container-highest": "#2d372e",
+                        "surface-variant": "#2d372e",
+                        "primary-fixed-dim": "#00e479",
+                        "tertiary": "#fffaf7",
+                        "background": "#0c160e",
+                        "primary-fixed": "#60ff99",
+                        "on-secondary-container": "#59002b",
+                        "on-tertiary-fixed": "#241a00",
+                        "secondary": "#ffb1c7",
+                        "surface-dim": "#0c160e",
+                        "on-tertiary-container": "#795f01",
+                        "outline-variant": "#3b4b3d",
+                        "on-secondary": "#650032",
+                        "error-container": "#93000a",
+                        "on-primary-container": "#007139",
+                        "on-error-container": "#ffdad6",
+                        "inverse-on-surface": "#29332a",
+                        "on-error": "#690005",
+                        "tertiary-fixed-dim": "#e5c364",
+                        "on-primary-fixed": "#00210c",
+                        "surface": "#0c160e",
+                        "error": "#ffb4ab",
+                        "tertiary-container": "#ffdb79",
+                        "secondary-fixed-dim": "#ffb1c7",
+                        "outline": "#849585",
+                        "inverse-surface": "#dae6d8",
+                        "tertiary-fixed": "#ffe08d",
+                        "on-background": "#dae6d8",
+                        "on-secondary-fixed": "#3e001d",
+                        "surface-container": "#18221a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "8px",
+                        "stack-md": "16px",
+                        "card-padding": "24px",
+                        "gutter": "24px",
+                        "container-margin": "32px",
+                        "stack-lg": "32px",
+                        "unit": "8px"
+                    },
+                    "fontFamily": {
+                        "display-md": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "display-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-md": ["24px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-lg": ["16px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                        "display-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.4), -2px -2px 10px rgba(255, 255, 255, 0.05);
+        }
+        .neon-glow {
+            text-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
+        }
+        .neon-border-glow {
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
+        }
+        .sunken-input {
+            background: #1a1a1a;
+            box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.5), inset -1px -1px 3px rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-x-hidden">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-black/80 backdrop-blur-[40px] border-b border-white/10 shadow-[5px_5px_15px_rgba(0,0,0,0.4),-2px_-2px_10px_rgba(255,255,255,0.05)] font-['Inter'] tracking-tight">
+<div class="flex items-center gap-4">
+<span class="text-xl font-black text-[#00ff88] drop-shadow-[0_0_8px_rgba(0,255,136,0.5)]">QuickBites</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden md:flex items-center gap-2 text-gray-400">
+<span class="text-sm font-medium">The Burger Theory • Live</span>
+<span class="flex h-2 w-2 rounded-full bg-[#00ff88] animate-pulse"></span>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full text-gray-400 hover:bg-white/10 hover:text-[#00ff88] transition-all duration-200 active:scale-95">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="h-8 w-8 rounded-full border border-[#00ff88]/30 overflow-hidden">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="Close-up portrait of a professional chef in a dark kitchen environment with dramatic cinematic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5TaLrSpA-Y7K82Ecgb604x7DTOJMFvaIFgHO3Fu_ae1-WGZyNzeHTdCixWVfhPcgb1dYoHDxUrIQJ3EKVF-YALpDPY-p59tjhTytAqR16i0vxRwBT153gGjpuytbnd3tybtecC4pgufLTeVuUxMDmYVZkXCYMwv6Thya_5dDnh19sGAFLIrZELxxAog5A4J8nhD1jXpVVKJ5WLr5l1-ZCuejQEsSaXJGpaCI08p3jiOAQf0T8n6sCR7csqkN5Uoj1fCTM77rsPlk"/>
+</div>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-64 flex flex-col pt-20 bg-black/90 backdrop-blur-[40px] border-r border-white/10 shadow-[10px_0_30px_rgba(0,0,0,0.5)] z-40 hidden md:flex">
+<div class="px-6 mb-8">
+<h2 class="text-[#00ff88] font-bold text-lg">QuickBites</h2>
+<p class="text-gray-500 text-xs uppercase tracking-widest">Partner Portal</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-6 py-3 text-gray-500 hover:bg-white/5 hover:text-white transition-colors cursor-pointer transition-all active:opacity-80" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-['Inter'] text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-gray-500 hover:bg-white/5 hover:text-white transition-colors cursor-pointer transition-all active:opacity-80" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-['Inter'] text-sm font-medium">Orders</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-gray-500 hover:bg-white/5 hover:text-white transition-colors cursor-pointer transition-all active:opacity-80" href="#">
+<span class="material-symbols-outlined" data-icon="restaurant_menu">restaurant_menu</span>
+<span class="font-['Inter'] text-sm font-medium">Menu Items</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-gray-500 hover:bg-white/5 hover:text-white transition-colors cursor-pointer transition-all active:opacity-80" href="#">
+<span class="material-symbols-outlined" data-icon="category">category</span>
+<span class="font-['Inter'] text-sm font-medium">Categories</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-[#00ff88] bg-[#00ff88]/10 border-r-2 border-[#00ff88] transition-colors cursor-pointer transition-all active:opacity-80" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-['Inter'] text-sm font-medium">Restaurant Settings</span>
+</a>
+</nav>
+<div class="p-6 border-t border-white/5">
+<a class="flex items-center gap-3 text-gray-500 hover:text-error transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-['Inter'] text-sm font-medium">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="md:ml-64 pt-24 pb-12 px-6 min-h-screen">
+<div class="max-w-5xl mx-auto space-y-gutter">
+<!-- Header Section -->
+<div class="flex justify-between items-end mb-stack-lg">
+<div>
+<h1 class="font-display-lg text-display-lg text-primary-container neon-glow">Restaurant Settings</h1>
+<p class="text-on-surface-variant font-body-md mt-2">Manage your storefront identity and operational preferences.</p>
+</div>
+<div class="hidden lg:block">
+<span class="bg-primary-container/15 border border-primary-container/50 text-primary-container px-4 py-2 rounded-full text-sm font-bold neon-border-glow">
+                        Store ID: QB-204-BT
+                    </span>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Column: Primary Info -->
+<div class="lg:col-span-8 space-y-gutter">
+<!-- Restaurant Info Card -->
+<section class="glass-card rounded-xl p-card-padding">
+<div class="flex justify-between items-start mb-stack-md">
+<h2 class="font-display-md text-display-md text-primary flex items-center gap-2">
+<span class="material-symbols-outlined" data-icon="storefront">storefront</span>
+                                Restaurant Info
+                            </h2>
+<button class="flex items-center gap-2 px-4 py-2 rounded-lg border border-white/10 text-[#00ff88] hover:bg-white/5 transition-all duration-200">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+<span class="font-label-caps text-label-caps">Edit</span>
+</button>
+</div>
+<div class="flex flex-col md:flex-row gap-stack-lg items-center md:items-start">
+<div class="w-32 h-32 rounded-xl overflow-hidden glass-card flex-shrink-0 border-2 border-primary-container/20">
+<img alt="Restaurant Logo" class="w-full h-full object-cover" data-alt="Minimalist modern burger restaurant logo on a dark background with neon green glowing highlights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuATvtjdHlAncroGHTeWzYK92FaBNJIo5sAly5nETbEM8DPykyQAyDSqwX4JzRsk37Rt690S6BGVI_3z6jUZFLbjBmYZeLEHzoqHxl9FOUTLwhzi7uA1XwG3W0_2qFaUWTfti-10WUgF1Vsa5CQRfjm5X__7HZotvA8Izz1TcLUhv-SfKNIDcWSFq83ivvoUZGYU-jQoMVF1ms6_eCz14HkI8bvgU0tgNlIL6bwB28DemiyLXiBGe7uiGle6R3y3-lf0t_ayE_PyETU"/>
+</div>
+<div class="flex-1 space-y-4 text-center md:text-left">
+<div>
+<h3 class="text-2xl font-bold text-on-surface">The Burger Theory</h3>
+<p class="text-on-surface-variant italic mt-1 leading-relaxed">
+                                        "Crafting the future of urban comfort food through molecular gastronomy and locally sourced ingredients. Where flavor meets the neon night."
+                                    </p>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-stack-md">
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-primary-container" data-icon="schedule">schedule</span>
+<span class="text-sm">11:00 AM - 11:00 PM</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-primary-container" data-icon="timer">timer</span>
+<span class="text-sm">Prep Time: 20 mins</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-primary-container" data-icon="call">call</span>
+<span class="text-sm">+1 (555) 234-5678</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-primary-container" data-icon="mail">mail</span>
+<span class="text-sm">orders@burgertheory.com</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Address & Map Card -->
+<section class="glass-card rounded-xl p-card-padding">
+<div class="flex justify-between items-start mb-stack-md">
+<h2 class="font-display-md text-display-md text-primary flex items-center gap-2">
+<span class="material-symbols-outlined" data-icon="location_on">location_on</span>
+                                Location
+                            </h2>
+<button class="flex items-center gap-2 px-4 py-2 rounded-lg border border-white/10 text-[#00ff88] hover:bg-white/5 transition-all duration-200">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+<span class="font-label-caps text-label-caps">Edit</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="space-y-stack-md">
+<div class="sunken-input p-4 rounded-xl">
+<label class="text-xs text-gray-500 uppercase tracking-tighter block mb-1">Street Address</label>
+<p class="text-on-surface">42 Neon Boulevard, Cyber District</p>
+</div>
+<div class="grid grid-cols-2 gap-stack-md">
+<div class="sunken-input p-4 rounded-xl">
+<label class="text-xs text-gray-500 uppercase tracking-tighter block mb-1">City</label>
+<p class="text-on-surface">Neo-Chicago</p>
+</div>
+<div class="sunken-input p-4 rounded-xl">
+<label class="text-xs text-gray-500 uppercase tracking-tighter block mb-1">State</label>
+<p class="text-on-surface">IL</p>
+</div>
+</div>
+<div class="sunken-input p-4 rounded-xl">
+<label class="text-xs text-gray-500 uppercase tracking-tighter block mb-1">Pincode</label>
+<p class="text-on-surface">60606-4404</p>
+</div>
+</div>
+<div class="h-full min-h-[200px] rounded-xl overflow-hidden glass-card border border-white/10 relative">
+<img alt="Map Location" class="w-full h-full object-cover opacity-60" data-alt="Modern dark-themed digital map interface with neon green pinpoint marker over a city grid" data-location="Chicago" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-r4uQi5yihIWHc4XMQtBnAb2sYGymgmu6722vQTj_DJIaZQYJRwuCxwpJey4dNDreZZWDQISVlsQCRjsK6S5KKN1yBvTTAx5VmQbdAlCpJ9lLvW3QhD6Oa56C4pWKKuzlNDulOne-x9tQnXP679G48EMN3pqurF7Fd_xJznW6k3CMQJEvSZV5jlgeWhWGxobbhYE1nFEOmYACO1qIA_DUzGYiiIVF7rJZTv_u9hx4mDDSHdcR4l3MYv8VvYYq41qEZ1T9RUicFf8"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-5xl text-primary-container drop-shadow-xl animate-bounce" data-icon="location_on" data-weight="fill">location_on</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Taxonomy & Quick Actions -->
+<div class="lg:col-span-4 space-y-gutter">
+<!-- Cuisines Card -->
+<section class="glass-card rounded-xl p-card-padding">
+<div class="flex justify-between items-center mb-stack-md">
+<h2 class="font-display-md text-display-md text-primary">Cuisines</h2>
+<button class="p-2 rounded-lg border border-white/10 text-[#00ff88] hover:bg-white/5 transition-all duration-200">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+</button>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="bg-[#00ff88]/10 border border-[#00ff88]/30 text-[#00ff88] px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-[#00ff88] rounded-full"></span>
+                                Burgers
+                            </span>
+<span class="bg-[#00ff88]/10 border border-[#00ff88]/30 text-[#00ff88] px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-[#00ff88] rounded-full"></span>
+                                American
+                            </span>
+<span class="bg-[#00ff88]/10 border border-[#00ff88]/30 text-[#00ff88] px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-[#00ff88] rounded-full"></span>
+                                Fast Food
+                            </span>
+</div>
+<p class="text-xs text-gray-500 mt-stack-md italic">These tags help customers find you in search results.</p>
+</section>
+<!-- Operational Status -->
+<section class="glass-card rounded-xl p-card-padding">
+<h2 class="font-display-md text-display-md text-primary mb-stack-md">Store Status</h2>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-4 sunken-input rounded-xl">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary-container" data-icon="bolt">bolt</span>
+<span class="text-on-surface font-medium">Instant Booking</span>
+</div>
+<div class="w-12 h-6 bg-[#00ff88] rounded-full relative shadow-[0_0_10px_rgba(0,255,136,0.4)]">
+<div class="absolute right-1 top-1 w-4 h-4 bg-black rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 sunken-input rounded-xl opacity-50">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-gray-500" data-icon="do_not_disturb_on">do_not_disturb_on</span>
+<span class="text-on-surface font-medium">Busy Mode</span>
+</div>
+<div class="w-12 h-6 bg-gray-700 rounded-full relative">
+<div class="absolute left-1 top-1 w-4 h-4 bg-gray-400 rounded-full"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Quick Support -->
+<section class="glass-card rounded-xl p-card-padding bg-gradient-to-br from-primary-container/10 to-transparent">
+<div class="flex items-center gap-4 mb-stack-md">
+<span class="material-symbols-outlined text-primary-container text-3xl" data-icon="support_agent">support_agent</span>
+<div>
+<h3 class="font-bold text-on-surface">Need Help?</h3>
+<p class="text-xs text-on-surface-variant">Partner support available 24/7</p>
+</div>
+</div>
+<button class="w-full bg-primary-container text-on-primary py-3 rounded-xl font-bold font-label-caps hover:brightness-110 active:scale-95 transition-all shadow-[0_0_15px_rgba(0,255,136,0.3)]">
+                            CONTACT SUPPORT
+                        </button>
+</section>
+</div>
+</div>
+<!-- Danger Zone -->
+<section class="glass-card rounded-xl p-card-padding border-error/20">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-stack-md">
+<div>
+<h2 class="text-error font-bold flex items-center gap-2">
+<span class="material-symbols-outlined" data-icon="warning">warning</span>
+                            Danger Zone
+                        </h2>
+<p class="text-on-surface-variant text-sm">Temporarily close your restaurant or deactivate your account.</p>
+</div>
+<div class="flex gap-stack-md">
+<button class="px-6 py-2 rounded-lg border border-error/50 text-error font-medium hover:bg-error/10 transition-all">Pause Store</button>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 w-full bg-black/80 backdrop-blur-[40px] border-t border-white/10 flex justify-around items-center h-16 z-50">
+<button class="flex flex-col items-center gap-1 text-[#00ff88] font-bold">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-[10px] uppercase">Settings</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-gray-400">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-[10px] uppercase">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-gray-400">
+<span class="material-symbols-outlined" data-icon="restaurant_menu">restaurant_menu</span>
+<span class="text-[10px] uppercase">Menu</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-gray-400">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="text-[10px] uppercase">Orders</span>
+</button>
+</nav>
+</body></html>

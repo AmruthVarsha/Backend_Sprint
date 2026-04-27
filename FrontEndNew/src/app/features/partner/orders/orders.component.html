@@ -1,0 +1,277 @@
+<!-- Top Navigation -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-black/80 backdrop-blur-[40px] border-b border-white/10 shadow-[5px_5px_15px_rgba(0,0,0,0.4),-2px_-2px_10px_rgba(255,255,255,0.05)]">
+  <div class="flex items-center gap-4">
+    <span class="text-xl font-black text-[#00ff88] drop-shadow-[0_0_8px_rgba(0,255,136,0.5)] font-['Inter'] tracking-tight">QuickBites</span>
+
+    <!-- Restaurant Switcher -->
+    @if (restaurants.length > 0) {
+      <div class="relative hidden md:block">
+        <button
+          (click)="showRestaurantDropdown = !showRestaurantDropdown"
+          class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-sm text-white hover:bg-white/10 transition-all">
+          <span class="material-symbols-outlined text-[#00ff88] text-sm">restaurant</span>
+          <span class="max-w-[160px] truncate font-medium">{{ selectedRestaurant?.name || 'Select Restaurant' }}</span>
+          <span class="material-symbols-outlined text-gray-400 text-sm transition-transform" [class.rotate-180]="showRestaurantDropdown">expand_more</span>
+        </button>
+        @if (showRestaurantDropdown) {
+          <div class="absolute top-full left-0 mt-2 w-64 bg-gray-900/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50">
+            <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold px-4 pt-3 pb-2">Your Restaurants</p>
+            @for (r of restaurants; track r.id) {
+              <button
+                (click)="selectRestaurant(r)"
+                class="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-colors text-left"
+                [class.text-[#00ff88]]="selectedRestaurant?.id === r.id"
+                [class.text-gray-300]="selectedRestaurant?.id !== r.id">
+                <span class="material-symbols-outlined text-sm" [class.text-[#00ff88]]="selectedRestaurant?.id === r.id" [class.text-gray-500]="selectedRestaurant?.id !== r.id">restaurant</span>
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-medium truncate">{{ r.name }}</p>
+                  <p class="text-[10px] text-gray-500">{{ r.isOpen ? 'Open' : 'Closed' }}</p>
+                </div>
+                @if (selectedRestaurant?.id === r.id) {
+                  <span class="material-symbols-outlined text-[#00ff88] text-sm">check</span>
+                }
+              </button>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+  <div class="flex items-center gap-4">
+    <div class="hidden md:block text-gray-400 text-sm font-medium font-['Inter']">{{ restaurantName }} • Live</div>
+    <button class="p-2 text-gray-400 hover:bg-white/10 hover:text-[#00ff88] transition-all active:scale-95">
+      <span class="material-symbols-outlined">notifications</span>
+    </button>
+    <div class="w-8 h-8 rounded-full overflow-hidden border border-white/10 bg-gray-600 flex items-center justify-center">
+      <span class="material-symbols-outlined text-white text-sm">person</span>
+    </div>
+  </div>
+</nav>
+
+<!-- Sidebar -->
+<nav class="fixed left-0 top-0 h-full flex flex-col pt-20 h-screen w-64 bg-black/90 backdrop-blur-[40px] border-r border-white/10 shadow-[10px_0_30px_rgba(0,0,0,0.5)] z-40 hidden md:flex">
+  <div class="flex flex-col gap-1 px-4">
+    <div class="flex items-center gap-3 p-3 mb-6">
+      <div class="w-10 h-10 rounded-lg bg-[#00ff88]/20 flex items-center justify-center border border-[#00ff88]/30">
+        <span class="material-symbols-outlined text-[#00ff88]">restaurant</span>
+      </div>
+      <div>
+        <p class="text-[#00ff88] font-bold font-['Inter'] text-sm">QuickBites</p>
+        <p class="text-gray-500 text-xs">Partner Portal</p>
+      </div>
+    </div>
+    <a routerLink="/partner/dashboard" class="flex items-center gap-3 p-3 rounded-xl text-gray-500 hover:bg-white/5 hover:text-white transition-colors cursor-pointer group">
+      <span class="material-symbols-outlined text-xl">dashboard</span>
+      <span class="font-['Inter'] text-sm font-medium">Dashboard</span>
+    </a>
+    <a routerLink="/partner/orders" class="flex items-center gap-3 p-3 rounded-xl text-[#00ff88] bg-[#00ff88]/10 border-r-2 border-[#00ff88] transition-all cursor-pointer">
+      <span class="material-symbols-outlined text-xl">receipt_long</span>
+      <span class="font-['Inter'] text-sm font-medium">Orders</span>
+    </a>
+    <a routerLink="/partner/menu-items" class="flex items-center gap-3 p-3 rounded-xl text-gray-500 hover:bg-white/5 hover:text-white transition-colors cursor-pointer group">
+      <span class="material-symbols-outlined text-xl">restaurant_menu</span>
+      <span class="font-['Inter'] text-sm font-medium">Menu Items</span>
+    </a>
+    <a routerLink="/partner/categories" class="flex items-center gap-3 p-3 rounded-xl text-gray-500 hover:bg-white/5 hover:text-white transition-colors cursor-pointer group">
+      <span class="material-symbols-outlined text-xl">category</span>
+      <span class="font-['Inter'] text-sm font-medium">Categories</span>
+    </a>
+    <a routerLink="/partner/settings" class="flex items-center gap-3 p-3 rounded-xl text-gray-500 hover:bg-white/5 hover:text-white transition-colors cursor-pointer group">
+      <span class="material-symbols-outlined text-xl">settings</span>
+      <span class="font-['Inter'] text-sm font-medium">Restaurant Settings</span>
+    </a>
+    <div class="mt-auto mb-8">
+      <button (click)="logout()" class="flex items-center gap-3 p-3 rounded-xl text-gray-500 hover:bg-white/5 hover:text-white transition-colors cursor-pointer group w-full">
+        <span class="material-symbols-outlined text-xl">logout</span>
+        <span class="font-['Inter'] text-sm font-medium">Logout</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<main class="md:ml-64 pt-24 px-6 pb-12 min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a1a1a] to-[#0a0a0a]">
+  <div class="max-w-6xl mx-auto">
+    
+    <!-- Page Header -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-white mb-2">Orders Management</h1>
+        <p class="text-gray-400">Real-time order tracking and kitchen fulfillment</p>
+      </div>
+      <div class="flex items-center gap-3 bg-gray-900/60 p-1.5 rounded-xl border border-white/5 shadow-inner">
+        <span class="material-symbols-outlined text-[#00ff88] text-sm ml-2">fiber_manual_record</span>
+        <span class="text-sm font-bold text-white mr-4">Live Monitoring Active</span>
+      </div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="flex overflow-x-auto pb-4 gap-4 mb-8 no-scrollbar">
+      <button 
+        *ngFor="let filter of orderFilters"
+        (click)="selectedFilter = filter.value"
+        [class.bg-[#00ff88]]="selectedFilter === filter.value"
+        [class.text-black]="selectedFilter === filter.value"
+        [class.shadow-[0_0_15px_rgba(0,255,136,0.3)]="selectedFilter === filter.value"
+        [class.border-[#00ff88]/50]="selectedFilter === filter.value"
+        [class.bg-white/5]="selectedFilter !== filter.value"
+        [class.text-gray-400]="selectedFilter !== filter.value"
+        [class.hover:text-[#00ff88]]="selectedFilter !== filter.value"
+        [class.hover:bg-white/10]="selectedFilter !== filter.value"
+        class="whitespace-nowrap px-6 py-2.5 rounded-full transition-all font-bold text-sm border border-white/5">
+        {{ filter.label }} ({{ filter.count }})
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    @if (isLoading) {
+      <div class="flex justify-center items-center py-12">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00ff88]"></div>
+      </div>
+    }
+
+    <!-- Error State -->
+    @if (errorMessage) {
+      <div class="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg mb-6">
+        {{ errorMessage }}
+      </div>
+    }
+
+    <!-- Orders Grid -->
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+      @for (order of filteredOrders; track order.id) {
+        <div class="glass-card rounded-[32px] p-6 flex flex-col gap-6 relative overflow-hidden group">
+          
+          <!-- Status Badge -->
+          <div class="absolute top-0 right-0 p-6">
+            <span 
+              [class]="getStatusBadgeClass(order.status)"
+              class="px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full">
+              {{ getStatusLabel(order.status) }}
+            </span>
+          </div>
+
+          <!-- Order Header -->
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-gray-400 text-sm uppercase mb-1">Order Number</p>
+              <h2 class="text-2xl font-bold text-white neon-glow">#{{ order.orderNumber }}</h2>
+            </div>
+            <div class="flex flex-col items-end pt-6">
+              <p class="text-white font-bold">{{ order.customerName }}</p>
+              <p class="text-gray-400 text-sm italic">{{ order.deliveryType }} • {{ order.scheduledTime }}</p>
+            </div>
+          </div>
+
+          <!-- Order Items -->
+          <div class="sunken-input rounded-2xl p-4 space-y-3">
+            @for (item of order.items; track item.id) {
+              <div class="flex items-center justify-between" [class.border-b]="!$last" [class.border-white/5]="!$last" [class.pb-2]="!$last">
+                <div class="flex items-center gap-3">
+                  <span class="bg-[#00ff88] text-black w-6 h-6 rounded flex items-center justify-center font-bold text-xs">
+                    {{ item.quantity }}
+                  </span>
+                  <span class="text-white font-medium">{{ item.name }}</span>
+                </div>
+                <span class="text-gray-400 text-sm">₹{{ item.price }}</span>
+              </div>
+            }
+            <div class="flex items-center justify-between pt-2 border-t border-white/10">
+              <span class="text-white font-bold">Total</span>
+              <span class="text-[#00ff88] font-bold text-lg">₹{{ order.totalAmount }}</span>
+            </div>
+          </div>
+
+          <!-- Order Timeline -->
+          <div class="space-y-4">
+            <p class="text-xs uppercase tracking-widest text-gray-400 font-bold">Order Status Timeline</p>
+            <div class="relative pt-2 px-2">
+              <div class="absolute top-5 left-2 right-2 h-1 bg-white/10 rounded-full overflow-hidden">
+                <div class="h-full bg-[#00ff88] shadow-[0_0_8px_#00ff88]" [style.width.%]="getProgressWidth(order.status)"></div>
+              </div>
+              <div class="flex justify-between relative z-10">
+                @for (stage of orderStages; track stage.value) {
+                  <div class="flex flex-col items-center gap-2">
+                    <div 
+                      [class.bg-[#00ff88]]="isStageCompleted(order.status, stage.value)"
+                      [class.border-black]="isStageCompleted(order.status, stage.value)"
+                      [class.border-4]="isStageCompleted(order.status, stage.value)"
+                      [class.bg-gray-800]="!isStageCompleted(order.status, stage.value)"
+                      [class.border-white/10]="!isStageCompleted(order.status, stage.value)"
+                      [class.border-2]="!isStageCompleted(order.status, stage.value)"
+                      class="w-6 h-6 rounded-full flex items-center justify-center">
+                      @if (isStageCompleted(order.status, stage.value) && isStagePassed(order.status, stage.value)) {
+                        <span class="material-symbols-outlined text-[12px] text-black">check</span>
+                      }
+                    </div>
+                    <span 
+                      [class.text-[#00ff88]]="isStageCompleted(order.status, stage.value)"
+                      [class.text-gray-500]="!isStageCompleted(order.status, stage.value)"
+                      class="text-[10px] font-bold">
+                      {{ stage.label }}
+                    </span>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex flex-col sm:flex-row gap-3 pt-4">
+            @if (order.status === 0) {
+              <button 
+                (click)="updateOrderStatus(order.id, 1)"
+                class="flex-1 py-3 px-6 rounded-xl bg-[#00ff88] text-black font-extrabold text-sm hover:brightness-110 active:scale-95 transition-all shadow-[0_4px_15px_rgba(0,255,136,0.3)] uppercase tracking-tight">
+                Accept Order
+              </button>
+              <button 
+                (click)="updateOrderStatus(order.id, 1)"
+                class="flex-1 py-3 px-6 rounded-xl border border-[#00ff88]/30 text-[#00ff88] font-bold text-sm hover:bg-[#00ff88]/10 active:scale-95 transition-all uppercase tracking-tight">
+                Mark as Preparing
+              </button>
+            }
+            @if (order.status === 1) {
+              <button 
+                (click)="updateOrderStatus(order.id, 2)"
+                class="w-full py-4 px-6 rounded-xl bg-[#00ff88] text-black font-extrabold text-sm hover:brightness-110 active:scale-95 transition-all shadow-[0_4px_15px_rgba(0,255,136,0.3)] uppercase tracking-widest">
+                Mark as Ready for Pickup
+              </button>
+            }
+            @if (order.status === 2) {
+              <button 
+                (click)="updateOrderStatus(order.id, 3)"
+                class="w-full py-4 px-6 rounded-xl bg-[#00ff88] text-black font-extrabold text-sm hover:brightness-110 active:scale-95 transition-all shadow-[0_4px_15px_rgba(0,255,136,0.3)] uppercase tracking-widest">
+                Mark as Completed
+              </button>
+            }
+            @if (order.status === 3) {
+              <div class="w-full py-4 px-6 rounded-xl bg-green-500/20 border border-green-500/30 text-green-400 font-bold text-sm text-center uppercase tracking-widest">
+                Order Completed
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Summary Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+      <div class="glass-card rounded-2xl p-6 flex flex-col justify-center items-center text-center">
+        <span class="material-symbols-outlined text-4xl text-[#00ff88] mb-2">timer</span>
+        <p class="text-gray-400 text-xs uppercase tracking-widest font-bold mb-1">Avg Prep Time</p>
+        <p class="text-3xl font-black text-white">{{ avgPrepTime }}</p>
+      </div>
+      <div class="glass-card rounded-2xl p-6 flex flex-col justify-center items-center text-center">
+        <span class="material-symbols-outlined text-4xl text-[#00ff88] mb-2">star</span>
+        <p class="text-gray-400 text-xs uppercase tracking-widest font-bold mb-1">Rating Today</p>
+        <p class="text-3xl font-black text-white">{{ todayRating }} / 5.0</p>
+      </div>
+      <div class="glass-card rounded-2xl p-6 flex flex-col justify-center items-center text-center">
+        <span class="material-symbols-outlined text-4xl text-[#00ff88] mb-2">payments</span>
+        <p class="text-gray-400 text-xs uppercase tracking-widest font-bold mb-1">Earnings Today</p>
+        <p class="text-3xl font-black text-white">₹{{ todayEarnings | number:'1.2-2' }}</p>
+      </div>
+    </div>
+
+  </div>
+</main>

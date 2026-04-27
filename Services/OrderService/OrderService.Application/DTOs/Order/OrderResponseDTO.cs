@@ -15,6 +15,7 @@ namespace OrderService.Application.DTOs.Order
         public string? DeliveryInstructions { get; set; }
         public string? ScheduledSlot { get; set; }
         public decimal TotalAmount { get; set; }
+        public int ItemCount => Items?.Count ?? 0;
         public string? CancellationReason { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

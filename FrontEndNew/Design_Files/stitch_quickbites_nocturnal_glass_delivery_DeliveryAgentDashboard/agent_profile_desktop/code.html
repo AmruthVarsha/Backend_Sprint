@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            background-color: #0c160e;
+            color: #dae6d8;
+            font-family: 'Inter', sans-serif;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.4), -2px -2px 10px rgba(255, 255, 255, 0.02);
+        }
+        .sunken-input {
+            background: #1a1a1a;
+            box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.5), inset -1px -1px 4px rgba(255, 255, 255, 0.05);
+            border: none;
+        }
+        .neon-glow {
+            text-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
+        }
+        .neon-border {
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary-fixed": "#ffd9e2",
+                      "surface-tint": "#00e479",
+                      "secondary-fixed-dim": "#ffb1c7",
+                      "on-primary-container": "#007139",
+                      "on-error-container": "#ffdad6",
+                      "surface-container": "#18221a",
+                      "surface": "#0c160e",
+                      "surface-bright": "#323c32",
+                      "outline": "#849585",
+                      "inverse-surface": "#dae6d8",
+                      "surface-container-high": "#222c24",
+                      "on-background": "#dae6d8",
+                      "tertiary-container": "#ffdb79",
+                      "secondary": "#ffb1c7",
+                      "on-secondary-fixed": "#3e001d",
+                      "on-secondary": "#650032",
+                      "tertiary": "#fffaf7",
+                      "on-surface": "#dae6d8",
+                      "error-container": "#93000a",
+                      "on-primary-fixed-variant": "#005228",
+                      "tertiary-fixed-dim": "#e5c364",
+                      "on-tertiary-container": "#795f01",
+                      "on-secondary-fixed-variant": "#8e0049",
+                      "primary-fixed": "#60ff99",
+                      "background": "#0c160e",
+                      "primary-fixed-dim": "#00e479",
+                      "tertiary-fixed": "#ffe08d",
+                      "on-surface-variant": "#b9cbb9",
+                      "on-primary-fixed": "#00210c",
+                      "on-tertiary-fixed-variant": "#584400",
+                      "surface-variant": "#2d372e",
+                      "inverse-primary": "#006d37",
+                      "error": "#ffb4ab",
+                      "surface-dim": "#0c160e",
+                      "on-secondary-container": "#59002b",
+                      "on-tertiary-fixed": "#241a00",
+                      "surface-container-low": "#141e16",
+                      "on-primary": "#003919",
+                      "inverse-on-surface": "#29332a",
+                      "on-tertiary": "#3d2f00",
+                      "surface-container-lowest": "#071009",
+                      "primary": "#f1ffef",
+                      "outline-variant": "#3b4b3d",
+                      "surface-container-highest": "#2d372e",
+                      "secondary-container": "#ff4994",
+                      "primary-container": "#00ff88",
+                      "on-error": "#690005"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-sm": "8px",
+                      "unit": "8px",
+                      "card-padding": "24px",
+                      "stack-md": "16px",
+                      "stack-lg": "32px",
+                      "container-margin": "32px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "display-md": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "label-caps": ["Inter"],
+                      "body-md": ["Inter"],
+                      "body-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "display-md": ["24px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "display-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "body-md": ["14px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                      "body-lg": ["16px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background antialiased min-h-screen">
+<!-- TopNavBar -->
+<header class="bg-zinc-950/80 backdrop-blur-[40px] text-[#00ff88] font-['Inter'] fixed top-0 w-full h-16 border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.4)] flex justify-between items-center px-6 z-50">
+<div class="flex items-center gap-4">
+<span class="text-2xl font-black tracking-tighter text-[#00ff88] drop-shadow-[0_0_8px_rgba(0,255,136,0.5)]">QuickBites</span>
+<div class="hidden md:flex ml-8 gap-6 font-medium text-sm">
+<span class="text-zinc-400 hover:text-[#00ff88] hover:bg-white/5 transition-all cursor-pointer px-3 py-1 rounded-lg">Live Orders</span>
+<span class="text-zinc-400 hover:text-[#00ff88] hover:bg-white/5 transition-all cursor-pointer px-3 py-1 rounded-lg">Map View</span>
+<span class="text-[#00ff88] border-b-2 border-[#00ff88] px-3 py-1">Agent Suite</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<span class="text-xs font-bold uppercase tracking-widest text-[#00ff88]">Status: Online</span>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-zinc-400 hover:text-[#00ff88] cursor-pointer">notifications</span>
+<span class="material-symbols-outlined text-zinc-400 hover:text-[#00ff88] cursor-pointer">settings</span>
+</div>
+<img alt="Agent Profile Picture" class="w-8 h-8 rounded-full border border-[#00ff88]" data-alt="Close up of a professional delivery agent smiling, wearing a sleek black uniform with neon green logo accents" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAh7Yh4EEly1XyuLAJczKM6W9QX5TTIXpA2pkEGrqNuLP2tMOH55kzQJCgu44e20UKSVEz8pSy3GvUMqIgrS5HtE-cFI8Q3TUJmAq8gckiJqkBfvbJiozGL6QOr_TAk1du1LcAKHIhjRcyc7x54Gbyk4Jj7Otu4jFKEcMA7g2Gj4nJcHzPC8MtIZQra7Gi4w_ekKNRSPaeNvQj2xmxPm8TV01i9DUMHJojmaTdtyUZjGUzoDMPqwnymryFOqo7_uIMjwGaMu7ppKEY"/>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="bg-zinc-950/90 backdrop-blur-[40px] text-[#00ff88] font-['Inter'] text-sm font-medium fixed left-0 top-0 h-full w-64 border-r border-white/10 shadow-[10px_0_30px_rgba(0,0,0,0.5)] flex flex-col pt-20 pb-6 hidden md:flex">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-black font-bold">bolt</span>
+</div>
+<div>
+<p class="text-[#00ff88] font-bold">Agent Suite</p>
+<p class="text-[10px] text-zinc-500 uppercase tracking-widest">V2.0.4</p>
+</div>
+</div>
+<div class="flex flex-col flex-1">
+<a class="px-6 py-4 flex items-center gap-4 text-zinc-500 hover:bg-white/5 hover:text-zinc-200 transition-colors duration-300" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="px-6 py-4 flex items-center gap-4 text-zinc-500 hover:bg-white/5 hover:text-zinc-200 transition-colors duration-300" href="#">
+<span class="material-symbols-outlined">assignment_turned_in</span>
+<span>Assigned Tasks</span>
+</a>
+<a class="px-6 py-4 flex items-center gap-4 text-zinc-500 hover:bg-white/5 hover:text-zinc-200 transition-colors duration-300" href="#">
+<span class="material-symbols-outlined">history</span>
+<span>History</span>
+</a>
+<a class="px-6 py-4 flex items-center gap-4 bg-white/5 text-[#00ff88] shadow-[inset_0_0_10px_rgba(0,255,136,0.1)] border-r-4 border-[#00ff88] transition-colors duration-300" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span>Profile</span>
+</a>
+</div>
+<button class="mx-6 p-4 rounded-xl border border-red-500/30 text-red-500 flex items-center justify-center gap-3 hover:bg-red-500/10 active:scale-95 transition-all">
+<span class="material-symbols-outlined">logout</span>
+<span>Logout</span>
+</button>
+</nav>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 pt-24 pb-12 px-6 lg:px-12">
+<div class="max-w-6xl mx-auto">
+<!-- Hero Header Section -->
+<div class="flex flex-col md:flex-row items-center gap-8 mb-12">
+<div class="relative">
+<div class="w-32 h-32 rounded-3xl overflow-hidden border-2 border-primary-container shadow-[0_0_20px_rgba(0,255,136,0.3)]">
+<img alt="Agent Photo" class="w-full h-full object-cover" data-alt="High resolution portrait of a South Asian man in his 30s with short hair and a clean-shaven face, looking confident and friendly" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDtjQVOqJEvSX1PalvGSts0tAOJze-sV6UXFvWqFxdQOfBL9gO78a4mBil1ifzvADV7HtQDdYnmLWKnddaETAousIBYc1umrX52KdWXZncr_OOLANVM5M2K0fcThlBoR6gVNj-shNJrT4gdr6B2PciG5oZmmsCht0m8TyvIgY31Znx289ZPWUfTcP8Bmc_4BbVlJ39Vvt0bED-pglfVwomZAnmv9_5AaZ5ym7LvzBbNUUD32Asz9acLrkzfh1qlBOmFSRWXYEA_ew"/>
+</div>
+<div class="absolute -bottom-2 -right-2 bg-primary-container text-black p-1.5 rounded-lg shadow-lg">
+<span class="material-symbols-outlined text-sm font-bold">verified</span>
+</div>
+</div>
+<div class="text-center md:text-left">
+<h1 class="font-display-lg text-display-lg text-primary neon-glow">Rahul Sharma</h1>
+<p class="text-zinc-500 font-label-caps mt-1 tracking-[0.2em]">AGENT ID: #AG-772</p>
+<div class="flex gap-2 mt-4 justify-center md:justify-start">
+<span class="px-3 py-1 rounded-full bg-primary-container/10 border border-primary-container/30 text-primary-container text-xs font-bold uppercase tracking-tighter">Gold Tier Agent</span>
+<span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-zinc-400 text-xs">Joined Mar 2022</span>
+</div>
+</div>
+</div>
+<!-- Bento Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+<div class="glass-card p-6 rounded-[32px] flex flex-col items-center justify-center text-center">
+<span class="material-symbols-outlined text-primary-container text-4xl mb-4">delivery_dining</span>
+<p class="text-zinc-400 font-label-caps text-label-caps mb-1">Total Deliveries</p>
+<p class="font-display-md text-display-md text-primary">452</p>
+</div>
+<div class="glass-card p-6 rounded-[32px] flex flex-col items-center justify-center text-center">
+<span class="material-symbols-outlined text-primary-container text-4xl mb-4">payments</span>
+<p class="text-zinc-400 font-label-caps text-label-caps mb-1">Total Earnings</p>
+<p class="font-display-md text-display-md text-primary">₹84,200</p>
+</div>
+<div class="glass-card p-6 rounded-[32px] flex flex-col items-center justify-center text-center">
+<div class="flex items-center gap-1 mb-4 text-primary-container">
+<span class="material-symbols-outlined fill text-4xl" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="text-zinc-400 font-label-caps text-label-caps mb-1">Average Rating</p>
+<p class="font-display-md text-display-md text-primary">4.8 <span class="text-sm text-zinc-500 font-normal">/ 5.0</span></p>
+</div>
+</div>
+<!-- Settings Form Area -->
+<div class="glass-card rounded-[40px] p-8 lg:p-12">
+<h2 class="font-display-md text-display-md text-primary mb-8 flex items-center gap-4">
+<span class="material-symbols-outlined text-primary-container">tune</span>
+                    Account Settings
+                </h2>
+<form class="space-y-10">
+<!-- Notifications Section -->
+<section>
+<h3 class="font-label-caps text-zinc-400 mb-6 border-b border-white/5 pb-2">Notifications</h3>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary-container">notifications_active</span>
+<div>
+<p class="font-body-lg text-primary">Push Notifications</p>
+<p class="text-xs text-zinc-500">Alerts for new orders and earnings</p>
+</div>
+</div>
+<div class="w-12 h-6 bg-primary-container rounded-full relative cursor-pointer">
+<div class="absolute right-1 top-1 w-4 h-4 bg-black rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary-container">sms</span>
+<div>
+<p class="font-body-lg text-primary">SMS Alerts</p>
+<p class="text-xs text-zinc-500">Critical updates via text message</p>
+</div>
+</div>
+<div class="w-12 h-6 bg-zinc-800 rounded-full relative cursor-pointer">
+<div class="absolute left-1 top-1 w-4 h-4 bg-zinc-400 rounded-full"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Payouts Section -->
+<section>
+<h3 class="font-label-caps text-zinc-400 mb-6 border-b border-white/5 pb-2">Payouts &amp; Banking</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="text-xs text-zinc-500 ml-1">Bank Name</label>
+<input class="w-full sunken-input rounded-xl px-4 py-3 text-primary focus:ring-1 focus:ring-primary-container outline-none transition-all" type="text" value="HDFC Bank"/>
+</div>
+<div class="space-y-2">
+<label class="text-xs text-zinc-500 ml-1">Account Number</label>
+<input class="w-full sunken-input rounded-xl px-4 py-3 text-primary focus:ring-1 focus:ring-primary-container outline-none transition-all" type="text" value="**** **** 8829"/>
+</div>
+</div>
+<div class="mt-6 p-4 rounded-2xl bg-[#00ff88]/5 border border-[#00ff88]/20 flex items-center gap-4">
+<span class="material-symbols-outlined text-primary-container">speed</span>
+<p class="text-sm text-primary-container font-medium">Weekly Payouts are active. Next transfer: <span class="font-bold">Monday, Oct 23</span></p>
+</div>
+</section>
+<!-- Privacy Section -->
+<section>
+<h3 class="font-label-caps text-zinc-400 mb-6 border-b border-white/5 pb-2">Security &amp; Privacy</h3>
+<div class="flex flex-col gap-4">
+<button class="w-full md:w-auto px-6 py-3 rounded-xl border border-white/10 text-zinc-300 flex items-center gap-3 hover:bg-white/5 transition-all" type="button">
+<span class="material-symbols-outlined text-sm">lock_reset</span>
+<span class="text-sm">Change Security PIN</span>
+</button>
+<button class="w-full md:w-auto px-6 py-3 rounded-xl border border-white/10 text-zinc-300 flex items-center gap-3 hover:bg-white/5 transition-all" type="button">
+<span class="material-symbols-outlined text-sm">visibility_off</span>
+<span class="text-sm">Hide Location History</span>
+</button>
+</div>
+</section>
+<!-- Action Buttons -->
+<div class="pt-8 flex flex-col md:flex-row gap-4 justify-end">
+<button class="px-8 py-3 rounded-full border border-zinc-700 text-zinc-400 hover:text-zinc-200 transition-all" type="button">Discard Changes</button>
+<button class="px-8 py-3 rounded-full bg-primary-container text-black font-bold shadow-[0_4px_20px_rgba(0,255,136,0.3)] active:scale-95 transition-all" type="submit">Save Settings</button>
+</div>
+</form>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-zinc-950/90 backdrop-blur-[40px] border-t border-white/10 flex justify-around items-center py-4 px-6 z-50">
+<a class="flex flex-col items-center gap-1 text-zinc-500" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-zinc-500" href="#">
+<span class="material-symbols-outlined">assignment_turned_in</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-[#00ff88]" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+</a>
+</nav>
+</body></html>

@@ -1,0 +1,95 @@
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-black/80 backdrop-blur-[40px] border-b border-white/10">
+  <span class="text-xl font-black text-emerald-400">QuickBites</span>
+  <button class="material-symbols-outlined text-gray-400">person</button>
+</nav>
+
+<aside class="fixed left-0 top-0 h-full w-64 bg-black/90 backdrop-blur-[40px] border-r border-white/10 pt-20 z-40 hidden md:flex flex-col">
+  <div class="px-6 mb-8"><p class="text-emerald-400 font-bold text-sm uppercase">System Admin</p></div>
+  <nav class="flex-1 px-4 space-y-1">
+    <a routerLink="/admin/dashboard" class="flex items-center px-6 py-4 text-gray-500 hover:bg-white/5 hover:text-emerald-200 transition-colors"><span class="material-symbols-outlined mr-4">dashboard</span> Dashboard</a>
+    <a routerLink="/admin/pending-approvals" class="flex items-center px-6 py-4 text-gray-500 hover:bg-white/5 hover:text-emerald-200 transition-colors"><span class="material-symbols-outlined mr-4">verified_user</span> Pending Approvals</a>
+    <a routerLink="/admin/user-management" class="bg-emerald-400/10 text-emerald-400 border-r-4 border-emerald-400 flex items-center px-6 py-4"><span class="material-symbols-outlined mr-4">group</span> User Management</a>
+    <a routerLink="/admin/restaurant-management" class="flex items-center px-6 py-4 text-gray-500 hover:bg-white/5 hover:text-emerald-200 transition-colors"><span class="material-symbols-outlined mr-4">restaurant</span> Restaurant Management</a>
+    <a routerLink="/admin/order-management" class="flex items-center px-6 py-4 text-gray-500 hover:bg-white/5 hover:text-emerald-200 transition-colors"><span class="material-symbols-outlined mr-4">receipt_long</span> Order Management</a>
+    <a routerLink="/admin/reports" class="flex items-center px-6 py-4 text-gray-500 hover:bg-white/5 hover:text-emerald-200 transition-colors"><span class="material-symbols-outlined mr-4">analytics</span> Reports</a>
+  </nav>
+</aside>
+
+<main class="ml-64 p-6 pt-24 min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a1a1a] to-[#0a0a0a]">
+  <header class="mb-8">
+    <h1 class="text-3xl font-bold text-white">User Management</h1>
+    <p class="text-gray-400 mt-1">Manage platform users and their permissions</p>
+  </header>
+
+  <!-- Loading State -->
+  @if (isLoading) {
+    <div class="flex justify-center items-center py-12">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-400"></div>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (errorMessage) {
+    <div class="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg mb-6">
+      {{ errorMessage }}
+    </div>
+  }
+
+  <div class="flex gap-4 mb-6">
+    <input [(ngModel)]="searchQuery" placeholder="Search users..." class="flex-1 px-4 py-3 rounded-xl bg-gray-900 border border-white/10 text-white focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400"/>
+    <select [(ngModel)]="selectedRole" class="px-4 py-3 rounded-xl bg-gray-900 border border-white/10 text-white focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400">
+      @for (role of roleFilters; track role) {
+        <option [value]="role">{{ role === 'all' ? 'All Roles' : role }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="glass-card rounded-2xl p-6">
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr class="text-left text-xs text-gray-500 uppercase">
+            <th class="px-6 pb-4">User</th>
+            <th class="px-6 pb-4">Email</th>
+            <th class="px-6 pb-4">Role</th>
+            <th class="px-6 pb-4">Status</th>
+            <th class="px-6 pb-4">Joined</th>
+            <th class="px-6 pb-4 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of filteredUsers; track user.userId) {
+            <tr class="glass-card hover:bg-white/10 transition-all">
+              <td class="px-6 py-4 rounded-l-xl">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-full bg-emerald-400/20 flex items-center justify-center font-bold text-emerald-400">{{ (user.fullName && user.fullName.length > 0) ? user.fullName.substring(0, 1).toUpperCase() : 'U' }}</div>
+                  <span class="font-semibold text-white">{{ user.fullName }}</span>
+                </div>
+              </td>
+              <td class="px-6 py-4 text-gray-400">{{ user.email }}</td>
+              <td class="px-6 py-4">
+                <span class="px-3 py-1 rounded-full text-[10px] uppercase font-bold border border-blue-400/30 text-blue-400 bg-blue-400/10">{{ user.role || 'None' }}</span>
+              </td>
+              <td class="px-6 py-4">
+                <button (click)="toggleUserStatus(user)" class="px-3 py-1 rounded-full text-[10px] uppercase font-bold" [class.border-emerald-400/30]="user.isActive" [class.text-emerald-400]="user.isActive" [class.bg-emerald-400/10]="user.isActive" [class.border-gray-500/30]="!user.isActive" [class.text-gray-500]="!user.isActive" [class.bg-gray-500/10]="!user.isActive" class="border">{{ user.isActive ? 'Active' : 'Inactive' }}</button>
+              </td>
+              <td class="px-6 py-4 text-gray-400">{{ user.createdAt | date:'MMM d, y' }}</td>
+              <td class="px-6 py-4 rounded-r-xl text-right">
+                <div class="flex justify-end gap-2">
+                  <button (click)="editUser(user)" class="p-2 rounded-lg bg-gray-900 hover:bg-emerald-400/20 transition-all">
+                    <span class="material-symbols-outlined text-emerald-400 text-sm">edit</span>
+                  </button>
+                  <button (click)="deleteUser(user.userId)" class="p-2 rounded-lg bg-gray-900 hover:bg-red-500/20 transition-all">
+                    <span class="material-symbols-outlined text-red-500 text-sm">delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+

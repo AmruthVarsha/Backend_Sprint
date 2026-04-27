@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>QuickBites - The Burger Theory Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary": "#003919",
+                        "surface-tint": "#00e479",
+                        "primary": "#f1ffef",
+                        "inverse-primary": "#006d37",
+                        "surface-bright": "#323c32",
+                        "secondary-fixed": "#ffd9e2",
+                        "on-tertiary-fixed-variant": "#584400",
+                        "on-surface": "#dae6d8",
+                        "on-tertiary": "#3d2f00",
+                        "on-secondary-fixed-variant": "#8e0049",
+                        "surface-container-lowest": "#071009",
+                        "on-surface-variant": "#b9cbb9",
+                        "surface-container-low": "#141e16",
+                        "secondary-container": "#ff4994",
+                        "on-primary-fixed-variant": "#005228",
+                        "surface-container-high": "#222c24",
+                        "primary-container": "#00ff88",
+                        "surface-container-highest": "#2d372e",
+                        "surface-variant": "#2d372e",
+                        "primary-fixed-dim": "#00e479",
+                        "tertiary": "#fffaf7",
+                        "background": "#0c160e",
+                        "primary-fixed": "#60ff99",
+                        "on-secondary-container": "#59002b",
+                        "on-tertiary-fixed": "#241a00",
+                        "secondary": "#ffb1c7",
+                        "surface-dim": "#0c160e",
+                        "on-tertiary-container": "#795f01",
+                        "outline-variant": "#3b4b3d",
+                        "on-secondary": "#650032",
+                        "error-container": "#93000a",
+                        "on-primary-container": "#007139",
+                        "on-error-container": "#ffdad6",
+                        "inverse-on-surface": "#29332a",
+                        "on-error": "#690005",
+                        "tertiary-fixed-dim": "#e5c364",
+                        "on-primary-fixed": "#00210c",
+                        "surface": "#0c160e",
+                        "error": "#ffb4ab",
+                        "tertiary-container": "#ffdb79",
+                        "secondary-fixed-dim": "#ffb1c7",
+                        "outline": "#849585",
+                        "inverse-surface": "#dae6d8",
+                        "tertiary-fixed": "#ffe08d",
+                        "on-background": "#dae6d8",
+                        "on-secondary-fixed": "#3e001d",
+                        "surface-container": "#18221a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "8px",
+                        "stack-md": "16px",
+                        "card-padding": "24px",
+                        "gutter": "24px",
+                        "container-margin": "32px",
+                        "stack-lg": "32px",
+                        "unit": "8px"
+                    },
+                    "fontFamily": {
+                        "display-md": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "display-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-md": ["24px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-lg": ["16px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                        "display-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.4), -2px -2px 10px rgba(255, 255, 255, 0.05);
+        }
+        .neomorphic-inset {
+            background: #1a1a1a;
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.8), inset -1px -1px 3px rgba(255,255,255,0.05);
+        }
+        .neon-glow {
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+        }
+        .status-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-black/80 backdrop-blur-[40px] border-b border-white/10 shadow-[5px_5px_15px_rgba(0,0,0,0.4),-2px_-2px_10px_rgba(255,255,255,0.05)]">
+<div class="flex items-center gap-4">
+<span class="text-xl font-black text-[#00ff88] drop-shadow-[0_0_8px_rgba(0,255,136,0.5)] font-['Inter'] tracking-tight">QuickBites</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden md:flex items-center gap-2 text-gray-400 font-medium font-['Inter']">
+<span class="material-symbols-outlined text-sm" data-icon="restaurant">restaurant</span>
+<span class="text-sm">The Burger Theory • Live</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="relative p-2 rounded-full hover:bg-white/10 transition-all active:scale-95 duration-150">
+<span class="material-symbols-outlined text-on-surface" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-[#00ff88] rounded-full neon-glow"></span>
+</button>
+<div class="w-10 h-10 rounded-full overflow-hidden border border-white/20">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="Close-up of a professional chef wearing a clean black uniform in a modern industrial kitchen setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1sHd7bpA37BxKCqSZfQfFaKYY5j8pongYdFVKYqoOmCdgdLP89MU32HQDu46WdJ79UQJdpYYXDJTuV_wfSti1Mg8Q2MOWdUh5ELHvWRWyBtcEB_B0eo9HDsmzR9djgA8hUfe2upHjpaeaUhJf1tD99xbPvGTvt5P22IkHVblyhdoehYBZrWD6Rc2Kc5XVR10awK069sVpqLc8h5VHdg5lTbefQY-W4TTxw6NBwxT3J7mHkoLEk6BfwveYsd8tjv2jux1zaKj9b7g"/>
+</div>
+</div>
+</div>
+</nav>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-64 bg-black/90 backdrop-blur-[40px] border-r border-white/10 shadow-[10px_0_30px_rgba(0,0,0,0.5)] flex flex-col pt-20 hidden md:flex">
+<div class="px-6 mb-8">
+<h2 class="text-[#00ff88] font-bold font-display-md">QuickBites</h2>
+<p class="text-gray-500 text-xs font-medium">Partner Portal</p>
+</div>
+<nav class="flex-1 px-4 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#00ff88] bg-[#00ff88]/10 border-r-2 border-[#00ff88] font-['Inter'] text-sm font-medium transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-500 hover:bg-white/5 hover:text-white transition-colors font-['Inter'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+                Orders
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-500 hover:bg-white/5 hover:text-white transition-colors font-['Inter'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="restaurant_menu">restaurant_menu</span>
+                Menu Items
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-500 hover:bg-white/5 hover:text-white transition-colors font-['Inter'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="category">category</span>
+                Categories
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-500 hover:bg-white/5 hover:text-white transition-colors font-['Inter'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                Restaurant Settings
+            </a>
+</nav>
+<div class="p-4 border-t border-white/10">
+<button class="flex items-center gap-3 px-4 py-3 w-full text-gray-500 hover:text-error transition-colors font-['Inter'] text-sm font-medium">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                Logout
+            </button>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="md:pl-64 pt-24 px-6 pb-12 min-h-screen">
+<div class="max-w-7xl mx-auto space-y-stack-lg">
+<!-- Welcome Header -->
+<header class="mb-stack-lg">
+<h1 class="font-display-lg text-display-lg text-primary">Welcome back, The Burger Theory!</h1>
+<p class="text-on-surface-variant font-body-lg">Here's what's happening in your kitchen today.</p>
+</header>
+<!-- Stat Cards Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- Card 1: Total Orders -->
+<div class="glass-card p-card-padding rounded-xl">
+<div class="flex justify-between items-start mb-stack-md">
+<div class="p-2 bg-primary-container/10 rounded-lg">
+<span class="material-symbols-outlined text-[#00ff88]" data-icon="shopping_cart">shopping_cart</span>
+</div>
+<span class="text-[#00ff88] text-xs font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="trending_up">trending_up</span>
+                            +12%
+                        </span>
+</div>
+<p class="text-label-caps font-label-caps text-on-surface-variant mb-1">TOTAL ORDERS TODAY</p>
+<h3 class="text-display-md font-display-md text-on-surface">42</h3>
+</div>
+<!-- Card 2: Active Orders -->
+<div class="glass-card p-card-padding rounded-xl">
+<div class="flex justify-between items-start mb-stack-md">
+<div class="p-2 bg-secondary-container/10 rounded-lg">
+<span class="material-symbols-outlined text-secondary" data-icon="timer">timer</span>
+</div>
+<div class="w-3 h-3 bg-[#00ff88] rounded-full status-pulse neon-glow"></div>
+</div>
+<p class="text-label-caps font-label-caps text-on-surface-variant mb-1">ACTIVE ORDERS</p>
+<h3 class="text-display-md font-display-md text-on-surface">8</h3>
+</div>
+<!-- Card 3: Menu Items -->
+<div class="glass-card p-card-padding rounded-xl">
+<div class="flex justify-between items-start mb-stack-md">
+<div class="p-2 bg-tertiary-container/10 rounded-lg">
+<span class="material-symbols-outlined text-tertiary-fixed-dim" data-icon="lunch_dining">lunch_dining</span>
+</div>
+</div>
+<p class="text-label-caps font-label-caps text-on-surface-variant mb-1">MENU ITEMS</p>
+<h3 class="text-display-md font-display-md text-on-surface">24</h3>
+</div>
+<!-- Card 4: Restaurant Status -->
+<div class="glass-card p-card-padding rounded-xl flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<p class="text-label-caps font-label-caps text-on-surface-variant">RESTAURANT STATUS</p>
+<span class="material-symbols-outlined text-gray-500" data-icon="storefront">storefront</span>
+</div>
+<div class="flex items-center justify-between mt-stack-md">
+<span class="text-body-lg font-bold text-[#00ff88]">Open</span>
+<!-- Custom Toggle Switch -->
+<div class="w-12 h-6 rounded-full neomorphic-inset relative cursor-pointer p-1">
+<div class="absolute right-1 top-1 w-4 h-4 rounded-full bg-[#00ff88] shadow-[0_0_10px_rgba(0,255,136,0.8)]"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Orders Section -->
+<section class="space-y-gutter">
+<div class="flex items-center justify-between">
+<h2 class="font-display-md text-display-md text-primary">Recent Orders</h2>
+<button class="px-4 py-2 rounded-lg border border-white/10 text-on-surface-variant hover:bg-white/5 transition-all text-sm font-semibold">
+                        View All History
+                    </button>
+</div>
+<!-- Orders Table Container -->
+<div class="glass-card rounded-xl overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-white/10 bg-white/5">
+<th class="p-gutter text-label-caps font-label-caps text-on-surface-variant">ORDER ID</th>
+<th class="p-gutter text-label-caps font-label-caps text-on-surface-variant">CUSTOMER</th>
+<th class="p-gutter text-label-caps font-label-caps text-on-surface-variant">ITEMS SUMMARY</th>
+<th class="p-gutter text-label-caps font-label-caps text-on-surface-variant">AMOUNT (₹)</th>
+<th class="p-gutter text-label-caps font-label-caps text-on-surface-variant">STATUS</th>
+<th class="p-gutter text-label-caps font-label-caps text-on-surface-variant text-right">ACTION</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5">
+<!-- Row 1 -->
+<tr class="hover:bg-white/5 transition-colors">
+<td class="p-gutter font-mono text-[#00ff88] font-bold">#QB-201</td>
+<td class="p-gutter font-medium">Rahul Sharma</td>
+<td class="p-gutter text-on-surface-variant">2x Truffle Burger, 1x Cajun Fries</td>
+<td class="p-gutter font-bold">₹1,240</td>
+<td class="p-gutter">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-[#ffdb79]/10 border border-[#ffdb79]/30 text-[#ffdb79]">
+                                            Pending
+                                        </span>
+</td>
+<td class="p-gutter text-right">
+<button class="text-[#00ff88] hover:underline font-bold text-sm">View Details</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-white/5 transition-colors">
+<td class="p-gutter font-mono text-[#00ff88] font-bold">#QB-202</td>
+<td class="p-gutter font-medium">Ananya Iyer</td>
+<td class="p-gutter text-on-surface-variant">1x Classic Cheeseburger, 1x Coke</td>
+<td class="p-gutter font-bold">₹580</td>
+<td class="p-gutter">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-[#00ff88]/10 border border-[#00ff88]/30 text-[#00ff88]">
+                                            Preparing
+                                        </span>
+</td>
+<td class="p-gutter text-right">
+<button class="text-[#00ff88] hover:underline font-bold text-sm">View Details</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-white/5 transition-colors">
+<td class="p-gutter font-mono text-[#00ff88] font-bold">#QB-203</td>
+<td class="p-gutter font-medium">Vikram Singh</td>
+<td class="p-gutter text-on-surface-variant">3x Monster Veggie Burger, 3x Shakes</td>
+<td class="p-gutter font-bold">₹2,150</td>
+<td class="p-gutter">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-secondary-container/10 border border-secondary-container/30 text-secondary">
+                                            Ready
+                                        </span>
+</td>
+<td class="p-gutter text-right">
+<button class="text-[#00ff88] hover:underline font-bold text-sm">View Details</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-white/5 transition-colors">
+<td class="p-gutter font-mono text-[#00ff88] font-bold">#QB-204</td>
+<td class="p-gutter font-medium">Priya Das</td>
+<td class="p-gutter text-on-surface-variant">1x Mushroom Swiss, 1x Onion Rings</td>
+<td class="p-gutter font-bold">₹890</td>
+<td class="p-gutter">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-[#00ff88]/10 border border-[#00ff88]/30 text-[#00ff88]">
+                                            Preparing
+                                        </span>
+</td>
+<td class="p-gutter text-right">
+<button class="text-[#00ff88] hover:underline font-bold text-sm">View Details</button>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-white/5 transition-colors">
+<td class="p-gutter font-mono text-[#00ff88] font-bold">#QB-205</td>
+<td class="p-gutter font-medium">Sameer Khan</td>
+<td class="p-gutter text-on-surface-variant">2x Double Bacon Burger, Large Coke</td>
+<td class="p-gutter font-bold">₹1,620</td>
+<td class="p-gutter">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-[#ffdb79]/10 border border-[#ffdb79]/30 text-[#ffdb79]">
+                                            Pending
+                                        </span>
+</td>
+<td class="p-gutter text-right">
+<button class="text-[#00ff88] hover:underline font-bold text-sm">View Details</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- Bottom Action Cards (Bento Style) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="glass-card p-card-padding rounded-xl flex items-center gap-6 group cursor-pointer hover:border-[#00ff88]/50 transition-all">
+<div class="w-16 h-16 rounded-lg overflow-hidden shrink-0">
+<img alt="Menu Management" class="w-full h-full object-cover" data-alt="Gourmet double decker burger with melting cheese and fresh lettuce on a dark wooden board" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5erDm4qLJgwwI9h3oL_Kie7zPMhZKsaUmokJIRNhguKBhesY6MzXe5i4nFUSpSgc_LUK8QA8_FrVlKob7dByxrOUeCxwp6ij-vQTeCLFw4sZPnXag_jVMlks6rrsgi_9u245r0P9PA4g-D4ZzQMrrh_sinjPNVzIfwpgL_zmogZpOdTz6r9B5mFEV8Oj6iK0EjbgJr-92xBGJUE_ifBFAhwx97fq_NL4ibqLQVO7ZRxC4ADBe68_JTMLg08bR0kmQkT-AReLX2R0"/>
+</div>
+<div>
+<h4 class="font-bold text-body-lg text-[#00ff88]">Update Menu</h4>
+<p class="text-on-surface-variant text-sm">Manage your burger varieties and pricing instantly.</p>
+</div>
+<span class="material-symbols-outlined ml-auto text-gray-500 group-hover:text-[#00ff88] transition-colors" data-icon="chevron_right">chevron_right</span>
+</div>
+<div class="glass-card p-card-padding rounded-xl flex items-center gap-6 group cursor-pointer hover:border-[#00ff88]/50 transition-all">
+<div class="w-16 h-16 rounded-lg overflow-hidden shrink-0">
+<img alt="Analytics" class="w-full h-full object-cover" data-alt="Digital dashboard screen showing vibrant glowing line charts and financial data analytics" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0ehVl_x9EKtciFIjLKg9f7O0o_LF9E3pBwJqvCBh_U3zBDS7j1dkDWARx7b99c-vGXTyB4rVr5-_uZ9aQ3ULlJjU1uXHC0wwMqWfw9aYkSTX_y5Mk9wYQk5rmEwaWfMzoNYtacPfNG53T1SSQ82uMkjSoNHVdeJTHKh0h7yO9lSLpz7QqZeQcmOOojCnq7Qob0GePftNB5HAfH7AMFRZYRmF9O6tw9ODPQLr3FaljY4VUJRcITR3srgR5OstkDrAyqixFj_LRkjA"/>
+</div>
+<div>
+<h4 class="font-bold text-body-lg text-[#00ff88]">Sales Insights</h4>
+<p class="text-on-surface-variant text-sm">Track your best-selling patties and rush hour trends.</p>
+</div>
+<span class="material-symbols-outlined ml-auto text-gray-500 group-hover:text-[#00ff88] transition-colors" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+</div>
+</main>
+<!-- FAB (Suppressed on Dashboard as per shell rules, but including for context if needed in other views) -->
+<!-- Not rendered as per 'Contextual FAB Suppression' rules for Dashboard -->
+</body></html>

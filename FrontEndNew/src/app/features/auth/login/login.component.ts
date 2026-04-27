@@ -25,6 +25,7 @@ export class LoginComponent implements OnInit {
   successMessage = '';
   showPassword = false;
   rememberMe = false;
+  isSubmitting = false;
 
   constructor(
     private fb: FormBuilder,
@@ -62,6 +63,7 @@ export class LoginComponent implements OnInit {
     }
 
     console.log('Form is VALID, proceeding with login...');
+    this.isSubmitting = true;
     
     const credentials: LoginDTO = {
       email: this.loginForm.value.email,
@@ -144,6 +146,7 @@ export class LoginComponent implements OnInit {
         console.error('=== LOGIN ERROR ===');
         console.error('Error object:', error);
         
+        this.isSubmitting = false;
         // Extract error message
         let errorMsg = 'Login failed. Please check your credentials and try again.';
         
@@ -168,6 +171,7 @@ export class LoginComponent implements OnInit {
       },
       complete: () => {
         console.log('=== LOGIN OBSERVABLE COMPLETED ===');
+        this.isSubmitting = false;
       }
     });
     
@@ -205,10 +209,8 @@ export class LoginComponent implements OnInit {
         this.router.navigate(['/customer/dashboard']);
         break;
       case 1: // Partner
-        console.log('Partner dashboard not implemented yet, redirecting to customer dashboard');
-        // TODO: Implement partner dashboard
-        // this.router.navigate(['/partner/dashboard']);
-        this.router.navigate(['/customer/dashboard']); // Temporary fallback
+        console.log('Navigating to partner dashboard');
+        this.router.navigate(['/partner/dashboard']);
         break;
       case 2: // DeliveryAgent
         console.log('Delivery dashboard not implemented yet, redirecting to customer dashboard');
@@ -217,10 +219,8 @@ export class LoginComponent implements OnInit {
         this.router.navigate(['/customer/dashboard']); // Temporary fallback
         break;
       case 3: // Admin
-        console.log('Admin dashboard not implemented yet, redirecting to customer dashboard');
-        // TODO: Implement admin dashboard
-        // this.router.navigate(['/admin/dashboard']);
-        this.router.navigate(['/customer/dashboard']); // Temporary fallback
+        console.log('Navigating to admin dashboard');
+        this.router.navigate(['/admin/dashboard']);
         break;
       default:
         console.log('Unknown role, navigating to customer dashboard');
