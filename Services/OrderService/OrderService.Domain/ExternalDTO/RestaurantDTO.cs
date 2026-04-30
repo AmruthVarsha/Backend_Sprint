@@ -31,8 +31,8 @@ namespace OrderService.Domain.ExternalDTO
         /// </summary>
         public RestaurantAddressDTO? Address { get; set; }
 
-        public TimeOnly OpeningTime { get; set; }
-        public TimeOnly ClosingTime { get; set; }
+        public string OpeningTime { get; set; } = string.Empty;
+        public string ClosingTime { get; set; } = string.Empty;
         public bool IsActive { get; set; }
         public bool IsApproved { get; set; }
         public List<CategoryWithItemsDTO> Menu { get; set; } = new();

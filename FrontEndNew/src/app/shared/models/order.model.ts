@@ -92,12 +92,21 @@ export interface OrderResponseDTO {
   restaurantOrders: RestaurantOrderSummaryDTO[];
 }
 
-/** Input for checkout — no cartId needed, backend discovers all active carts */
+/** Input for checkout — uses local storage items */
 export interface CheckoutDTO {
   addressId: string;
   paymentMethod: PaymentMethod;
   deliveryInstructions?: string;
   scheduledSlot?: string;
+  items: CartItemDTO[];
+}
+
+export interface CartItemDTO {
+  menuItemId: string;
+  menuItemName: string;
+  unitPrice: number;
+  quantity: number;
+  restaurantId: string;
 }
 
 export interface CancelOrderDTO {

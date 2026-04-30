@@ -3,10 +3,6 @@ using OrderService.Domain.Enums;
 
 namespace OrderService.Application.DTOs.Order
 {
-    /// <summary>
-    /// Input DTO for placing an order from ALL active carts.
-    /// The system auto-discovers the carts for the current user.
-    /// </summary>
     public class CheckoutDTO
     {
         [Required]
@@ -20,5 +16,17 @@ namespace OrderService.Application.DTOs.Order
 
         [StringLength(100)]
         public string? ScheduledSlot { get; set; }
+
+        [Required]
+        public List<CartItemDTO> Items { get; set; } = new();
+    }
+
+    public class CartItemDTO
+    {
+        public Guid MenuItemId { get; set; }
+        public string MenuItemName { get; set; } = string.Empty;
+        public decimal UnitPrice { get; set; }
+        public int Quantity { get; set; }
+        public Guid RestaurantId { get; set; }
     }
 }

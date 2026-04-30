@@ -110,5 +110,15 @@ namespace AuthService.Infrastructure.Repositories
                 IsActive = u.IsActive
             });
         }
+ 
+        public async Task DeleteAsync(string userId)
+        {
+            var appUser = await userManager.FindByIdAsync(userId);
+            if (appUser != null)
+            {
+                await userManager.DeleteAsync(appUser);
+            }
+        }
     }
 }
+ 

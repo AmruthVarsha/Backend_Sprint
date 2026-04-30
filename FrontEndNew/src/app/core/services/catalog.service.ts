@@ -12,6 +12,7 @@ export interface Restaurant {
   totalRatings: number;
   prepTimeMinutes: number; // Backend field name
   isActive: boolean;
+  isApproved: boolean;
   city: string;
   pincode: string;
   cuisines: string[]; // Backend returns array

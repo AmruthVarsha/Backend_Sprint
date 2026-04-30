@@ -62,16 +62,17 @@
             </div>
           </div>
           <div class="flex items-center justify-between pt-4 border-t border-[#e5e7eb]">
-            <!-- Status is read-only (no toggle endpoint exists on backend) -->
-            <span
-              class="px-3 py-1 rounded-full text-[10px] uppercase font-bold border"
+            <button
+              (click)="toggleRestaurantStatus(restaurant)"
+              class="px-3 py-1 rounded-full text-[10px] uppercase font-bold border transition-all hover:scale-105 active:scale-95"
               [class.border-green-200]="restaurant.isActive"
               [class.text-green-700]="restaurant.isActive"
               [class.bg-green-50]="restaurant.isActive"
               [class.border-gray-200]="!restaurant.isActive"
               [class.text-gray-600]="!restaurant.isActive"
               [class.bg-gray-50]="!restaurant.isActive"
-            >{{ restaurant.isActive ? 'Active' : 'Inactive' }}</span>
+              [title]="restaurant.isActive ? 'Deactivate restaurant' : 'Activate restaurant'"
+            >{{ restaurant.isActive ? 'Active' : 'Inactive' }}</button>
 
             <!-- Delete button with loading spinner -->
             <button

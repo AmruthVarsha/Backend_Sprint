@@ -131,7 +131,7 @@ export class RestaurantDetailComponent implements OnInit {
     this.addingItemId = menuItem.id;
     this.addError = '';
 
-    this.cartService.addItem(menuItem, this.restaurantId, this.restaurant.name)
+    this.cartService.addItemAsync(menuItem, this.restaurantId, this.restaurant.name)
       .subscribe({
         next: () => {
           this.addingItemId = null;

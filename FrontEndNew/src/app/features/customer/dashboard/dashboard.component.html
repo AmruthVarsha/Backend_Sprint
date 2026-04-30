@@ -2,33 +2,36 @@
   <!-- Shared Navbar -->
   <app-navbar></app-navbar>
 
-  <!-- Main content with proper top padding to account for fixed navbar -->
-  <main class="max-w-7xl mx-auto px-6 py-10 pt-24">
-    <!-- Hero Section & Search - Slides down from top -->
-    <section class="mb-16 relative animate-slide-down overflow-visible">
-      <div class="bg-surface-container-lowest rounded-[24px] p-6 md:p-16 overflow-hidden relative border border-surface-variant shadow-[0_4px_12px_rgba(181,28,0,0.06)]">
+  <app-food-reveal-animation></app-food-reveal-animation>
+
+  <!-- Main content with proper top padding -->
+  <main appScrollReveal class="max-w-7xl mx-auto px-6 py-10">
+    <!-- Search & Hero Section -->
+    <section class="mb-16 relative overflow-visible">
+      <div class="bg-white rounded-[32px] p-8 md:p-16 overflow-hidden relative border border-slate-100 shadow-xl shadow-slate-200/50">
         <div class="relative z-10 max-w-2xl">
-          <h1 class="font-display-lg text-display-lg text-on-surface mb-2">
+          <h1 class="text-4xl md:text-6xl font-black text-[#1a1a1a] tracking-tight mb-4">
             Satisfy Your <span class="text-primary">Nightly</span> Cravings.
           </h1>
-          <p class="font-body-lg text-body-lg text-on-surface-variant mb-10">
+          <p class="text-lg text-slate-500 mb-10 max-w-lg">
             Premium restaurants delivered to your doorstep with urban speed and futuristic precision.
           </p>
 
-          <div class="flex flex-col md:flex-row gap-4 p-2 bg-surface-container rounded-2xl md:rounded-full border border-surface-variant">
+          <div class="flex flex-col md:flex-row gap-4 p-2 bg-slate-50 rounded-2xl md:rounded-full border border-slate-100 focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/5 transition-all">
             <div class="flex flex-1 items-center px-4 py-2">
-              <span class="material-symbols-outlined text-primary mr-3">location_on</span>
-              <input [(ngModel)]="deliveryAddress" class="bg-transparent border-none focus:ring-0 text-on-surface w-full font-body-lg text-body-lg placeholder:text-on-surface-variant/70"
-                placeholder="Enter delivery address..." type="text" />
+              <span class="material-symbols-outlined text-primary mr-3">search</span>
+              <input [(ngModel)]="searchQuery" (input)="filterRestaurants()"
+                class="bg-transparent border-none focus:ring-0 outline-none text-[#1a1a1a] w-full font-medium placeholder:text-slate-400"
+                placeholder="Search for restaurants, cuisines, or your favorite dishes..." type="text" />
             </div>
-            <button (click)="findFood()"
-              class="bg-primary text-on-primary px-8 py-3 rounded-xl md:rounded-full font-label-lg text-label-lg font-semibold shadow-[0_4px_12px_rgba(181,28,0,0.2)] hover:bg-surface-tint active:scale-95 transform transition-all">
-              Find Food
+            <button (click)="filterRestaurants()"
+              class="bg-primary text-white px-10 py-4 rounded-xl md:rounded-full font-bold shadow-xl shadow-primary/20 hover:bg-surface-tint active:scale-95 transform transition-all">
+              Search
             </button>
           </div>
         </div>
 
-        <!-- Decorative Element -->
+        <!-- Decorative Image -->
         <div class="absolute right-0 top-0 bottom-0 w-1/3 hidden lg:block">
           <img alt="Gourmet Food" class="h-full w-full object-cover"
             src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0rrjazWbpUAa_zrcoLh7JGosrLMkIOERCBE9WC2WUvztPFLUq_YWpajdJr8zXDI5CdTbOs0wsOYzb4eV4VbXnupf-gq-2OVYfI2dVJEOSh1ILfqLblqCbP7MFKSiab5xyr4uGrWqzIDfN92grimBub0aHp5vEb1rF1bcUSnfMZafk-qTJunYevZd2_kCNHT1r2JxTradkKIIdXO_yOYjtv-zOHqIDrtOlbEdUT7jY-u3beLupIbwy4P02leIz3lV0MCH39xIg5FM" />
@@ -42,24 +45,18 @@
         @for (cuisine of cuisines; track cuisine) {
         <button (click)="selectCuisine(cuisine)" 
           [class.bg-primary]="selectedCuisine === cuisine"
-          [class.text-on-primary]="selectedCuisine === cuisine"
-          [class.shadow-[0_4px_12px_rgba(181,28,0,0.2)]]="selectedCuisine === cuisine"
-          [class.bg-surface-container]="selectedCuisine !== cuisine"
+          [class.text-white]="selectedCuisine === cuisine"
+          [class.shadow-lg]="selectedCuisine === cuisine"
+          [class.shadow-primary/20]="selectedCuisine === cuisine"
+          [class.bg-white]="selectedCuisine !== cuisine"
           [class.border]="selectedCuisine !== cuisine" 
-          [class.border-surface-variant]="selectedCuisine !== cuisine"
+          [class.border-slate-100]="selectedCuisine !== cuisine"
           [class.hover:border-primary]="selectedCuisine !== cuisine"
-          [class.text-on-surface]="selectedCuisine !== cuisine"
-          class="px-6 py-2 rounded-full font-label-lg text-label-lg font-semibold whitespace-nowrap transition-all">
+          [class.text-slate-600]="selectedCuisine !== cuisine"
+          class="px-8 py-3 rounded-full font-bold whitespace-nowrap transition-all">
           {{ cuisine }}
         </button>
         }
-      </div>
-
-      <div class="flex items-center gap-2">
-        <div class="flex items-center bg-surface-container border border-surface-variant px-4 py-2 rounded-xl text-on-surface-variant">
-          <span class="material-symbols-outlined text-sm mr-2">filter_list</span>
-          <span class="font-label-lg text-label-lg font-semibold">Sort by: Popular</span>
-        </div>
       </div>
     </section>
 

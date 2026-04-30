@@ -30,6 +30,7 @@ export const API_ENDPOINTS = {
     SET_TWO_FACTOR_AUTH: '/gateway/auth/Auth/SetTwoFactorAuth',
     TWO_FACTOR_AUTH: '/gateway/auth/Auth/TwoFactorAuth',
     VERIFY_OTP: '/gateway/auth/Auth/VerifyOTP',
+    SUPPORT: '/gateway/auth/Support',
     
     // Admin Only
     PROMOTE_ROLE: '/gateway/auth/Auth/PromoteRole',

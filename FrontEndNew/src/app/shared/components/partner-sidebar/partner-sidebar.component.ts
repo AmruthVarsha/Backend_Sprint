@@ -21,6 +21,7 @@ export class PartnerSidebarComponent {
   @Output() logoutClicked = new EventEmitter<void>();
 
   showRestaurantDropdown = false;
+  isMobileMenuOpen = false;
 
   constructor(private authService: AuthService, private router: Router) {}
 

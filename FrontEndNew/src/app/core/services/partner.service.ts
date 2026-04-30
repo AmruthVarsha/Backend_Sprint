@@ -14,6 +14,7 @@ export interface Restaurant {
   email: string;
   isOpen: boolean;
   isApproved: boolean;
+  logoUrl?: string;
   openingTime?: string;
   closingTime?: string;
   prepTimeMinutes?: number;

@@ -6,6 +6,8 @@ import { CatalogService, Restaurant as BackendRestaurant } from '../../../core/s
 import { AuthService } from '../../../core/services/auth.service';
 import { CartService, CartItem } from '../../../core/services/cart.service';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
+import { FoodRevealAnimationComponent } from '../../../shared/components/food-reveal-animation/food-reveal-animation.component';
+import { ScrollRevealDirective } from '../../../shared/directives/scroll-reveal.directive';
 
 interface Restaurant extends BackendRestaurant {
   isFavorite?: boolean;
@@ -14,7 +16,7 @@ interface Restaurant extends BackendRestaurant {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, NavbarComponent],
+  imports: [CommonModule, RouterModule, FormsModule, NavbarComponent, FoodRevealAnimationComponent, ScrollRevealDirective],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -124,6 +126,22 @@ export class DashboardComponent implements OnInit {
   filterRestaurants(): void {
     let result = [...this.restaurants];
 
+    // 1. Filter by Status (Must be Active and Approved)
+    result = result.filter(r => r.isActive && r.isApproved);
+
+    // 2. Filter by Operating Hours
+    const now = new Date();
+    const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+    result = result.filter(r => {
+      // If no timing info, assume open (safety fallback)
+      if (!r.openingTime || !r.closingTime) return true;
+
+      // Basic string comparison works for HH:mm format
+      return currentTime >= r.openingTime && currentTime <= r.closingTime;
+    });
+
+    // 3. Filter by Cuisine
     if (this.selectedCuisine !== 'All Cuisines') {
       result = result.filter(r =>
         r.cuisines?.some(cuisine =>
@@ -132,10 +150,20 @@ export class DashboardComponent implements OnInit {
       );
     }
 
-    if (this.searchQuery) {
+    // 4. Filter by Search Query
+    if (this.searchQuery.trim()) {
+      const query = this.searchQuery.toLowerCase().trim();
+
+      // If query is a 6-digit pincode, reload restaurants for that area
+      if (/^\d{6}$/.test(query)) {
+        this.loadRestaurants(query);
+        return;
+      }
+
       result = result.filter(r =>
-        r.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        r.cuisineType?.toLowerCase().includes(this.searchQuery.toLowerCase())
+        r.name.toLowerCase().includes(query) ||
+        r.cuisines?.some(c => c.toLowerCase().includes(query)) ||
+        r.cuisineType?.toLowerCase().includes(query)
       );
     }
 

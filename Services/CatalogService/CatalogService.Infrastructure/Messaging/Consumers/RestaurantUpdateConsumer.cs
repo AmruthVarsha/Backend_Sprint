@@ -32,12 +32,7 @@ namespace CatalogService.Infrastructure.Messaging.Consumers
             }
             else if (message.EventType == "Deleted")
             {
-                var restaurant = await _restaurantRepository.GetByIdAsync(message.RestaurantId);
-                if (restaurant != null)
-                {
-                    restaurant.IsActive = false;
-                    await _restaurantRepository.UpdateAsync(restaurant);
-                }
+                await _restaurantRepository.DeleteAsync(message.RestaurantId);
             }
         }
     }

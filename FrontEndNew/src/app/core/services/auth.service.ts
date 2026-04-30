@@ -249,6 +249,13 @@ export class AuthService {
   }
 
   /**
+   * Submit Support Request
+   */
+  submitSupport(data: { name: string; email: string; concern: string }): Observable<any> {
+    return this.api.post(API_ENDPOINTS.AUTH.SUPPORT, data);
+  }
+
+  /**
    * Send Two-Factor OTP
    */
   sendTwoFactorOTP(email: string): Observable<any> {

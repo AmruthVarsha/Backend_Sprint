@@ -51,15 +51,15 @@ export class OrdersComponent implements OnInit {
 
   getStatusClass(status: string): string {
     const map: Record<string, string> = {
-      'Placed':              'bg-yellow-500/10 text-yellow-400 border-yellow-500/30',
-      'Paid':                'bg-blue-500/10 text-blue-400 border-blue-500/30',
-      'InProgress':          'bg-purple-500/10 text-purple-400 border-purple-500/30',
-      'OutForDelivery':      'bg-cyan-500/10 text-cyan-400 border-cyan-500/30',
-      'Delivered':           'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
-      'CancelledByCustomer': 'bg-red-500/10 text-red-400 border-red-500/30',
-      'CancelledBySystem':   'bg-red-500/10 text-red-400 border-red-500/30',
+      'Placed':              'bg-surface-container text-on-surface-variant border-surface-variant',
+      'Paid':                'bg-secondary-container text-on-secondary-container border-secondary/20',
+      'InProgress':          'bg-tertiary-container text-on-tertiary-container border-tertiary/20',
+      'OutForDelivery':      'bg-primary-container text-on-primary-container border-primary/20',
+      'Delivered':           'bg-secondary-container text-on-secondary-container border-secondary/20',
+      'CancelledByCustomer': 'bg-error-container text-on-error-container border-error/20',
+      'CancelledBySystem':   'bg-error-container text-on-error-container border-error/20',
     };
-    return map[status] ?? 'bg-slate-500/10 text-slate-400 border-slate-500/30';
+    return map[status] ?? 'bg-surface-container text-on-surface-variant border-surface-variant';
   }
 
   getStatusLabel(status: string): string {

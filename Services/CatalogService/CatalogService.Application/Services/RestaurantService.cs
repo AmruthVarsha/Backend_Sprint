@@ -184,24 +184,40 @@ namespace CatalogService.Application.Services
             restaurant.PrepTimeMinutes = dto.PrepTimeMinutes;
 
             // Update Address
-            if (restaurant.Address != null && dto.Address != null)
+            if (dto.Address != null)
             {
+                if (restaurant.Address == null)
+                {
+                    restaurant.Address = new Address { Id = Guid.NewGuid() };
+                }
                 restaurant.Address.Street = dto.Address.Street?.Trim() ?? string.Empty;
                 restaurant.Address.City = dto.Address.City?.Trim() ?? string.Empty;
                 restaurant.Address.State = dto.Address.State?.Trim() ?? string.Empty;
                 restaurant.Address.Pincode = dto.Address.Pincode ?? string.Empty;
             }
 
-            // Update Cuisines (Clear and Add to avoid tracking/duplicate issues)
-            restaurant.RestaurantCuisines.Clear();
+            // Update Cuisines (Efficiently sync the collection)
+            var existingCuisineIds = restaurant.RestaurantCuisines.Select(rc => rc.CuisineId).ToList();
+            
+            // Remove those no longer present
+            var cuisinesToRemove = restaurant.RestaurantCuisines
+                .Where(rc => !cuisineIds.Contains(rc.CuisineId))
+                .ToList();
+            foreach (var rc in cuisinesToRemove)
+                restaurant.RestaurantCuisines.Remove(rc);
+
+            // Add new ones
             foreach (var cid in cuisineIds)
             {
-                restaurant.RestaurantCuisines.Add(new RestaurantCuisine
+                if (!existingCuisineIds.Contains(cid))
                 {
-                    Id = Guid.NewGuid(),
-                    RestaurantId = id,
-                    CuisineId = cid
-                });
+                    restaurant.RestaurantCuisines.Add(new RestaurantCuisine
+                    {
+                        Id = Guid.NewGuid(),
+                        RestaurantId = id,
+                        CuisineId = cid
+                    });
+                }
             }
 
             await _restaurantRepo.UpdateAsync(restaurant);
@@ -219,12 +235,12 @@ namespace CatalogService.Application.Services
             }
         }
 
-        public async Task PatchStatusAsync(Guid id, bool isOpen, string requestorId)
+        public async Task PatchStatusAsync(Guid id, bool isOpen, string requestorId, bool isAdmin = false)
         {
             var restaurant = await _restaurantRepo.GetByIdAsync(id)
                 ?? throw new NotFoundException(nameof(Restaurant), id);
 
-            if (restaurant.OwnerId != requestorId)
+            if (!isAdmin && restaurant.OwnerId != requestorId)
                 throw new ForbiddenException("You do not own this restaurant.");
 
             if (!restaurant.IsApproved)

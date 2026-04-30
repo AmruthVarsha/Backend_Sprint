@@ -124,9 +124,22 @@ export class PartnerSettingsComponent implements OnInit, OnDestroy {
     this.successMessage = '';
     this.cdr.markForCheck();
 
-    // Prepare DTO for backend (Map cuisines -> cuisineNames)
+    // Prepare DTO for backend (Strictly map to UpdateRestaurantDto)
     const updateDto = {
-      ...this.restaurant,
+      name: this.restaurant.name,
+      description: this.restaurant.description,
+      logoUrl: this.restaurant.logoUrl,
+      phoneNumber: this.restaurant.phoneNumber,
+      email: this.restaurant.email,
+      openingTime: this.restaurant.openingTime,
+      closingTime: this.restaurant.closingTime,
+      prepTimeMinutes: this.restaurant.prepTimeMinutes,
+      address: {
+        street: this.restaurant.address.street,
+        city: this.restaurant.address.city,
+        state: this.restaurant.address.state,
+        pincode: this.restaurant.address.pincode
+      },
       cuisineNames: (this.restaurant as any).cuisines || []
     };
 

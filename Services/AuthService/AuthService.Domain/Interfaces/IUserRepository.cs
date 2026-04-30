@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using AuthService.Domain.Entities;
@@ -12,5 +12,6 @@ namespace AuthService.Domain.Interfaces
         public Task<User?> UpdateAsync(User user);
         public Task<IEnumerable<User>> GetAllUsersAsync();
         public Task<IEnumerable<User>> GetUsersByFilterAsync(string? role,bool? isActive);
+        public Task DeleteAsync(string userId);
     }
 }

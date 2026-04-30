@@ -54,6 +54,7 @@ export class AdminOrderManagementComponent implements OnInit, OnDestroy {
   showStatusModal = false;
   updatingOrder: AdminOrder | null = null;
   selectedNewStatus: number = 0;
+  updateReason: string = '';
   isUpdatingStatus = false;
   statusUpdateError = '';
 
@@ -141,17 +142,18 @@ export class AdminOrderManagementComponent implements OnInit, OnDestroy {
 
   getStatusColorClasses(status: any): string {
     const label = this.getStatusLabel(status);
-    if (label === 'Delivered') return 'border-emerald-400/30 text-emerald-400 bg-emerald-400/10';
-    if (label === 'Pending') return 'border-yellow-400/30 text-yellow-400 bg-yellow-400/10';
-    if (label === 'Preparing') return 'border-blue-400/30 text-blue-400 bg-blue-400/10';
-    if (label === 'Cancelled') return 'border-red-400/30 text-red-400 bg-red-400/10';
-    return 'border-gray-400/30 text-gray-400 bg-gray-400/10';
+    if (label === 'Delivered') return 'border-emerald-200 text-emerald-700 bg-emerald-50';
+    if (label === 'Pending') return 'border-yellow-200 text-yellow-700 bg-yellow-50';
+    if (label === 'Preparing') return 'border-blue-200 text-blue-700 bg-blue-50';
+    if (label === 'Cancelled') return 'border-red-200 text-red-700 bg-red-50';
+    return 'border-gray-200 text-gray-700 bg-gray-50';
   }
 
   // ── STATUS UPDATE MODAL ────────────────────────────────────────────────────
   openStatusModal(order: AdminOrder): void {
     this.updatingOrder = order;
     this.selectedNewStatus = this.getStatusValue(order.status);
+    this.updateReason = '';
     this.statusUpdateError = '';
     this.showStatusModal = true;
     this.cdr.markForCheck();
@@ -160,18 +162,28 @@ export class AdminOrderManagementComponent implements OnInit, OnDestroy {
   cancelStatusUpdate(): void {
     this.showStatusModal = false;
     this.updatingOrder = null;
+    this.updateReason = '';
     this.statusUpdateError = '';
     this.cdr.markForCheck();
   }
 
   saveStatusUpdate(): void {
     if (!this.updatingOrder) return;
+    if (this.updateReason.length < 5) {
+      this.statusUpdateError = 'Reason must be at least 5 characters long.';
+      return;
+    }
 
     this.isUpdatingStatus = true;
     this.statusUpdateError = '';
     this.updatingOrderId = this.updatingOrder.orderId;
 
-    this.adminService.updateOrderStatus(this.updatingOrder.orderId, { status: this.selectedNewStatus }).pipe(
+    const updateDto = {
+      newStatus: Number(this.selectedNewStatus),
+      reason: this.updateReason
+    };
+
+    this.adminService.updateOrderStatus(this.updatingOrder.orderId, updateDto).pipe(
       takeUntil(this.destroy$),
       catchError(err => {
         console.error('Failed to update order status', err);
@@ -192,6 +204,7 @@ export class AdminOrderManagementComponent implements OnInit, OnDestroy {
       this.successMessage = `Order status updated to "${this.getStatusLabel(this.selectedNewStatus)}".`;
       this.showStatusModal = false;
       this.updatingOrder = null;
+      this.updateReason = '';
       this.cdr.markForCheck();
       setTimeout(() => { this.successMessage = ''; this.cdr.markForCheck(); }, 3000);
     });

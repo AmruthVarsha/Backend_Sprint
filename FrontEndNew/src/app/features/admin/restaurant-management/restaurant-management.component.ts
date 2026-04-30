@@ -124,6 +124,28 @@ export class AdminRestaurantManagementComponent implements OnInit, OnDestroy {
     });
   }
 
+  toggleRestaurantStatus(restaurant: Restaurant): void {
+    const newStatus = !restaurant.isActive;
+    this.errorMessage = '';
+    this.successMessage = '';
+    this.cdr.markForCheck();
+
+    this.adminService.updateRestaurantStatus(restaurant.restaurantId, newStatus).pipe(
+      takeUntil(this.destroy$),
+      catchError(err => {
+        console.error('Failed to update status', err);
+        this.errorMessage = `Failed to update status for "${restaurant.name}".`;
+        this.cdr.markForCheck();
+        return EMPTY;
+      })
+    ).subscribe(() => {
+      restaurant.isActive = newStatus;
+      this.successMessage = `"${restaurant.name}" is now ${newStatus ? 'Active' : 'Inactive'}.`;
+      this.cdr.markForCheck();
+      setTimeout(() => { this.successMessage = ''; this.cdr.markForCheck(); }, 3000);
+    });
+  }
+
   goBack(): void {
     this.router.navigate(['/admin/dashboard']);
   }

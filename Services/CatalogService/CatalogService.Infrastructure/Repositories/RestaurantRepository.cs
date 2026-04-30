@@ -58,7 +58,8 @@ namespace CatalogService.Infrastructure.Repositories
                 .Include(r => r.RestaurantCuisines)
                     .ThenInclude(rc => rc.Cuisine)
                 .Where(r => r.Name.Contains(searchTerm) ||
-                            r.RestaurantCuisines.Any(rc => rc.Cuisine.Name.Contains(searchTerm)))
+                            r.RestaurantCuisines.Any(rc => rc.Cuisine.Name.Contains(searchTerm)) ||
+                            r.Categories.Any(c => c.MenuItems.Any(m => m.Name.Contains(searchTerm))))
                 .ToListAsync();
         }
 

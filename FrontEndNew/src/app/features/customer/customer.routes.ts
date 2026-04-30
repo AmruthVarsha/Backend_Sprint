@@ -26,6 +26,10 @@ export const CUSTOMER_ROUTES: Routes = [
     loadComponent: () => import('./profile/profile.component').then(m => m.ProfileComponent)
   },
   {
+    path: 'support',
+    loadComponent: () => import('./support/support.component').then(m => m.SupportComponent)
+  },
+  {
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full'

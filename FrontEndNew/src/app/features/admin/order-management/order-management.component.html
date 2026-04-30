@@ -146,7 +146,7 @@
       <!-- Status selector -->
       <div class="mb-6">
         <label class="block text-xs text-[#9ca3af] uppercase mb-2">New Status</label>
-        <div class="grid grid-cols-2 gap-2">
+        <div class="grid grid-cols-2 gap-2 mb-4">
           @for (opt of statusOptions; track opt.value) {
             <button
               (click)="selectedNewStatus = opt.value"
@@ -162,6 +162,19 @@
             </button>
           }
         </div>
+
+        <label class="block text-xs text-[#9ca3af] uppercase mb-2">Reason for Update</label>
+        <textarea 
+          [(ngModel)]="updateReason" 
+          name="updateReason"
+          rows="3"
+          placeholder="e.g., Customer requested cancellation, Kitchen delay, etc."
+          class="w-full px-4 py-2 rounded-lg border border-[#e5e7eb] focus:ring-1 focus:ring-[#ff6b35] focus:border-[#ff6b35] resize-none text-sm outline-none text-[#1a1a1a]"
+          [class.border-red-500]="updateReason.length > 0 && updateReason.length < 5"
+        ></textarea>
+        @if (updateReason.length > 0 && updateReason.length < 5) {
+          <p class="text-[10px] text-red-500 mt-1">Reason must be at least 5 characters long.</p>
+        }
       </div>
 
       <div class="flex gap-3">
@@ -173,7 +186,7 @@
         </button>
         <button
           (click)="saveStatusUpdate()"
-          [disabled]="isUpdatingStatus"
+          [disabled]="isUpdatingStatus || updateReason.length < 5"
           class="flex-1 py-3 rounded-xl bg-[#ff6b35] text-white font-bold hover:bg-[#ff8555] transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md"
         >
           @if (isUpdatingStatus) {

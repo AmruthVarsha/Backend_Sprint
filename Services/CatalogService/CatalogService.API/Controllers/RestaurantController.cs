@@ -80,12 +80,13 @@ namespace CatalogService.API.Controllers
             return Ok("Update Successfully");
         }
 
-        [Authorize(Roles = "Partner")]
+        [Authorize(Roles = "Partner,Admin")]
         [HttpPatch("restaurant/{id}/status")]
         public async Task<IActionResult> PatchRestaurantStatus([FromRoute] Guid id, [FromBody] PatchRestaurantStatusDto dto)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            await restaurantService.PatchStatusAsync(id, dto.IsOpen, userId!);
+            var isAdmin = User.IsInRole("Admin");
+            await restaurantService.PatchStatusAsync(id, dto.IsOpen, userId!, isAdmin);
             return Ok(new { message = "Restaurant status updated successfully." });
         }
 

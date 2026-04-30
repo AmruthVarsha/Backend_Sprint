@@ -1,0 +1,137 @@
+.reveal-container {
+  position: relative;
+  width: 100%;
+  height: 100vh; /* Fill the entire viewport */
+  min-height: 700px;
+  overflow: hidden;
+  background-color: #f4fafd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.content-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 20px;
+}
+
+.text-content {
+  z-index: 10;
+  max-width: 700px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal-container.animate .text-content {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.food-item {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  transition: all 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.food-item img {
+  width: 220px; /* Reduced from 280px */
+  height: auto;
+  filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.12));
+}
+
+/* Burger: Comes from top-left */
+.food-item.burger {
+  top: 5%;
+  left: 0;
+  transform: translate(-100%, -100%) rotate(-45deg);
+}
+
+.food-item.burger.visible {
+  opacity: 1;
+  transform: translate(0, 0) rotate(-10deg);
+  top: 20%;
+  left: 8%;
+}
+
+/* Coke: Comes from top-right */
+.food-item.coke {
+  top: 5%;
+  right: 0;
+  transform: translate(100%, -100%) rotate(45deg);
+}
+
+.food-item.coke.visible {
+  opacity: 1;
+  transform: translate(0, 0) rotate(10deg);
+  top: 20%;
+  right: 8%;
+}
+
+/* Pizza: Comes from bottom */
+.food-item.pizza {
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 100%) rotate(0);
+}
+
+.food-item.pizza.visible {
+  opacity: 1;
+  transform: translate(-50%, 0) rotate(0deg);
+  bottom: 5%;
+}
+
+.scroll-indicator {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #5c403a; /* text-on-surface-variant */
+  opacity: 0;
+  transition: opacity 1s ease-in 1s;
+}
+
+.reveal-container.animate .scroll-indicator {
+  opacity: 1;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-bounce {
+  animation: bounce 2s infinite;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .food-item img {
+    width: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .food-item img {
+    width: 150px;
+  }
+  .food-item.burger.visible {
+    top: 5%;
+    left: 5%;
+  }
+  .food-item.coke.visible {
+    top: 5%;
+    right: 5%;
+  }
+}

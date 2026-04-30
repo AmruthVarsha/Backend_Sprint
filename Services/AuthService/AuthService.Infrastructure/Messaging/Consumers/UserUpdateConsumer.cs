@@ -45,15 +45,10 @@ namespace AuthService.Infrastructure.Messaging.Consumers
             }
             else if (message.EventType == "Deleted")
             {
-                var user = await _userRepository.GetByIdAsync(message.UserId);
-                if (user != null)
-                {
-                    user.IsActive = false;
-                    await _userRepository.UpdateAsync(user);
+                await _userRepository.DeleteAsync(message.UserId);
 
-                    var tokens = await _refreshTokenRepository.GetByUserIdAsync(message.UserId);
-                    await _refreshTokenRepository.RevokeAll(tokens, "admin-deleted");
-                }
+                var tokens = await _refreshTokenRepository.GetByUserIdAsync(message.UserId);
+                await _refreshTokenRepository.RevokeAll(tokens, "admin-deleted");
             }
         }
     }

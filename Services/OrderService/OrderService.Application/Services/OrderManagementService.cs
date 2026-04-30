@@ -56,24 +56,23 @@ namespace OrderService.Application.Services
             if (address.UserId != customerId)
                 throw new ForbiddenException("The selected address does not belong to you.");
 
-            // 2. Load all active carts for this customer
-            var allCarts = await _cartRepository.GetByCustomerId(customerId);
-            var activeCarts = allCarts
-                .Where(c => c.Status == CartStatus.Active && c.CartItems.Any())
-                .ToList();
+            // 2. Validate items from DTO
+            if (dto.Items == null || !dto.Items.Any())
+                throw new BadRequestException("No items found in your checkout request.");
 
-            if (!activeCarts.Any())
-                throw new BadRequestException("You have no active carts with items to checkout.");
+            // Group items by restaurant to create sub-orders
+            var itemsByRestaurant = dto.Items.GroupBy(i => i.RestaurantId).ToList();
 
             // 3. Validate each cart (restaurant active, approved, open, service area, items)
             var restaurantOrders = new List<RestaurantOrder>();
             decimal grandTotal = 0;
 
-            foreach (var cart in activeCarts)
+            foreach (var restaurantGroup in itemsByRestaurant)
             {
-                var restaurant = await _catalogRepository.GetRestaurantById(cart.RestaurantId);
+                var restaurantId = restaurantGroup.Key;
+                var restaurant = await _catalogRepository.GetRestaurantById(restaurantId);
                 if (restaurant == null)
-                    throw new NotFoundException("Restaurant", cart.RestaurantId);
+                    throw new NotFoundException("Restaurant", restaurantId);
 
                 if (!restaurant.IsActive)
                     throw new BadRequestException($"Restaurant '{restaurant.Name}' is currently inactive.");
@@ -82,48 +81,51 @@ namespace OrderService.Application.Services
                     throw new BadRequestException($"Restaurant '{restaurant.Name}' is not yet approved.");
 
                 var currentTime = TimeOnly.FromDateTime(DateTime.Now);
-                if (currentTime < restaurant.OpeningTime || currentTime > restaurant.ClosingTime)
+                var openingTime = TimeOnly.Parse(restaurant.OpeningTime);
+                var closingTime = TimeOnly.Parse(restaurant.ClosingTime);
+
+                if (currentTime < openingTime || currentTime > closingTime)
                     throw new BadRequestException(
                         $"Restaurant '{restaurant.Name}' is currently closed " +
-                        $"({restaurant.OpeningTime:HH:mm} – {restaurant.ClosingTime:HH:mm}).");
+                        $"({restaurant.OpeningTime} – {restaurant.ClosingTime}).");
 
-                var isServiceable = await _catalogRepository.IsServiceAreaAvailable(cart.RestaurantId, address.Pincode);
+                var isServiceable = await _catalogRepository.IsServiceAreaAvailable(restaurantId, address.Pincode);
                 if (!isServiceable)
                     throw new BadRequestException(
                         $"Restaurant '{restaurant.Name}' does not deliver to pincode {address.Pincode}.");
 
-                // Validate every cart item is still live
+                // Validate every item is still live
                 decimal subTotal = 0;
                 var orderItems = new List<OrderItem>();
 
-                foreach (var cartItem in cart.CartItems)
+                foreach (var itemDto in restaurantGroup)
                 {
                     // Find the category and item in the pre-fetched restaurant menu
-                    var category = restaurant.Menu.FirstOrDefault(c => c.Items.Any(i => i.Id == cartItem.MenuItemId));
-                    var menuItem = category?.Items.FirstOrDefault(i => i.Id == cartItem.MenuItemId);
+                    var category = restaurant.Menu.FirstOrDefault(c => c.Items.Any(i => i.Id == itemDto.MenuItemId));
+                    var menuItem = category?.Items.FirstOrDefault(i => i.Id == itemDto.MenuItemId);
 
                     if (menuItem == null)
                         throw new BadRequestException(
-                            $"'{cartItem.MenuItemName}' from '{restaurant.Name}' is no longer available.");
+                            $"'{itemDto.MenuItemName}' from '{restaurant.Name}' is no longer available.");
 
                     if (!menuItem.IsAvailable)
                         throw new BadRequestException(
-                            $"'{cartItem.MenuItemName}' from '{restaurant.Name}' is currently unavailable.");
+                            $"'{itemDto.MenuItemName}' from '{restaurant.Name}' is currently unavailable.");
 
                     if (!category.IsActive)
                         throw new BadRequestException(
-                            $"'{cartItem.MenuItemName}' belongs to an inactive category.");
+                            $"'{itemDto.MenuItemName}' belongs to an inactive category.");
 
-                    var lineTotal = cartItem.UnitPrice * cartItem.Quantity;
+                    var lineTotal = itemDto.UnitPrice * itemDto.Quantity;
                     subTotal += lineTotal;
 
                     orderItems.Add(new OrderItem
                     {
                         Id = Guid.NewGuid(),
-                        MenuItemId = cartItem.MenuItemId,
-                        MenuItemName = cartItem.MenuItemName,
-                        UnitPrice = cartItem.UnitPrice,
-                        Quantity = cartItem.Quantity,
+                        MenuItemId = itemDto.MenuItemId,
+                        MenuItemName = itemDto.MenuItemName,
+                        UnitPrice = itemDto.UnitPrice,
+                        Quantity = itemDto.Quantity,
                         TotalPrice = lineTotal
                     });
                 }
@@ -133,9 +135,8 @@ namespace OrderService.Application.Services
                 restaurantOrders.Add(new RestaurantOrder
                 {
                     Id = Guid.NewGuid(),
-                    RestaurantId = cart.RestaurantId,
+                    RestaurantId = restaurantId,
                     RestaurantName = restaurant.Name,
-                    // Store restaurant address so delivery agent knows where to pick up
                     RestaurantAddress = restaurant.FormattedAddress,
                     SubTotal = subTotal,
                     Status = RestaurantOrderStatus.Pending,
@@ -183,13 +184,7 @@ namespace OrderService.Application.Services
             // 6. Auto-assign delivery agent (use delivery address pincode)
             await TryAutoAssignAgentAsync(order, address.Pincode);
 
-            // 7. Mark all carts as Ordered
-            foreach (var cart in activeCarts)
-            {
-                cart.Status = CartStatus.Ordered;
-                cart.UpdatedAt = DateTime.UtcNow;
-                await _cartRepository.UpdateAsync(cart);
-            }
+            // 7. (Optional) Cleanup local carts if any existed - skipped as we use localStorage now
 
             // 8. Publish event
             await _orderStatusPublisher.PublishOrderStatus(

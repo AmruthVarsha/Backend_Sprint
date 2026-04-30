@@ -129,7 +129,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       addressId: this.selectedAddressId,
       paymentMethod: this.selectedPaymentMethod,
       deliveryInstructions: this.deliveryInstructions || undefined,
-      scheduledSlot: this.scheduledSlot || undefined
+      scheduledSlot: this.scheduledSlot || undefined,
+      items: this.cartItems.map(item => ({
+        menuItemId: item.menuItem.id,
+        menuItemName: item.menuItem.name,
+        unitPrice: item.menuItem.price,
+        quantity: item.quantity,
+        restaurantId: item.restaurantId
+      }))
     };
 
     this.orderService.checkout(dto).pipe(takeUntil(this.destroy$)).subscribe({

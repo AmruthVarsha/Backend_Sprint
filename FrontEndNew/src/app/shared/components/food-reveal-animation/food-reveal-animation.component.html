@@ -1,0 +1,33 @@
+<section #section class="reveal-container" [class.animate]="isVisible">
+  <div class="content-wrapper">
+    <div class="text-content">
+      <h2 class="font-display-lg text-display-lg text-on-surface">Satisfy Your <span class="text-primary">Nightly</span> Cravings.</h2>
+      <p class="font-body-lg text-body-lg text-on-surface-variant mt-4">Premium restaurants delivered with futuristic precision.</p>
+      
+      <!-- CTA Button -->
+      <button (click)="scrollToContent()"
+        class="mt-8 px-10 py-4 bg-primary text-on-primary rounded-full font-label-lg text-label-lg font-semibold shadow-[0_4px_12px_rgba(181,28,0,0.3)] hover:brightness-110 active:scale-95 transform transition-all">
+        Explore Restaurants
+      </button>
+    </div>
+
+    <!-- Food items with corrected paths from public directory -->
+    <div class="food-item burger" [class.visible]="isVisible">
+      <img src="/images/Burger.png" alt="Burger">
+    </div>
+    
+    <div class="food-item coke" [class.visible]="isVisible">
+      <img src="/images/coke.png" alt="Coke">
+    </div>
+
+    <div class="food-item pizza" [class.visible]="isVisible">
+      <img src="/images/Pizza.png" alt="Pizza">
+    </div>
+  </div>
+
+  <!-- Scroll Indicator -->
+  <div class="scroll-indicator" (click)="scrollToContent()" style="cursor: pointer;">
+    <span class="material-symbols-outlined animate-bounce">keyboard_double_arrow_down</span>
+    <p class="font-label-sm text-label-sm uppercase tracking-widest mt-2">Scroll Down</p>
+  </div>
+</section>

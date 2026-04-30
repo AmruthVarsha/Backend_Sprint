@@ -56,42 +56,20 @@
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- Revenue by Category -->
     <div class="bg-white border border-[#e5e7eb] rounded-2xl p-6 shadow-sm">
-      <h3 class="text-xl font-bold text-[#1a1a1a] mb-6">Top Performing Restaurants</h3>
-      <div class="flex justify-center items-center h-48 border border-[#e5e7eb] rounded-xl bg-[#f9fafb]">
-        <p class="text-[#6b7280] flex items-center gap-2">
-          <span class="material-symbols-outlined">construction</span>
-          Advanced reporting coming soon
-        </p>
+      <h3 class="text-xl font-bold text-[#1a1a1a] mb-6">User Segmentation</h3>
+      <div class="h-64 relative">
+        <canvas #revenueCategoryChart></canvas>
       </div>
     </div>
 
+    <!-- Order Volume Over Time -->
     <div class="bg-white border border-[#e5e7eb] rounded-2xl p-6 shadow-sm">
-      <h3 class="text-xl font-bold text-[#1a1a1a] mb-6">Export Reports</h3>
-      <div class="space-y-4">
-        <button (click)="exportReport('revenue')" class="w-full flex items-center justify-between p-4 bg-[#f9fafb] rounded-xl hover:bg-[#f3f4f6] transition-all border border-[#e5e7eb]">
-          <div class="flex items-center gap-3">
-            <span class="material-symbols-outlined text-[#ff6b35]">download</span>
-            <span class="text-[#1a1a1a] font-medium">Revenue Report</span>
-          </div>
-          <span class="material-symbols-outlined text-[#6b7280]">chevron_right</span>
-        </button>
-        <button (click)="exportReport('orders')" class="w-full flex items-center justify-between p-4 bg-[#f9fafb] rounded-xl hover:bg-[#f3f4f6] transition-all border border-[#e5e7eb]">
-          <div class="flex items-center gap-3">
-            <span class="material-symbols-outlined text-[#ff6b35]">download</span>
-            <span class="text-[#1a1a1a] font-medium">Orders Report</span>
-          </div>
-          <span class="material-symbols-outlined text-[#6b7280]">chevron_right</span>
-        </button>
-        <button (click)="exportReport('users')" class="w-full flex items-center justify-between p-4 bg-[#f9fafb] rounded-xl hover:bg-[#f3f4f6] transition-all border border-[#e5e7eb]">
-          <div class="flex items-center gap-3">
-            <span class="material-symbols-outlined text-[#ff6b35]">download</span>
-            <span class="text-[#1a1a1a] font-medium">Users Report</span>
-          </div>
-          <span class="material-symbols-outlined text-[#6b7280]">chevron_right</span>
-        </button>
+      <h3 class="text-xl font-bold text-[#1a1a1a] mb-6">Order Density Pulse</h3>
+      <div class="h-64 relative">
+        <canvas #orderVolumeChart></canvas>
       </div>
     </div>
   </div>
 </main>
-

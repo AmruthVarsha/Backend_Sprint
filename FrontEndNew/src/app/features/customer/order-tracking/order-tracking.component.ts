@@ -118,15 +118,15 @@ export class OrderTrackingComponent implements OnInit, OnDestroy {
   /** Per-restaurant status colour */
   getSubStatusClass(status: string): string {
     const map: Record<string, string> = {
-      [RestaurantOrderStatus.Pending]:       'bg-zinc-500/20 text-zinc-300 border-zinc-500/40',
-      [RestaurantOrderStatus.Accepted]:      'bg-blue-500/15 text-blue-300 border-blue-500/40',
-      [RestaurantOrderStatus.Preparing]:     'bg-yellow-500/15 text-yellow-300 border-yellow-500/40',
-      [RestaurantOrderStatus.ReadyForPickup]:'bg-orange-500/15 text-orange-300 border-orange-500/40',
-      [RestaurantOrderStatus.PickedUp]:      'bg-purple-500/15 text-purple-300 border-purple-500/40',
-      [RestaurantOrderStatus.Cancelled]:     'bg-red-500/15 text-red-300 border-red-500/40',
-      [RestaurantOrderStatus.Rejected]:      'bg-red-500/15 text-red-300 border-red-500/40',
+      [RestaurantOrderStatus.Pending]:       'bg-surface-container text-on-surface-variant border-surface-variant',
+      [RestaurantOrderStatus.Accepted]:      'bg-secondary-container text-on-secondary-container border-secondary/20',
+      [RestaurantOrderStatus.Preparing]:     'bg-tertiary-container text-on-tertiary-container border-tertiary/20',
+      [RestaurantOrderStatus.ReadyForPickup]:'bg-primary-container text-on-primary-container border-primary/20',
+      [RestaurantOrderStatus.PickedUp]:      'bg-secondary-container text-on-secondary-container border-secondary/20',
+      [RestaurantOrderStatus.Cancelled]:     'bg-error-container text-on-error-container border-error/20',
+      [RestaurantOrderStatus.Rejected]:      'bg-error-container text-on-error-container border-error/20',
     };
-    return map[status] ?? 'bg-zinc-500/20 text-zinc-300 border-zinc-500/40';
+    return map[status] ?? 'bg-surface-container text-on-surface-variant border-surface-variant';
   }
 
   getSubStatusIcon(status: string): string {

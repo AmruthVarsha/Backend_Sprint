@@ -1,26 +1,36 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
-import { Router } from '@angular/router';
-import { PartnerService } from '../../../core/services/partner.service';
-import { finalize } from 'rxjs/operators';
+import { Router, RouterModule } from '@angular/router';
+import { PartnerService, Restaurant } from '../../../core/services/partner.service';
+import { finalize, takeUntil, filter } from 'rxjs/operators';
+import { PartnerSidebarComponent } from '../../../shared/components/partner-sidebar/partner-sidebar.component';
+import { Subject } from 'rxjs';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-add-restaurant',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, PartnerSidebarComponent],
   templateUrl: './add-restaurant.component.html'
 })
-export class AddRestaurantComponent implements OnInit {
+export class AddRestaurantComponent implements OnInit, OnDestroy {
   restaurantForm!: FormGroup;
   isSubmitting = false;
   errorMessage = '';
   availableCuisines: any[] = [];
   selectedCuisineNames: Set<string> = new Set();
 
+  restaurants: Restaurant[] = [];
+  selectedRestaurant: Restaurant | null = null;
+  get restaurantName(): string { return this.selectedRestaurant?.name || 'New Restaurant'; }
+
+  private destroy$ = new Subject<void>();
+
   constructor(
     private fb: FormBuilder,
     private partnerService: PartnerService,
+    private authService: AuthService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
@@ -28,6 +38,39 @@ export class AddRestaurantComponent implements OnInit {
   ngOnInit(): void {
     this.initForm();
     this.loadCuisines();
+    this.loadRestaurants();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private loadRestaurants(): void {
+    this.partnerService.getMyRestaurants().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (list) => { this.restaurants = list; this.cdr.markForCheck(); },
+      error: () => { console.error('Failed to load restaurants.'); }
+    });
+
+    this.partnerService.selectedRestaurant$.pipe(
+      takeUntil(this.destroy$),
+      filter(r => r !== null)
+    ).subscribe(restaurant => {
+      this.selectedRestaurant = restaurant;
+      this.cdr.markForCheck();
+    });
+  }
+
+  selectRestaurant(restaurant: Restaurant): void {
+    this.partnerService.setSelectedRestaurant(restaurant);
+    this.cdr.markForCheck();
+  }
+
+  logout(): void {
+    this.authService.logout().subscribe({
+      next: () => this.router.navigate(['/auth/login']),
+      error: () => this.router.navigate(['/auth/login'])
+    });
   }
 
   private initForm(): void {
