@@ -163,6 +163,7 @@ export interface DeliveryOrderResponseDTO {
   assignmentStatus: string;
   pickedUpAt?: Date;
   deliveredAt?: Date;
+  createdAt: string | Date;
   restaurantStops: DeliveryRestaurantStopDTO[];
 }
 

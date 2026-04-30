@@ -68,7 +68,7 @@ export class DeliveryHistory implements OnInit, OnDestroy {
 
   get filteredAssignments(): DeliveryOrderResponseDTO[] {
     const now = new Date();
-    return this.allAssignments.filter(a => {
+    const filtered = this.allAssignments.filter(a => {
       const date = a.deliveredAt ? new Date(a.deliveredAt) : null;
       if (this.selectedFilter === 'today') {
         return date && date.toDateString() === now.toDateString();
@@ -80,6 +80,12 @@ export class DeliveryHistory implements OnInit, OnDestroy {
         return date >= weekAgo;
       }
       return true; // 'all'
+    });
+
+    return filtered.sort((a, b) => {
+      const timeA = a.deliveredAt ? new Date(a.deliveredAt).getTime() : 0;
+      const timeB = b.deliveredAt ? new Date(b.deliveredAt).getTime() : 0;
+      return timeB - timeA;
     });
   }
 
@@ -100,10 +106,10 @@ export class DeliveryHistory implements OnInit, OnDestroy {
 
   getStatusClass(status: string): string {
     const map: Record<string, string> = {
-      [DeliveryStatus.Delivered]: 'border-[#00ff88]/30 bg-[#00ff88]/10 text-[#00ff88]',
-      [DeliveryStatus.PickedUp]: 'border-purple-500/30 bg-purple-500/10 text-purple-300',
-      [DeliveryStatus.Assigned]: 'border-blue-500/30 bg-blue-500/10 text-blue-300',
+      [DeliveryStatus.Delivered]: 'border-green-200 bg-green-50 text-green-700',
+      [DeliveryStatus.PickedUp]: 'border-purple-200 bg-purple-50 text-purple-700',
+      [DeliveryStatus.Assigned]: 'border-blue-200 bg-blue-50 text-blue-700',
     };
-    return map[status] ?? 'border-zinc-500/30 bg-zinc-500/10 text-zinc-300';
+    return map[status] ?? 'border-gray-200 bg-gray-50 text-gray-700';
   }
 }

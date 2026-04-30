@@ -25,6 +25,7 @@ namespace OrderService.Application.DTOs.Delivery
         public string AssignmentStatus { get; set; } = string.Empty;
         public DateTime? PickedUpAt { get; set; }
         public DateTime? DeliveredAt { get; set; }
+        public DateTime CreatedAt { get; set; }
 
         // All pickup stops
         public List<DeliveryRestaurantStopDTO> RestaurantStops { get; set; } = new();

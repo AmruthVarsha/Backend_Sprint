@@ -34,18 +34,12 @@ namespace OrderService.Application.Services
         public async Task<IEnumerable<DeliveryOrderResponseDTO>> GetAssignmentsAsync(string agentId)
         {
             var assignments = await _deliveryRepository.GetByAgentId(agentId);
-            var result = new List<DeliveryOrderResponseDTO>();
-
-            foreach (var assignment in assignments)
-            {
-                var order = await _orderRepository.GetByIdWithDetails(assignment.OrderId);
-                if (order == null) continue;
-
-                var payment = await _paymentRepository.GetByOrderId(assignment.OrderId);
-                result.Add(MapToDeliveryResponse(order, assignment, payment));
-            }
-
-            return result;
+            
+            return assignments
+                .Where(a => a.Order != null)
+                .OrderBy(a => (int)a.Status) // Assigned(0), PickedUp(1), Delivered(2)
+                .ThenByDescending(a => a.Status == DeliveryStatus.Delivered ? (a.DeliveredAt ?? DateTime.MinValue) : a.Order!.CreatedAt)
+                .Select(assignment => MapToDeliveryResponse(assignment.Order!, assignment, assignment.Order!.Payment));
         }
 
         public async Task<DeliveryOrderResponseDTO> UpdateDeliveryStatusAsync(
@@ -231,6 +225,7 @@ namespace OrderService.Application.Services
                 AssignmentStatus = assignment.Status.ToString(),
                 PickedUpAt = assignment.PickedUpAt,
                 DeliveredAt = assignment.DeliveredAt,
+                CreatedAt = order.CreatedAt,
                 RestaurantStops = order.RestaurantOrders.Select(ro => new DeliveryRestaurantStopDTO
                 {
                     SubOrderId = ro.Id,

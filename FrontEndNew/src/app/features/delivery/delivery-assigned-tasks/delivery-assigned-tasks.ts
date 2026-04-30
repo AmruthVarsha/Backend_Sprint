@@ -51,6 +51,7 @@ export class DeliveryAssignedTasks implements OnInit, OnDestroy {
     this.deliveryService.getAssignments().pipe(takeUntil(this.destroy$)).subscribe({
       next: (list) => {
         this.assignments = list;
+        this.sortAssignments();
         this.isLoading = false;
         this.cdr.detectChanges();
       },
@@ -85,6 +86,7 @@ export class DeliveryAssignedTasks implements OnInit, OnDestroy {
               updated,
               ...this.assignments.slice(idx + 1)
             ];
+            this.sortAssignments();
           }
           this.updatingId = null;
           this.cdr.detectChanges();
@@ -112,6 +114,7 @@ export class DeliveryAssignedTasks implements OnInit, OnDestroy {
               updated,
               ...this.assignments.slice(idx + 1)
             ];
+            this.sortAssignments();
           }
           this.updatingId = null;
           this.cdr.detectChanges();
@@ -126,25 +129,53 @@ export class DeliveryAssignedTasks implements OnInit, OnDestroy {
 
   getStopStatusClass(status: string): string {
     const map: Record<string, string> = {
-      [RestaurantOrderStatus.ReadyForPickup]: 'text-green-400',
-      [RestaurantOrderStatus.Preparing]:      'text-yellow-400',
-      [RestaurantOrderStatus.Pending]:        'text-zinc-400',
-      [RestaurantOrderStatus.PickedUp]:       'text-purple-400',
+      [RestaurantOrderStatus.ReadyForPickup]: 'text-green-700',
+      [RestaurantOrderStatus.Preparing]:      'text-yellow-700',
+      [RestaurantOrderStatus.Pending]:        'text-gray-600',
+      [RestaurantOrderStatus.PickedUp]:       'text-[#44e2cd]',
     };
-    return map[status] ?? 'text-zinc-400';
+    return map[status] ?? 'text-gray-600';
   }
 
   getAssignmentStatusClass(status: string): string {
     const map: Record<string, string> = {
-      [DeliveryStatus.Assigned]:  'bg-blue-500/15 border-blue-500/40 text-blue-300',
-      [DeliveryStatus.PickedUp]:  'bg-purple-500/15 border-purple-500/40 text-purple-300',
-      [DeliveryStatus.Delivered]: 'bg-green-500/15 border-green-500/40 text-green-300',
+      [DeliveryStatus.Assigned]:  'bg-blue-50 border-blue-200 text-blue-700',
+      [DeliveryStatus.PickedUp]:  'bg-purple-50 border-purple-200 text-purple-700',
+      [DeliveryStatus.Delivered]: 'bg-green-50 border-green-200 text-green-700',
     };
-    return map[status] ?? 'bg-zinc-500/20 border-zinc-500/40 text-zinc-300';
+    return map[status] ?? 'bg-gray-50 border-gray-200 text-gray-700';
   }
 
   /** Returns the agent's earning for a single assignment (exposed for template). */
   deliveryEarning(totalAmount: number): number {
     return Math.round(totalAmount * DELIVERY_COMMISSION_RATE * 100) / 100;
+  }
+
+  private sortAssignments(): void {
+    const statusPriority: Record<string, number> = {
+      [DeliveryStatus.Assigned]: 0,
+      [DeliveryStatus.PickedUp]: 1,
+      [DeliveryStatus.Delivered]: 2
+    };
+
+    this.assignments.sort((a, b) => {
+      const priorityA = statusPriority[a.assignmentStatus] ?? 3;
+      const priorityB = statusPriority[b.assignmentStatus] ?? 3;
+
+      if (priorityA !== priorityB) {
+        return priorityA - priorityB;
+      }
+
+      // Secondary sort by date (newest first)
+      const timeA = a.assignmentStatus === DeliveryStatus.Delivered 
+        ? (a.deliveredAt ? new Date(a.deliveredAt).getTime() : 0)
+        : (a.createdAt ? new Date(a.createdAt).getTime() : 0);
+        
+      const timeB = b.assignmentStatus === DeliveryStatus.Delivered 
+        ? (b.deliveredAt ? new Date(b.deliveredAt).getTime() : 0)
+        : (b.createdAt ? new Date(b.createdAt).getTime() : 0);
+
+      return timeB - timeA;
+    });
   }
 }
