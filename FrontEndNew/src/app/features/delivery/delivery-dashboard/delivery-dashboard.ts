@@ -17,7 +17,7 @@ const DELIVERY_COMMISSION_RATE = 0.08;
 
 /** Returns the agent's cut for a given order amount. */
 function deliveryEarning(totalAmount: number): number {
-  return Math.round(totalAmount * DELIVERY_COMMISSION_RATE * 100) / 100;
+  return Math.floor(totalAmount * DELIVERY_COMMISSION_RATE * 100) / 100;
 }
 
 @Component({
@@ -64,13 +64,14 @@ export class DeliveryDashboard implements OnInit, OnDestroy {
 
   get totalEarningsToday(): number {
     const todayStr = new Date().toDateString();
-    return this.assignments
+    const total = this.assignments
       .filter(a =>
         a.assignmentStatus === DeliveryStatus.Delivered &&
         a.deliveredAt &&
         new Date(a.deliveredAt).toDateString() === todayStr
       )
       .reduce((sum, a) => sum + deliveryEarning(a.totalAmount), 0);
+    return Number(total.toFixed(2));
   }
 
   /** Returns the agent's earning for a single assignment (exposed for template). */
@@ -107,7 +108,15 @@ export class DeliveryDashboard implements OnInit, OnDestroy {
         this.cdr.markForCheck();
       });
 
-    this.loadProfile();
+    // Load agent profile reactively
+    this.deliveryService.profile$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(p => {
+        this.profile = p;
+        this.isLoadingProfile = false;
+        this.cdr.markForCheck();
+      });
+
     this.loadAssignments();
   }
 
@@ -116,23 +125,7 @@ export class DeliveryDashboard implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  loadProfile(): void {
-    this.isLoadingProfile = true;
-    this.deliveryService.getProfile()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (p) => {
-          this.profile = p;
-          this.isLoadingProfile = false;
-          this.cdr.markForCheck();
-        },
-        error: () => {
-          this.profile = null;
-          this.isLoadingProfile = false;
-          this.cdr.markForCheck();
-        }
-      });
-  }
+
 
   loadAssignments(): void {
     this.isLoadingAssignments = true;

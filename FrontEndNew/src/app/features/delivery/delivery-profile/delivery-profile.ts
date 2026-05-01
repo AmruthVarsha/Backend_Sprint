@@ -34,7 +34,21 @@ export class DeliveryProfile implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.loadProfile();
+    // Subscribe to the reactive profile subject
+    this.deliveryService.profile$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(p => {
+        if (p) {
+          this.profile = p;
+          if (p.id) {
+            this.agentNameInput = p.agentName || '';
+            this.pincodeInput = p.currentPincode || '';
+            this.isActiveInput = p.isActive;
+          }
+        }
+        this.isLoading = false;
+        this.cdr.markForCheck();
+      });
   }
 
   ngOnDestroy(): void {
@@ -42,26 +56,7 @@ export class DeliveryProfile implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  loadProfile(): void {
-    this.isLoading = true;
-    this.deliveryService.getProfile().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (p) => {
-        this.profile = p;
-        if (p.id) { // Only set if profile actually exists (not the empty fallback)
-          this.agentNameInput = p.agentName || '';
-          this.pincodeInput = p.currentPincode || '';
-          this.isActiveInput = p.isActive;
-        }
-        this.isLoading = false;
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        this.errorMessage = 'Failed to load profile details. Please try again.';
-        this.isLoading = false;
-        this.cdr.detectChanges();
-      }
-    });
-  }
+
 
   saveProfile(): void {
     if (!this.agentNameInput.trim()) {

@@ -54,7 +54,7 @@
           @if (isLoadingAssignments) {
           <div class="h-8 w-24 bg-surface-container animate-pulse rounded"></div>
           } @else {
-          <h3 class="font-headline-md text-headline-md text-on-surface">₹{{ totalEarningsToday }}</h3>
+          <h3 class="font-headline-md text-headline-md text-on-surface">₹{{ totalEarningsToday | number:'1.2-2' }}</h3>
           }
         </div>
       </div>

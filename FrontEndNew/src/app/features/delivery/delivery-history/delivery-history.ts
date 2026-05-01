@@ -94,14 +94,15 @@ export class DeliveryHistory implements OnInit, OnDestroy {
   }
 
   get totalFilteredEarnings(): number {
-    return this.filteredAssignments
+    const total = this.filteredAssignments
       .filter(a => a.assignmentStatus === DeliveryStatus.Delivered)
-      .reduce((sum, a) => sum + Math.round(a.totalAmount * DELIVERY_COMMISSION_RATE * 100) / 100, 0);
+      .reduce((sum, a) => sum + this.deliveryEarning(a.totalAmount), 0);
+    return Number(total.toFixed(2));
   }
 
   /** Returns the agent's earning for a single assignment (exposed for template). */
   deliveryEarning(totalAmount: number): number {
-    return Math.round(totalAmount * DELIVERY_COMMISSION_RATE * 100) / 100;
+    return Math.floor(totalAmount * DELIVERY_COMMISSION_RATE * 100) / 100;
   }
 
   getStatusClass(status: string): string {
