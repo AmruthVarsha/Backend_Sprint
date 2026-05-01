@@ -78,8 +78,13 @@
             }
 
             @if (!isLoadingAddresses && addresses.length === 0) {
-              <div class="p-4 rounded-xl bg-tertiary-container border border-tertiary text-on-tertiary-container font-body-sm text-body-sm">
-                No saved addresses found. Please add an address in your profile first.
+              <div class="p-6 rounded-xl bg-surface-container border border-surface-variant text-center space-y-4 animate-fade-in">
+                <span class="material-symbols-outlined text-4xl text-on-surface-variant">home_pin</span>
+                <p class="font-body-md text-body-md text-on-surface-variant">No saved addresses found. You need to add an address before placing an order.</p>
+                <a [routerLink]="['/customer/profile']" [queryParams]="{ tab: 'addresses', action: 'addAddress' }" class="inline-flex items-center gap-2 px-6 py-3 bg-secondary text-on-secondary font-label-lg text-label-lg font-semibold rounded-xl hover:bg-surface-tint transition-all shadow-[0_4px_12px_rgba(0,109,55,0.1)] active:scale-95">
+                  <span class="material-symbols-outlined text-[20px]">add_location</span>
+                  Add New Address
+                </a>
               </div>
             }
 
@@ -98,6 +103,13 @@
                     </div>
                   </label>
                 }
+                
+                <!-- Always show add button at the bottom of the list -->
+                <a [routerLink]="['/customer/profile']" [queryParams]="{ tab: 'addresses', action: 'addAddress' }" 
+                  class="flex items-center justify-center gap-2 p-4 rounded-xl border border-dashed border-surface-variant text-on-surface-variant hover:border-secondary hover:text-secondary hover:bg-secondary/5 transition-all group">
+                  <span class="material-symbols-outlined group-hover:scale-110 transition-transform">add_location</span>
+                  <span class="font-label-lg text-label-lg font-semibold">Add Another Address</span>
+                </a>
               </div>
             }
           </div>

@@ -6,6 +6,10 @@ namespace OrderService.Application.DTOs.Delivery
     public class UpsertAgentProfileDTO
     {
         [Required]
+        [StringLength(100, MinimumLength = 2)]
+        public string AgentName { get; set; } = string.Empty;
+
+        [Required]
         [StringLength(20, MinimumLength = 4)]
         public string CurrentPincode { get; set; } = string.Empty;
 
@@ -18,6 +22,7 @@ namespace OrderService.Application.DTOs.Delivery
     {
         public Guid Id { get; set; }
         public string AgentUserId { get; set; } = string.Empty;
+        public string AgentName { get; set; } = string.Empty;
         public bool IsActive { get; set; }
         public string CurrentPincode { get; set; } = string.Empty;
         public DateTime LastUpdated { get; set; }

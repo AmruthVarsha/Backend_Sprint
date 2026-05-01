@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
 import { RoleEnum } from './shared/models/auth.model';
+import { RoleRedirectComponent } from './shared/components/role-redirect.component';
 
 export const routes: Routes = [
   {
@@ -10,8 +11,9 @@ export const routes: Routes = [
   },
   {
     path: 'customer',
-    loadChildren: () => import('./features/customer/customer.routes').then(m => m.CUSTOMER_ROUTES)
-    // No auth guard - publicly accessible
+    loadChildren: () => import('./features/customer/customer.routes').then(m => m.CUSTOMER_ROUTES),
+    canActivate: [roleGuard],
+    data: { roles: [RoleEnum.Customer], allowGuest: true }
   },
   {
     path: 'partner',
@@ -28,10 +30,16 @@ export const routes: Routes = [
   {
     path: 'delivery',
     loadChildren: () => import('./features/delivery/delivery.routes').then(m => m.DELIVERY_ROUTES),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: [RoleEnum.DeliveryAgent, RoleEnum.Admin] }
   },
   {
     path: '',
-    redirectTo: '/customer/dashboard',
+    component: RoleRedirectComponent,
     pathMatch: 'full'
+  },
+  {
+    path: '**',
+    redirectTo: ''
   }
 ];

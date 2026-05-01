@@ -28,6 +28,7 @@ namespace OrderService.Application.Services
                 {
                     Id = Guid.NewGuid(),
                     AgentUserId = agentUserId,
+                    AgentName = dto.AgentName,
                     IsActive = dto.IsActive,
                     CurrentPincode = dto.CurrentPincode,
                     LastUpdated = DateTime.UtcNow,
@@ -38,6 +39,7 @@ namespace OrderService.Application.Services
             }
             else
             {
+                existing.AgentName = dto.AgentName;
                 existing.IsActive = dto.IsActive;
                 existing.CurrentPincode = dto.CurrentPincode;
                 existing.LastUpdated = DateTime.UtcNow;
@@ -50,8 +52,15 @@ namespace OrderService.Application.Services
         {
             var profile = await _profileRepository.GetByAgentUserId(agentUserId);
             if (profile == null)
-                throw new NotFoundException(
-                    $"No delivery profile found for agent '{agentUserId}'. Please register first.");
+            {
+                // Return an empty profile response instead of throwing NotFound,
+                // so the frontend can handle the "Not Registered" state gracefully.
+                return new AgentProfileResponseDTO
+                {
+                    AgentUserId = agentUserId,
+                    IsActive = false
+                };
+            }
 
             return MapToResponse(profile);
         }
@@ -62,6 +71,7 @@ namespace OrderService.Application.Services
             {
                 Id = profile.Id,
                 AgentUserId = profile.AgentUserId,
+                AgentName = profile.AgentName,
                 IsActive = profile.IsActive,
                 CurrentPincode = profile.CurrentPincode,
                 LastUpdated = profile.LastUpdated

@@ -37,7 +37,7 @@ namespace OrderService.Application.Services
             
             return assignments
                 .Where(a => a.Order != null)
-                .OrderBy(a => (int)a.Status) // Assigned(0), PickedUp(1), Delivered(2)
+                .OrderBy(a => (int)a.Status)
                 .ThenByDescending(a => a.Status == DeliveryStatus.Delivered ? (a.DeliveredAt ?? DateTime.MinValue) : a.Order!.CreatedAt)
                 .Select(assignment => MapToDeliveryResponse(assignment.Order!, assignment, assignment.Order!.Payment));
         }
@@ -53,33 +53,25 @@ namespace OrderService.Application.Services
                 throw new ForbiddenException("You are not assigned to this delivery.");
 
             if (!IsValidTransition(assignment.Status, dto.Status))
-                throw new BadRequestException(
-                    $"Cannot transition from '{assignment.Status}' to '{dto.Status}'.");
+                throw new BadRequestException($"Cannot transition from '{assignment.Status}' to '{dto.Status}'.");
 
             assignment.Status = dto.Status;
             UpdateTimestamps(assignment, dto.Status);
             await _deliveryRepository.UpdateAsync(assignment);
 
-            // Sync parent order status and sub-order statuses
             await SyncOrderStatusAsync(assignment.OrderId, dto.Status);
 
-            // Publish event so AdminService (and any other subscribers) are notified
             var updatedOrder = await _orderRepository.GetByIdWithDetails(assignment.OrderId);
             var payment = await _paymentRepository.GetByOrderId(assignment.OrderId);
             if (updatedOrder != null)
             {
                 await _orderStatusPublisher.PublishOrderStatus(
-                    updatedOrder.Id,
-                    updatedOrder.CustomerId,
+                    updatedOrder.Id, updatedOrder.CustomerId,
                     string.Join(", ", updatedOrder.RestaurantOrders.Select(ro => ro.RestaurantName)),
-                    updatedOrder.TotalAmount,
-                    updatedOrder.Status.ToString(),
-                    updatedOrder.CreatedAt,
-                    payment?.Method.ToString() ?? "Unknown",
-                    payment?.Status.ToString() ?? "Unknown");
+                    updatedOrder.TotalAmount, updatedOrder.Status.ToString(), updatedOrder.CreatedAt,
+                    payment?.Method.ToString() ?? "Unknown", payment?.Status.ToString() ?? "Unknown");
             }
 
-            // When delivered, free the agent
             if (dto.Status == DeliveryStatus.Delivered)
             {
                 var agentProfile = await _agentProfileRepository.GetByAgentUserId(agentId);
@@ -97,41 +89,29 @@ namespace OrderService.Application.Services
         public async Task<DeliveryOrderResponseDTO> UpdateDeliveryPaymentStatusAsync(Guid assignmentId, string agentId, UpdatePaymentStatusDTO dto)
         {
             var assignment = await _deliveryRepository.GetById(assignmentId);
-            if (assignment == null)
-                throw new NotFoundException("DeliveryAssignment", assignmentId);
-
-            if (assignment.DeliveryAgentId != agentId)
-                throw new ForbiddenException("You are not assigned to this delivery.");
+            if (assignment == null) throw new NotFoundException("DeliveryAssignment", assignmentId);
+            if (assignment.DeliveryAgentId != agentId) throw new ForbiddenException("You are not assigned to this delivery.");
 
             var payment = await _paymentRepository.GetByOrderId(assignment.OrderId);
-            if (payment == null)
-                throw new NotFoundException("Payment", assignment.OrderId);
+            if (payment == null) throw new NotFoundException("Payment", assignment.OrderId);
 
             payment.Status = dto.Status;
             payment.UpdatedAt = DateTime.UtcNow;
             await _paymentRepository.UpdateAsync(payment);
 
             var updatedOrder = await _orderRepository.GetByIdWithDetails(assignment.OrderId);
-
             if (updatedOrder != null)
             {
                 await _orderStatusPublisher.PublishOrderStatus(
-                    updatedOrder.Id,
-                    updatedOrder.CustomerId,
+                    updatedOrder.Id, updatedOrder.CustomerId,
                     string.Join(", ", updatedOrder.RestaurantOrders.Select(ro => ro.RestaurantName)),
-                    updatedOrder.TotalAmount,
-                    updatedOrder.Status.ToString(),
-                    updatedOrder.CreatedAt,
-                    payment.Method.ToString(),
-                    payment.Status.ToString());
+                    updatedOrder.TotalAmount, updatedOrder.Status.ToString(), updatedOrder.CreatedAt,
+                    payment.Method.ToString(), payment.Status.ToString());
             }
 
             return MapToDeliveryResponse(updatedOrder!, assignment, payment);
         }
 
-        // ─────────────────────────────────────────────────────────────────────
-        // Agent status transition rules: Assigned → PickedUp → Delivered
-        // ─────────────────────────────────────────────────────────────────────
         private static bool IsValidTransition(DeliveryStatus from, DeliveryStatus to)
         {
             return (from, to) switch
@@ -144,10 +124,8 @@ namespace OrderService.Application.Services
 
         private static void UpdateTimestamps(Domain.Entities.DeliveryAssignment assignment, DeliveryStatus status)
         {
-            if (status == DeliveryStatus.PickedUp)
-                assignment.PickedUpAt = DateTime.UtcNow;
-            else if (status == DeliveryStatus.Delivered)
-                assignment.DeliveredAt = DateTime.UtcNow;
+            if (status == DeliveryStatus.PickedUp) assignment.PickedUpAt = DateTime.UtcNow;
+            else if (status == DeliveryStatus.Delivered) assignment.DeliveredAt = DateTime.UtcNow;
         }
 
         private async Task SyncOrderStatusAsync(Guid orderId, DeliveryStatus deliveryStatus)
@@ -169,9 +147,6 @@ namespace OrderService.Application.Services
                 await _orderRepository.UpdateAsync(order);
             }
 
-            // Also keep restaurant sub-orders in sync with the delivery lifecycle.
-            // The restaurant can only push sub-orders up to ReadyForPickup;
-            // the rest of the journey (PickedUp → Delivered) is the agent's job.
             if (deliveryStatus == DeliveryStatus.PickedUp)
             {
                 foreach (var ro in order.RestaurantOrders)
@@ -188,9 +163,7 @@ namespace OrderService.Application.Services
             {
                 foreach (var ro in order.RestaurantOrders)
                 {
-                    // Advance any sub-order that hasn't reached a terminal state yet
-                    if (ro.Status != RestaurantOrderStatus.Cancelled &&
-                        ro.Status != RestaurantOrderStatus.Rejected)
+                    if (ro.Status != RestaurantOrderStatus.Cancelled && ro.Status != RestaurantOrderStatus.Rejected)
                     {
                         ro.Status = RestaurantOrderStatus.Delivered;
                         ro.UpdatedAt = DateTime.UtcNow;
@@ -200,9 +173,6 @@ namespace OrderService.Application.Services
             }
         }
 
-        // ─────────────────────────────────────────────────────────────────────
-        // Mapping
-        // ─────────────────────────────────────────────────────────────────────
         private static DeliveryOrderResponseDTO MapToDeliveryResponse(
             Domain.Entities.Order order,
             Domain.Entities.DeliveryAssignment assignment,

@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import { UserService } from '../../../core/services/user.service';
@@ -57,8 +57,13 @@ export class ProfileComponent implements OnInit {
     private orderService: OrderService,
     private fb: FormBuilder,
     private router: Router,
+    private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
   ) {}
+
+  get isCustomer(): boolean {
+    return this.userProfile ? this.getRoleName(this.userProfile.role) === 'Customer' : false;
+  }
 
   ngOnInit(): void {
     this.initializeForms();
@@ -82,6 +87,21 @@ export class ProfileComponent implements OnInit {
     }
     
     this.loadUserProfile();
+
+    // Deep link to specific tab or action
+    this.route.queryParams.subscribe(params => {
+      if (params['tab']) {
+        const tab = params['tab'] as TabType;
+        if (['personal', 'security', 'addresses', 'orders'].includes(tab)) {
+          this.selectTab(tab);
+        }
+      }
+      
+      if (params['action'] === 'addAddress') {
+        this.selectTab('addresses');
+        this.showAddAddressForm();
+      }
+    });
   }
 
   initializeForms(): void {

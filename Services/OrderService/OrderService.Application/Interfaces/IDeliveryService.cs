@@ -9,4 +9,3 @@ namespace OrderService.Application.Interfaces
         Task<DeliveryOrderResponseDTO> UpdateDeliveryPaymentStatusAsync(Guid assignmentId, string agentId, UpdatePaymentStatusDTO dto);
     }
 }
-

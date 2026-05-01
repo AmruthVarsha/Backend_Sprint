@@ -17,8 +17,10 @@
             </div>
             <div>
               <p class="font-label-lg text-label-lg text-on-surface font-semibold">{{ userProfile.fullName }}</p>
+              @if (getRoleName(userProfile.role) !== 'Customer') {
               <p class="font-label-sm text-label-sm text-primary font-semibold tracking-wide uppercase">{{
                 getRoleName(userProfile.role) }}</p>
+              }
             </div>
           </div>
           <p class="font-label-sm text-label-sm text-on-surface-variant truncate mb-1">{{ userProfile.email }}</p>
@@ -52,6 +54,7 @@
           <span>Security</span>
         </button>
 
+        @if (isCustomer) {
         <button (click)="selectTab('addresses')" 
           [class.bg-primary-fixed]="activeTab === 'addresses'"
           [class.text-primary]="activeTab === 'addresses'" 
@@ -59,7 +62,8 @@
           [class.border-primary]="activeTab === 'addresses'" 
           [class.text-slate-600]="activeTab !== 'addresses'"
           class="w-full flex items-center gap-3 px-6 py-3 hover:bg-surface-container hover:text-on-surface hover:translate-x-1 transition-all duration-300 font-['Plus_Jakarta_Sans'] text-sm font-semibold">
-          <span class="material-symbols-outlined">location_on</span>
+          <span class="material-symbols-outlined"
+            [style.font-variation-settings]="activeTab === 'addresses' ? '\'FILL\' 1' : '\'FILL\' 0'">location_on</span>
           <span>Addresses</span>
         </button>
 
@@ -70,9 +74,11 @@
           [class.border-primary]="activeTab === 'orders'" 
           [class.text-slate-600]="activeTab !== 'orders'"
           class="w-full flex items-center gap-3 px-6 py-3 hover:bg-surface-container hover:text-on-surface hover:translate-x-1 transition-all duration-300 font-['Plus_Jakarta_Sans'] text-sm font-semibold">
-          <span class="material-symbols-outlined">history</span>
+          <span class="material-symbols-outlined"
+            [style.font-variation-settings]="activeTab === 'orders' ? '\'FILL\' 1' : '\'FILL\' 0'">history</span>
           <span>Order History</span>
         </button>
+        }
       </nav>
 
       <div class="p-6 border-t border-surface-variant">
@@ -126,10 +132,12 @@
               <div>
                 <div class="flex flex-wrap gap-3 items-center mb-2">
                   <h2 class="font-headline-md text-headline-md text-on-surface">{{ userProfile.fullName }}</h2>
+                  @if (getRoleName(userProfile.role) !== 'Customer') {
                   <span
                     class="bg-secondary-container text-on-secondary-container border border-secondary px-3 py-0.5 rounded-full font-label-sm text-label-sm font-semibold tracking-wide uppercase">
                     {{ getRoleName(userProfile.role) }}
                   </span>
+                  }
                   <span
                     [class]="getAccountStatusClass() + ' px-3 py-0.5 rounded-full font-label-sm text-label-sm font-semibold tracking-wide uppercase border'">
                     {{ getAccountStatusName() }}
@@ -186,6 +194,7 @@
               </div>
 
               <!-- Role (Read Only) -->
+              @if (getRoleName(userProfile.role) !== 'Customer') {
               <div class="space-y-2">
                 <label class="font-label-sm text-label-sm font-bold tracking-wider text-on-surface-variant uppercase">Assigned Role</label>
                 <div class="relative">
@@ -197,6 +206,7 @@
                   </div>
                 </div>
               </div>
+              }
             </div>
 
             <!-- Info Alert -->
@@ -318,7 +328,7 @@
         }
 
         <!-- Addresses Tab -->
-        @if (activeTab === 'addresses') {
+        @if (activeTab === 'addresses' && isCustomer) {
         <header class="mb-8 flex justify-between items-center">
           <div>
             <h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">Saved Addresses</h1>
@@ -434,7 +444,7 @@
         }
 
         <!-- Order History Tab -->
-        @if (activeTab === 'orders') {
+        @if (activeTab === 'orders' && isCustomer) {
         <header class="mb-8">
           <h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">Order History</h1>
           <p class="font-body-md text-body-md text-on-surface-variant">View your past orders and track deliveries.</p>

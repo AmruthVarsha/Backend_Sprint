@@ -21,7 +21,6 @@ export class DeliveryService {
 
   /**
    * Agent: get currently assigned orders with full pickup/dropoff details.
-   * GET /gateway/order/delivery/assignments
    */
   getAssignments(): Observable<DeliveryOrderResponseDTO[]> {
     return this.api.get<DeliveryOrderResponseDTO[]>(API_ENDPOINTS.DELIVERY.ASSIGNMENTS);
@@ -29,8 +28,6 @@ export class DeliveryService {
 
   /**
    * Agent: update delivery status.
-   * Transitions: Assigned → PickedUp → Delivered.
-   * PUT /gateway/order/delivery/assignments/{id}/status
    */
   updateDeliveryStatus(assignmentId: string, dto: UpdateDeliveryStatusDTO): Observable<DeliveryOrderResponseDTO> {
     return this.api.put<DeliveryOrderResponseDTO>(API_ENDPOINTS.DELIVERY.UPDATE_STATUS(assignmentId), dto);
@@ -38,15 +35,13 @@ export class DeliveryService {
 
   /**
    * Agent: update payment status (e.g., mark COD as Paid).
-   * PUT /gateway/order/delivery/assignments/{id}/payment-status
    */
   updatePaymentStatus(assignmentId: string, dto: { status: string }): Observable<DeliveryOrderResponseDTO> {
     return this.api.put<DeliveryOrderResponseDTO>(API_ENDPOINTS.DELIVERY.UPDATE_PAYMENT_STATUS(assignmentId), dto);
   }
 
   /**
-   * Agent: get their profile (isActive, currentPincode).
-   * GET /gateway/order/delivery/profile
+   * Agent: get their profile.
    */
   getProfile(): Observable<AgentProfileResponseDTO> {
     return this.api.get<AgentProfileResponseDTO>(API_ENDPOINTS.DELIVERY.PROFILE)
@@ -57,7 +52,6 @@ export class DeliveryService {
 
   /**
    * Agent: create or update profile.
-   * PUT /gateway/order/delivery/profile
    */
   upsertProfile(dto: UpsertAgentProfileDTO): Observable<AgentProfileResponseDTO> {
     return this.api.put<AgentProfileResponseDTO>(API_ENDPOINTS.DELIVERY.PROFILE, dto)

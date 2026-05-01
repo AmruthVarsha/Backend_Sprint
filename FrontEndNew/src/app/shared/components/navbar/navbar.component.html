@@ -1,8 +1,9 @@
 <!-- Top Navigation Bar -->
 <nav class="bg-white/90 backdrop-blur-md fixed top-0 w-full z-50 border-b border-slate-100 shadow-xl shadow-primary/5 flex justify-between items-center px-6 py-3">
-  <div class="text-2xl font-black tracking-tighter text-primary cursor-pointer" routerLink="/customer/dashboard">
+  <div class="text-2xl font-black tracking-tighter text-primary cursor-pointer" (click)="goToDashboard()">
     Crave
   </div>
+  @if (userRole === 0 || userRole === 'Customer') {
   <ul class="hidden md:flex space-x-8 items-center">
     <li>
       <a routerLink="/customer/dashboard"
@@ -27,10 +28,21 @@
       </a>
     </li>
   </ul>
+  } @else if (isAuthenticated) {
+    <ul class="hidden md:flex space-x-8 items-center">
+      <li>
+        <button (click)="goToDashboard()"
+          class="font-['Plus_Jakarta_Sans'] text-sm font-medium text-slate-500 hover:text-primary transition-all active:scale-95 duration-200 block">
+          Dashboard
+        </button>
+      </li>
+    </ul>
+  }
 
   <div class="flex items-center space-x-4 text-primary">
 
-      <!-- Cart Button with Dropdown -->
+      <!-- Cart Button with Dropdown (Only for Customers) -->
+      @if (userRole === 0 || userRole === 'Customer') {
       <div class="relative cart-container">
         <button (click)="goToCheckout()"
           class="hover:text-surface-tint transition-all duration-200 active:scale-95 transform relative">
@@ -111,6 +123,7 @@
           }
         </div>
       </div>
+      }
 
       <!-- User Profile Dropdown (Authenticated) -->
       @if (isAuthenticated) {
@@ -125,10 +138,15 @@
         <!-- Dropdown Menu -->
         <div
           class="absolute right-0 mt-2 w-48 bg-surface-container-lowest rounded-2xl p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 shadow-[0_8px_20px_rgba(181,28,0,0.1)] border border-surface-variant z-50">
-          <button routerLink="/customer/profile"
+          <button (click)="goToDashboard(); $event.stopPropagation()"
+            class="w-full flex items-center gap-3 px-4 py-3 text-left text-on-surface hover:bg-surface-container rounded-xl transition-all">
+            <span class="material-symbols-outlined">dashboard</span>
+            <span class="font-label-lg text-label-lg">Dashboard</span>
+          </button>
+          <button (click)="goToProfile(); $event.stopPropagation()"
             class="w-full flex items-center gap-3 px-4 py-3 text-left text-on-surface hover:bg-surface-container rounded-xl transition-all">
             <span class="material-symbols-outlined">person</span>
-            <span class="font-label-lg text-label-lg">Profile</span>
+            <span class="font-label-lg text-label-lg">Account</span>
           </button>
           <button (click)="logout()"
             class="w-full flex items-center gap-3 px-4 py-3 text-left text-on-surface hover:bg-surface-container rounded-xl transition-all">

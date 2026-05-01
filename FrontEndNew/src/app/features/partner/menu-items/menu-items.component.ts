@@ -174,11 +174,17 @@ export class PartnerMenuItemsComponent implements OnInit, OnDestroy {
     this.itemForm.reset({
       price: 0,
       isVeg: true,
+      imageUrl: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=400&h=300&auto=format&fit=crop',
       prepTimeMinutes: 15,
       isAvailable: true
     });
     this.showItemModal = true;
     this.cdr.markForCheck();
+  }
+
+  handleImageError(event: any): void {
+    event.target.src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=400&h=300&auto=format&fit=crop';
+    event.target.onerror = null;
   }
 
   editItem(item: MenuItem): void {
@@ -220,16 +226,13 @@ export class PartnerMenuItemsComponent implements OnInit, OnDestroy {
       description: formValue.description,
       price: formValue.price,
       categoryName: formValue.categoryName,
-      imageUrl: formValue.imageUrl,
+      imageUrl: formValue.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=400&h=300&auto=format&fit=crop',
       isVeg: formValue.isVeg,
       prepTimeMinutes: formValue.prepTimeMinutes,
       isAvailable: formValue.isAvailable
     };
 
     if (this.isEditing && this.currentItemId) {
-      // Backend UPDATE expects:
-      // string Name, string? Description, string? ImageUrl, decimal Price, bool IsVeg, int PrepTimeMinutes, bool IsAvailable
-      // We will send standard update DTO
       this.partnerService.updateMenuItem(this.currentItemId, dto as any).subscribe({
         next: () => {
           this.loadMenuItems();

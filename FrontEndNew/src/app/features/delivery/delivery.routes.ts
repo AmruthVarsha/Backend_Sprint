@@ -19,7 +19,14 @@ export const DELIVERY_ROUTES: Routes = [
       { path: 'dashboard', component: DeliveryDashboard },
       { path: 'tasks', component: DeliveryAssignedTasks },
       { path: 'history', component: DeliveryHistory },
-      { path: 'profile', component: DeliveryProfile }
+      {
+        path: 'profile',
+        loadComponent: () => import('./delivery-profile/delivery-profile').then(m => m.DeliveryProfile)
+      },
     ]
+  },
+  {
+    path: 'account',
+    loadComponent: () => import('../customer/profile/profile.component').then(m => m.ProfileComponent)
   }
 ];

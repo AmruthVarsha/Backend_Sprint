@@ -18,7 +18,8 @@ export class RegisterComponent implements OnInit {
   isLoading = false;
   errorMessage = '';
   successMessage = '';
-  selectedRole: 'Customer' | 'Partner' | 'DeliveryAgent' | 'Admin' = 'Customer';
+  selectedRole: 'Customer' | 'Partner' | 'DeliveryAgent' | 'Admin' | null = null;
+  roleError = false;
 
   constructor(
     private fb: FormBuilder,
@@ -49,6 +50,7 @@ export class RegisterComponent implements OnInit {
 
   selectRole(role: 'Customer' | 'Partner' | 'DeliveryAgent' | 'Admin'): void {
     this.selectedRole = role;
+    this.roleError = false;
   }
 
   togglePasswordVisibility(): void {
@@ -80,7 +82,11 @@ export class RegisterComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.registerForm.invalid) {
+    if (!this.selectedRole) {
+      this.roleError = true;
+    }
+
+    if (this.registerForm.invalid || !this.selectedRole) {
       Object.keys(this.registerForm.controls).forEach(key => {
         this.registerForm.get(key)?.markAsTouched();
       });

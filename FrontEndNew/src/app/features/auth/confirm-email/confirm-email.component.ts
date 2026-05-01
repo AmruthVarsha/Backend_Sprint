@@ -191,20 +191,32 @@ export class ConfirmEmailComponent implements OnInit {
       next: () => {
         console.log('[ConfirmEmail] Email confirmed successfully');
         this.isLoading = false;
-        this.successMessage = 'Email confirmed successfully! Redirecting...';
+        this.successMessage = 'Email confirmed successfully! Updating your session...';
         
-        // Update the user profile to reflect email confirmation
-        this.authService.getProfile().subscribe({
+        // Refresh token to update the EmailConfirmed claim in the JWT
+        this.authService.refreshToken().subscribe({
           next: () => {
-            setTimeout(() => {
-              this.router.navigate(['/customer/profile']);
-            }, 1500);
+            // Update the user profile locally
+            this.authService.getProfile().subscribe({
+              next: () => {
+                setTimeout(() => {
+                  this.router.navigate(['/customer/profile']);
+                }, 1500);
+              },
+              error: () => {
+                setTimeout(() => {
+                  this.router.navigate(['/customer/profile']);
+                }, 1500);
+              }
+            });
           },
-          error: () => {
-            // Even if profile fetch fails, redirect to profile
-            setTimeout(() => {
-              this.router.navigate(['/customer/profile']);
-            }, 1500);
+          error: (err) => {
+            console.error('[ConfirmEmail] Token refresh failed:', err);
+            // Even if refresh fails, attempt to update profile and redirect
+            this.authService.getProfile().subscribe({
+              next: () => this.router.navigate(['/customer/profile']),
+              error: () => this.router.navigate(['/customer/profile'])
+            });
           }
         });
       },

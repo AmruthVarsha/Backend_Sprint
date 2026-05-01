@@ -89,6 +89,7 @@ export interface OrderResponseDTO {
   createdAt: string;
   updatedAt: string;
   payment?: OrderPaymentDTO;
+  deliveryAgentName?: string;
   restaurantOrders: RestaurantOrderSummaryDTO[];
 }
 
@@ -185,6 +186,7 @@ export interface UpdateDeliveryStatusDTO {
 }
 
 export interface UpsertAgentProfileDTO {
+  agentName: string;
   currentPincode: string;
   isActive: boolean;
 }
@@ -192,6 +194,7 @@ export interface UpsertAgentProfileDTO {
 export interface AgentProfileResponseDTO {
   id: string;
   agentUserId: string;
+  agentName: string;
   isActive: boolean;
   currentPincode: string;
   lastUpdated: string;

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AdminService.Infrastructure.Migrations
 {
     [DbContext(typeof(AdminDbContext))]
-    [Migration("20260429044510_AddPaymentStatusToOrderSummary")]
-    partial class AddPaymentStatusToOrderSummary
+    [Migration("20260501042517_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

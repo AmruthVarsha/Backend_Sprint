@@ -24,7 +24,10 @@ export const roleGuard: CanActivateFn = (route, state) => {
   const user = authService.currentUserValue;
   const requiredRoles = route.data['roles'] as RoleEnum[];
 
+  const allowGuest = route.data['allowGuest'] === true;
+
   if (!user) {
+    if (allowGuest) return true;
     // User not logged in
     router.navigate(['/auth/login']);
     return false;

@@ -30,6 +30,10 @@ export const PARTNER_ROUTES: Routes = [
     loadComponent: () => import('./add-restaurant/add-restaurant.component').then(m => m.AddRestaurantComponent)
   },
   {
+    path: 'profile',
+    loadComponent: () => import('../customer/profile/profile.component').then(m => m.ProfileComponent)
+  },
+  {
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full'

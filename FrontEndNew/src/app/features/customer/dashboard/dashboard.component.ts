@@ -137,8 +137,21 @@ export class DashboardComponent implements OnInit {
       // If no timing info, assume open (safety fallback)
       if (!r.openingTime || !r.closingTime) return true;
 
-      // Basic string comparison works for HH:mm format
-      return currentTime >= r.openingTime && currentTime <= r.closingTime;
+      const [openH, openM] = r.openingTime.split(':').map(Number);
+      const [closeH, closeM] = r.closingTime.split(':').map(Number);
+      const [nowH, nowM] = currentTime.split(':').map(Number);
+
+      const openVal = openH * 60 + openM;
+      const closeVal = closeH * 60 + closeM;
+      const nowVal = nowH * 60 + nowM;
+
+      if (openVal < closeVal) {
+        // Normal case (e.g., 09:00 to 22:00)
+        return nowVal >= openVal && nowVal <= closeVal;
+      } else {
+        // Cross-midnight case (e.g., 18:00 to 02:00)
+        return nowVal >= openVal || nowVal <= closeVal;
+      }
     });
 
     // 3. Filter by Cuisine
@@ -218,6 +231,14 @@ export class DashboardComponent implements OnInit {
 
   goToCheckout(): void {
     this.router.navigate(['/customer/checkout']);
+  }
+
+  formatTime(timeStr?: string): string {
+    if (!timeStr) return 'N/A';
+    const [h, m] = timeStr.split(':').map(Number);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const h12 = h % 12 || 12;
+    return `${h12}:${m.toString().padStart(2, '0')} ${ampm}`;
   }
 
   logout(): void {

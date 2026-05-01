@@ -16,10 +16,15 @@
     @if (!isLoading) {
 
     <!-- Current status card -->
-    @if (profile) {
+    @if (profile && profile.id) {
     <div class="bg-white border border-[#e5e7eb] rounded-2xl p-6 mb-6 shadow-sm">
       <div class="flex items-center justify-between">
         <div>
+          <p class="text-xs text-[#9ca3af] uppercase tracking-widest mb-1">Agent Details</p>
+          <div class="flex items-center gap-2 mb-3">
+             <span class="material-symbols-outlined text-[#ff6b35]">account_circle</span>
+             <p class="font-bold text-[#1a1a1a] text-lg">{{ profile.agentName }}</p>
+          </div>
           <p class="text-xs text-[#9ca3af] uppercase tracking-widest mb-1">Current Status</p>
           <div class="flex items-center gap-2">
             <div class="w-2.5 h-2.5 rounded-full"
@@ -50,20 +55,27 @@
       Go Offline
     </button>
     }
-    } @else {
+    } @else if (!isLoading) {
     <!-- No profile — register -->
     <div class="bg-yellow-50 border border-yellow-200 rounded-2xl p-5 mb-6 flex gap-3">
       <span class="material-symbols-outlined text-yellow-600">info</span>
       <div>
         <p class="font-semibold text-yellow-800 text-sm">Profile not set up yet</p>
-        <p class="text-yellow-700 text-xs mt-0.5">Register your service area pincode to start receiving orders.</p>
+        <p class="text-yellow-700 text-xs mt-0.5">Register your full name and service area pincode to start receiving orders.</p>
       </div>
     </div>
     }
 
     <!-- Edit form -->
     <div class="bg-white border border-[#e5e7eb] rounded-2xl p-6 space-y-5 shadow-sm">
-      <h2 class="font-bold text-[#1a1a1a] text-base">{{ profile ? 'Update Profile' : 'Register Profile' }}</h2>
+      <h2 class="font-bold text-[#1a1a1a] text-base">{{ (profile && profile.id) ? 'Update Profile' : 'Register Profile' }}</h2>
+
+      <!-- Full Name -->
+      <div>
+        <label class="block text-sm text-[#6b7280] mb-2">Your Full Name</label>
+        <input [(ngModel)]="agentNameInput" type="text" placeholder="e.g. John Doe"
+          class="w-full bg-[#f9fafb] border border-[#e5e7eb] rounded-xl px-4 py-3 text-[#1a1a1a] text-sm placeholder-[#9ca3af] focus:outline-none focus:ring-2 focus:ring-[#ff6b35] focus:border-transparent transition-colors">
+      </div>
 
       <!-- Pincode -->
       <div>
@@ -96,8 +108,8 @@
       </div>
       }
 
-      <button (click)="saveProfile()" [disabled]="isSaving || !pincodeInput.trim()"
-        class="w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-md" [class]="pincodeInput.trim() && !isSaving
+      <button (click)="saveProfile()" [disabled]="isSaving || !pincodeInput.trim() || !agentNameInput.trim()"
+        class="w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-md" [class]="pincodeInput.trim() && agentNameInput.trim() && !isSaving
             ? 'bg-[#ff6b35] text-white hover:bg-[#ff8555] active:scale-95'
             : 'bg-[#e5e7eb] text-[#9ca3af] cursor-not-allowed'">
         @if (isSaving) {
@@ -105,7 +117,7 @@
         Saving...
         } @else {
         <span class="material-symbols-outlined text-sm">save</span>
-        {{ profile ? 'Save Changes' : 'Register' }}
+        {{ (profile && profile.id) ? 'Save Changes' : 'Register' }}
         }
       </button>
     </div>

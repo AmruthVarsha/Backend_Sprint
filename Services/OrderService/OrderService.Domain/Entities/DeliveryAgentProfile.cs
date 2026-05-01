@@ -11,6 +11,7 @@ namespace OrderService.Domain.Entities
 
         // References the UserId in AuthService (NameIdentifier claim)
         public string AgentUserId { get; set; } = string.Empty;
+        public string AgentName { get; set; } = string.Empty;
 
         // Availability for auto-assignment
         public bool IsActive { get; set; } = false;

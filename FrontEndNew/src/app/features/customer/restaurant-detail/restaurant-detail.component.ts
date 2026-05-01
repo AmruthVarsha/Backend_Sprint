@@ -175,4 +175,20 @@ export class RestaurantDetailComponent implements OnInit {
     }
     this.router.navigate(['/customer/checkout']);
   }
+
+  formatTime(timeStr?: string): string {
+    if (!timeStr) return 'N/A';
+    const [h, m] = timeStr.split(':').map(Number);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const h12 = h % 12 || 12;
+    return `${h12}:${m.toString().padStart(2, '0')} ${ampm}`;
+  }
+
+  handleImageError(event: any, type: 'restaurant' | 'menu'): void {
+    const defaultRestaurant = 'https://via.placeholder.com/1920x400?text=Restaurant';
+    const defaultMenu = 'https://via.placeholder.com/200x200?text=Dish';
+    event.target.src = type === 'restaurant' ? defaultRestaurant : defaultMenu;
+    // Prevent infinite loop if placeholder also fails
+    event.target.onerror = null;
+  }
 }

@@ -24,6 +24,9 @@ namespace OrderService.Application.DTOs.Order
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
+        public string? DeliveryAgentId { get; set; }
+        public string? DeliveryAgentName { get; set; }
+
         // Payment snapshot
         public OrderPaymentDTO? Payment { get; set; }
 

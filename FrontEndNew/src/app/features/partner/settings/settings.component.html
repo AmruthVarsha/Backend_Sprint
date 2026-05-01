@@ -50,6 +50,12 @@
           <input [(ngModel)]="restaurant.phoneNumber" class="w-full px-4 py-3 rounded-xl bg-surface-container border border-surface-variant text-on-surface focus:ring-2 focus:ring-primary font-body-lg text-body-lg"/>
         </div>
 
+        <div class="md:col-span-2">
+          <label class="block font-label-lg text-label-lg text-on-surface font-semibold mb-2">Logo URL</label>
+          <input [(ngModel)]="restaurant.logoUrl" placeholder="https://image-link.com/logo.jpg" class="w-full px-4 py-3 rounded-xl bg-surface-container border border-surface-variant text-on-surface focus:ring-2 focus:ring-primary font-body-lg text-body-lg"/>
+          <p class="text-on-surface-variant font-label-sm text-label-sm mt-1">Provide a URL for your restaurant's logo. Leave blank for default.</p>
+        </div>
+
         <div class="md:col-span-2 py-2 border-t border-surface-variant">
           <h3 class="font-headline-md text-headline-md text-on-surface mb-4">Location Details</h3>
         </div>
@@ -79,13 +85,13 @@
         </div>
 
         <div>
-          <label class="block font-label-lg text-label-lg text-on-surface font-semibold mb-2">Opening Time (HH:mm)</label>
-          <input [(ngModel)]="restaurant.openingTime" placeholder="09:00" class="w-full px-4 py-3 rounded-xl bg-surface-container border border-surface-variant text-on-surface focus:ring-2 focus:ring-primary font-body-lg text-body-lg"/>
+          <label class="block font-label-lg text-label-lg text-on-surface font-semibold mb-2">Opening Time</label>
+          <input [(ngModel)]="restaurant.openingTime" type="time" class="w-full px-4 py-3 rounded-xl bg-surface-container border border-surface-variant text-on-surface focus:ring-2 focus:ring-primary font-body-lg text-body-lg"/>
         </div>
 
         <div>
-          <label class="block font-label-lg text-label-lg text-on-surface font-semibold mb-2">Closing Time (HH:mm)</label>
-          <input [(ngModel)]="restaurant.closingTime" placeholder="22:00" class="w-full px-4 py-3 rounded-xl bg-surface-container border border-surface-variant text-on-surface focus:ring-2 focus:ring-primary font-body-lg text-body-lg"/>
+          <label class="block font-label-lg text-label-lg text-on-surface font-semibold mb-2">Closing Time</label>
+          <input [(ngModel)]="restaurant.closingTime" type="time" class="w-full px-4 py-3 rounded-xl bg-surface-container border border-surface-variant text-on-surface focus:ring-2 focus:ring-primary font-body-lg text-body-lg"/>
         </div>
 
         <div>

@@ -22,6 +22,7 @@ export class DeliveryProfile implements OnInit, OnDestroy {
   successMessage = '';
 
   // Form fields
+  agentNameInput = '';
   pincodeInput = '';
   isActiveInput = false;
 
@@ -30,7 +31,7 @@ export class DeliveryProfile implements OnInit, OnDestroy {
   constructor(
     private deliveryService: DeliveryService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadProfile();
@@ -46,26 +47,27 @@ export class DeliveryProfile implements OnInit, OnDestroy {
     this.deliveryService.getProfile().pipe(takeUntil(this.destroy$)).subscribe({
       next: (p) => {
         this.profile = p;
-        this.pincodeInput = p.currentPincode;
-        this.isActiveInput = p.isActive;
+        if (p.id) { // Only set if profile actually exists (not the empty fallback)
+          this.agentNameInput = p.agentName || '';
+          this.pincodeInput = p.currentPincode || '';
+          this.isActiveInput = p.isActive;
+        }
         this.isLoading = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
-        // 404 = profile not registered yet — show the register form
-        if (err.status === 404) {
-          this.profile = null;
-          this.isLoading = false;
-        } else {
-          this.errorMessage = 'Failed to load profile.';
-          this.isLoading = false;
-        }
+        this.errorMessage = 'Failed to load profile details. Please try again.';
+        this.isLoading = false;
         this.cdr.detectChanges();
       }
     });
   }
 
   saveProfile(): void {
+    if (!this.agentNameInput.trim()) {
+      this.errorMessage = 'Please enter your full name.';
+      return;
+    }
     if (!this.pincodeInput.trim()) {
       this.errorMessage = 'Please enter your service pincode.';
       return;
@@ -76,6 +78,7 @@ export class DeliveryProfile implements OnInit, OnDestroy {
     this.successMessage = '';
 
     const dto: UpsertAgentProfileDTO = {
+      agentName: this.agentNameInput.trim(),
       currentPincode: this.pincodeInput.trim(),
       isActive: this.isActiveInput
     };
@@ -83,6 +86,7 @@ export class DeliveryProfile implements OnInit, OnDestroy {
     this.deliveryService.upsertProfile(dto).pipe(takeUntil(this.destroy$)).subscribe({
       next: (p) => {
         this.profile = p;
+        this.agentNameInput = p.agentName;
         this.pincodeInput = p.currentPincode;
         this.isActiveInput = p.isActive;
         this.isSaving = false;
@@ -90,7 +94,7 @@ export class DeliveryProfile implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        this.errorMessage = err?.error?.message || 'Failed to save profile.';
+        this.errorMessage = err?.error?.message || 'Failed to save profile. Make sure all fields are valid.';
         this.isSaving = false;
         this.cdr.detectChanges();
       }

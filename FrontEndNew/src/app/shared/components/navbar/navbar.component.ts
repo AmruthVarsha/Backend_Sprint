@@ -15,6 +15,7 @@ import { CartService, CartItem } from '../../../core/services/cart.service';
 export class NavbarComponent implements OnInit {
   searchQuery: string = '';
   isAuthenticated: boolean = false;
+  userRole: string | number | null = null;
   cartItems: CartItem[] = [];
 
   constructor(
@@ -28,6 +29,12 @@ export class NavbarComponent implements OnInit {
     // Check authentication status
     this.authService.isAuthenticated$.subscribe(isAuth => {
       this.isAuthenticated = isAuth;
+      if (isAuth) {
+        const user = this.authService.currentUserValue;
+        this.userRole = user?.role ?? null;
+      } else {
+        this.userRole = null;
+      }
       this.cdr.detectChanges();
     });
 
@@ -59,8 +66,38 @@ export class NavbarComponent implements OnInit {
     this.cartService.updateQuantity(item.menuItem.id, newQuantity);
   }
 
+  goToDashboard(): void {
+    const role = this.userRole;
+    if (role === 0 || role === 'Customer') {
+      this.router.navigate(['/customer/dashboard']);
+    } else if (role === 1 || role === 'Partner') {
+      this.router.navigate(['/partner/dashboard']);
+    } else if (role === 2 || role === 'DeliveryAgent' || role === 'Delivery Agent') {
+      this.router.navigate(['/delivery/dashboard']);
+    } else if (role === 3 || role === 'Admin') {
+      this.router.navigate(['/admin/dashboard']);
+    } else {
+      this.router.navigate(['/']);
+    }
+  }
+
   goToCheckout(): void {
     this.router.navigate(['/customer/checkout']);
+  }
+
+  goToProfile(): void {
+    const role = this.userRole;
+    if (role === 0 || role === 'Customer') {
+      this.router.navigate(['/customer/profile']);
+    } else if (role === 1 || role === 'Partner') {
+      this.router.navigate(['/partner/profile']);
+    } else if (role === 2 || role === 'DeliveryAgent' || role === 'Delivery Agent') {
+      this.router.navigate(['/delivery/account']);
+    } else if (role === 3 || role === 'Admin') {
+      this.router.navigate(['/admin/profile']);
+    } else {
+      this.router.navigate(['/']);
+    }
   }
 
   logout(): void {
